@@ -1,8 +1,20 @@
-import { describe, it, expect, afterEach } from "vitest";
+import { describe, it, expect, afterEach, vi } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { TopBar } from "@/components/layout/top-bar";
+
+vi.mock("@azure/msal-react", () => ({
+  useMsal: vi.fn(() => ({
+    instance: {},
+    accounts: [],
+    inProgress: "none",
+  })),
+}));
+
+vi.mock("@/lib/auth/auth-utils", () => ({
+  logoutRedirect: vi.fn(),
+}));
 
 describe("Layout components", () => {
   afterEach(() => {
@@ -15,9 +27,9 @@ describe("Layout components", () => {
       expect(screen.getByText("Auto")).toBeInTheDocument();
     });
 
-    it("should render a Sign In link", () => {
+    it("should render a Se connecter link when unauthenticated", () => {
       render(<Header />);
-      expect(screen.getByText("Sign In")).toBeInTheDocument();
+      expect(screen.getByText("Se connecter")).toBeInTheDocument();
     });
   });
 

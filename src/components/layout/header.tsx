@@ -1,6 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { useMsal } from "@azure/msal-react";
+import { UserMenu } from "@/components/layout/user-menu";
 
 export function Header() {
+  const { accounts } = useMsal();
+  const isAuthenticated = accounts.length > 0;
+
   return (
     <header className="border-b bg-background">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -8,9 +15,24 @@ export function Header() {
           Auto
         </Link>
         <nav className="flex items-center gap-4">
-          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
-            Sign In
-          </Link>
+          {isAuthenticated ? (
+            <UserMenu />
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Se connecter
+              </Link>
+              <Link
+                href="/register"
+                className="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90"
+              >
+                Créer un compte
+              </Link>
+            </>
+          )}
         </nav>
       </div>
     </header>
