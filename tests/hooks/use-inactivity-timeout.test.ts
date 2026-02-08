@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook } from "@testing-library/react";
 
 vi.mock("@/lib/auth/auth-utils", () => ({
-  logoutRedirect: vi.fn(),
+  logoutRedirect: vi.fn(() => Promise.resolve()),
 }));
 
 vi.mock("@/lib/auth/msal-instance", () => ({

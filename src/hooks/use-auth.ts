@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useAuthStore } from "@/stores/auth-store";
 import { loginRedirect, logoutRedirect } from "@/lib/auth/auth-utils";
+import type { Role } from "@auto/shared";
 
 export function useAuth() {
   const user = useAuthStore((s) => s.user);
@@ -15,10 +16,7 @@ export function useAuth() {
     await logoutRedirect();
   }, []);
 
-  const hasRole = useCallback(
-    (role: string) => roles.includes(role),
-    [roles],
-  );
+  const hasRole = useCallback((role: Role) => roles.includes(role), [roles]);
 
   return {
     user,

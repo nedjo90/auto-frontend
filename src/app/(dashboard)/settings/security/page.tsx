@@ -11,8 +11,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 export default function SecuritySettingsPage() {
   const { hasRole } = useAuth();
-  const isSeller =
-    hasRole("private_seller") || hasRole("professional_seller");
+  const isSeller = hasRole("private_seller") || hasRole("professional_seller");
 
   const [mfaEnabled, setMfaEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,28 +26,20 @@ export default function SecuritySettingsPage() {
     setError(null);
 
     try {
-      const response = await apiClient(
-        `${API_BASE}/api/security/toggle2FA`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ enable: !mfaEnabled }),
-        },
-      );
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.detail || "Erreur lors de la mise à jour");
-      }
+      const response = await apiClient(`${API_BASE}/api/security/toggle2FA`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enable: !mfaEnabled }),
+      });
 
       const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.detail || "Erreur lors de la mise à jour");
+      }
       setMfaEnabled(result.mfaStatus === "enabled");
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Erreur lors de la mise à jour du 2FA",
-      );
+      setError(err instanceof Error ? err.message : "Erreur lors de la mise à jour du 2FA");
     } finally {
       setIsLoading(false);
     }
@@ -73,9 +64,7 @@ export default function SecuritySettingsPage() {
                 <Shield className="mt-1 size-6 text-muted-foreground" />
               )}
               <div className="space-y-1">
-                <h2 className="font-semibold">
-                  Authentification à deux facteurs (2FA)
-                </h2>
+                <h2 className="font-semibold">Authentification à deux facteurs (2FA)</h2>
                 <p className="text-sm text-muted-foreground">
                   {mfaEnabled
                     ? "La vérification en deux étapes est activée. Votre compte bénéficie d'une sécurité renforcée."
@@ -108,8 +97,7 @@ export default function SecuritySettingsPage() {
       {!isSeller && (
         <Card className="p-6">
           <p className="text-sm text-muted-foreground">
-            L&apos;authentification à deux facteurs est disponible pour les
-            comptes vendeurs.
+            L&apos;authentification à deux facteurs est disponible pour les comptes vendeurs.
           </p>
         </Card>
       )}

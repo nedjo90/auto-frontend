@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("@/lib/auth/auth-utils", () => ({
   getAccessToken: vi.fn(),
-  loginRedirect: vi.fn(),
+  loginRedirect: vi.fn(() => Promise.resolve()),
 }));
 
 import { apiClient } from "@/lib/auth/api-client";
@@ -28,68 +28,47 @@ describe("api-client", () => {
 
     await apiClient("/api/test");
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      "/api/test",
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          Authorization: "Bearer token-abc",
-        }),
-      }),
-    );
+    const callArgs = vi.mocked(global.fetch).mock.calls[0];
+    const headers = callArgs[1]?.headers as Headers;
+    expect(headers.get("Authorization")).toBe("Bearer token-abc");
   });
 
   it("merges custom headers with auth header", async () => {
     vi.mocked(getAccessToken).mockResolvedValue("token-abc");
-    vi.mocked(global.fetch).mockResolvedValue(
-      new Response("{}", { status: 200 }),
-    );
+    vi.mocked(global.fetch).mockResolvedValue(new Response("{}", { status: 200 }));
 
     await apiClient("/api/test", {
       headers: { "Content-Type": "application/json" },
     });
 
     const callArgs = vi.mocked(global.fetch).mock.calls[0];
-    const headers = (callArgs[1] as RequestInit).headers as Record<
-      string,
-      string
-    >;
-    expect(headers["Authorization"]).toBe("Bearer token-abc");
-    expect(headers["Content-Type"]).toBe("application/json");
+    const headers = callArgs[1]?.headers as Headers;
+    expect(headers.get("Authorization")).toBe("Bearer token-abc");
+    expect(headers.get("Content-Type")).toBe("application/json");
   });
 
-  it("triggers loginRedirect on 401 response", async () => {
+  it("throws and triggers loginRedirect on 401 response", async () => {
     vi.mocked(getAccessToken).mockResolvedValue("expired-token");
-    vi.mocked(global.fetch).mockResolvedValue(
-      new Response("Unauthorized", { status: 401 }),
-    );
+    vi.mocked(global.fetch).mockResolvedValue(new Response("Unauthorized", { status: 401 }));
 
-    const response = await apiClient("/api/protected");
-
-    expect(response.status).toBe(401);
+    await expect(apiClient("/api/protected")).rejects.toThrow("Authentication required");
     expect(loginRedirect).toHaveBeenCalled();
   });
 
   it("works without token (unauthenticated request)", async () => {
     vi.mocked(getAccessToken).mockResolvedValue(null);
-    vi.mocked(global.fetch).mockResolvedValue(
-      new Response("{}", { status: 200 }),
-    );
+    vi.mocked(global.fetch).mockResolvedValue(new Response("{}", { status: 200 }));
 
     await apiClient("/api/public");
 
     const callArgs = vi.mocked(global.fetch).mock.calls[0];
-    const headers = (callArgs[1] as RequestInit).headers as Record<
-      string,
-      string
-    >;
-    expect(headers["Authorization"]).toBeUndefined();
+    const headers = callArgs[1]?.headers as Headers;
+    expect(headers.has("Authorization")).toBe(false);
   });
 
   it("passes through non-401 error responses", async () => {
     vi.mocked(getAccessToken).mockResolvedValue("token");
-    vi.mocked(global.fetch).mockResolvedValue(
-      new Response("Server Error", { status: 500 }),
-    );
+    vi.mocked(global.fetch).mockResolvedValue(new Response("Server Error", { status: 500 }));
 
     const response = await apiClient("/api/test");
 

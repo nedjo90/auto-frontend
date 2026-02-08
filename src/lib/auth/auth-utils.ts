@@ -1,3 +1,4 @@
+import { type AuthenticationResult } from "@azure/msal-browser";
 import { msalInstance, msalInitPromise } from "./msal-instance";
 import { loginRequest } from "./msal-config";
 
@@ -21,7 +22,8 @@ export async function logoutRedirect(): Promise<void> {
  * Attempts silent token acquisition. Falls back to redirect on interaction-required errors.
  * Returns null if no active account or if redirect is triggered.
  */
-export async function acquireTokenSilent() {
+export async function acquireTokenSilent(): Promise<AuthenticationResult | null> {
+  await msalInitPromise;
   const account = msalInstance.getActiveAccount();
   if (!account) return null;
 
@@ -31,10 +33,7 @@ export async function acquireTokenSilent() {
       account,
     });
   } catch (error: unknown) {
-    if (
-      error instanceof Error &&
-      error.name === "InteractionRequiredAuthError"
-    ) {
+    if (error instanceof Error && error.name === "InteractionRequiredAuthError") {
       await msalInstance.loginRedirect(loginRequest);
     }
     return null;
@@ -53,6 +52,7 @@ export async function getAccessToken(): Promise<string | null> {
 /**
  * Checks if a valid account exists in the MSAL cache.
  */
-export function isAuthenticated(): boolean {
+export async function isAuthenticated(): Promise<boolean> {
+  await msalInitPromise;
   return msalInstance.getActiveAccount() !== null;
 }

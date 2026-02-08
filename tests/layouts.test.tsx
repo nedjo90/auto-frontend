@@ -42,9 +42,9 @@ describe("Layout components", () => {
   });
 
   describe("TopBar", () => {
-    it("should render Dashboard title", () => {
+    it("should render Tableau de bord title", () => {
       render(<TopBar />);
-      expect(screen.getByText("Dashboard")).toBeInTheDocument();
+      expect(screen.getByText("Tableau de bord")).toBeInTheDocument();
     });
   });
 });

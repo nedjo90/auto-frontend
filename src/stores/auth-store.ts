@@ -1,24 +1,17 @@
 import { create } from "zustand";
+import type { IAuthUser, IAuthState, Role } from "@auto/shared";
 
-export interface AuthUser {
-  id: string;
-  email: string;
-  name: string;
-}
+// Re-export for convenience
+export type { IAuthUser };
 
-interface AuthState {
-  user: AuthUser | null;
-  isAuthenticated: boolean;
-  roles: string[];
-  isLoading: boolean;
-  lastActivity: number;
-  setUser: (user: AuthUser, roles: string[]) => void;
+interface AuthStoreState extends IAuthState {
+  setUser: (user: IAuthUser, roles: Role[]) => void;
   clearUser: () => void;
   updateLastActivity: () => void;
   checkSessionTimeout: (timeoutMinutes: number) => boolean;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthStoreState>((set, get) => ({
   user: null,
   isAuthenticated: false,
   roles: [],
@@ -41,8 +34,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       lastActivity: 0,
     }),
 
-  updateLastActivity: () =>
-    set({ lastActivity: Date.now() }),
+  updateLastActivity: () => set({ lastActivity: Date.now() }),
 
   checkSessionTimeout: (timeoutMinutes) => {
     const { isAuthenticated, lastActivity } = get();

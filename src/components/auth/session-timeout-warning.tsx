@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,51 +12,33 @@ import {
 } from "@/components/ui/dialog";
 import { useAuthStore } from "@/stores/auth-store";
 import { logoutRedirect } from "@/lib/auth/auth-utils";
+import type { ISessionConfig } from "@auto/shared";
 
-interface SessionTimeoutWarningProps {
-  timeoutMinutes: number;
-  warningMinutes: number;
+interface SessionTimeoutWarningProps extends ISessionConfig {
+  showWarning: boolean;
+  remainingSeconds: number;
 }
 
+/**
+ * Dialog warning the user their session will expire.
+ * M5: Receives state from useInactivityTimeout — no duplicate interval.
+ */
 export function SessionTimeoutWarning({
-  timeoutMinutes,
-  warningMinutes,
+  showWarning,
+  remainingSeconds,
 }: SessionTimeoutWarningProps) {
-  const [showWarning, setShowWarning] = useState(false);
-  const [remainingSeconds, setRemainingSeconds] = useState(0);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const lastActivity = useAuthStore((s) => s.lastActivity);
   const updateLastActivity = useAuthStore((s) => s.updateLastActivity);
-
-  useEffect(() => {
-    if (!isAuthenticated || lastActivity === 0) return;
-
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - lastActivity;
-      const timeoutMs = timeoutMinutes * 60 * 1000;
-      const warningMs = (timeoutMinutes - warningMinutes) * 60 * 1000;
-      const remaining = Math.max(0, Math.ceil((timeoutMs - elapsed) / 1000));
-
-      if (elapsed >= timeoutMs) {
-        logoutRedirect();
-        return;
-      }
-
-      if (elapsed >= warningMs) {
-        setShowWarning(true);
-        setRemainingSeconds(remaining);
-      } else {
-        setShowWarning(false);
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isAuthenticated, lastActivity, timeoutMinutes, warningMinutes]);
 
   const handleStayConnected = useCallback(() => {
     updateLastActivity();
-    setShowWarning(false);
   }, [updateLastActivity]);
+
+  const handleLogout = useCallback(() => {
+    logoutRedirect().catch((err) => {
+      console.error("[session-timeout-warning] Logout failed:", err);
+    });
+  }, []);
 
   if (!isAuthenticated) return null;
 
@@ -64,11 +46,9 @@ export function SessionTimeoutWarning({
   const seconds = remainingSeconds % 60;
 
   return (
+    // L2: onOpenChange={() => {}} prevents dismiss via Escape (intentional for security)
     <Dialog open={showWarning} onOpenChange={() => {}}>
-      <DialogContent
-        className="sm:max-w-md"
-        onPointerDownOutside={(e) => e.preventDefault()}
-      >
+      <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Clock className="size-5 text-amber-500" />
@@ -83,7 +63,7 @@ export function SessionTimeoutWarning({
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={() => logoutRedirect()}>
+          <Button variant="outline" onClick={handleLogout}>
             Se déconnecter
           </Button>
           <Button onClick={handleStayConnected}>Rester connecté</Button>

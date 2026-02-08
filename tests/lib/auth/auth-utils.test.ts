@@ -77,9 +77,7 @@ describe("auth-utils", () => {
   describe("acquireTokenSilent", () => {
     it("returns auth result on success", async () => {
       vi.mocked(msalInstance.getActiveAccount).mockReturnValue(mockAccount);
-      vi.mocked(msalInstance.acquireTokenSilent).mockResolvedValue(
-        mockAuthResult,
-      );
+      vi.mocked(msalInstance.acquireTokenSilent).mockResolvedValue(mockAuthResult);
 
       const result = await acquireTokenSilent();
       expect(result).toBeDefined();
@@ -108,9 +106,7 @@ describe("auth-utils", () => {
   describe("getAccessToken", () => {
     it("returns access token string on success", async () => {
       vi.mocked(msalInstance.getActiveAccount).mockReturnValue(mockAccount);
-      vi.mocked(msalInstance.acquireTokenSilent).mockResolvedValue(
-        mockAuthResult,
-      );
+      vi.mocked(msalInstance.acquireTokenSilent).mockResolvedValue(mockAuthResult);
 
       const token = await getAccessToken();
       expect(token).toBe("access-token-123");
@@ -125,14 +121,14 @@ describe("auth-utils", () => {
   });
 
   describe("isAuthenticated", () => {
-    it("returns true when active account exists", () => {
+    it("returns true when active account exists", async () => {
       vi.mocked(msalInstance.getActiveAccount).mockReturnValue(mockAccount);
-      expect(isAuthenticated()).toBe(true);
+      expect(await isAuthenticated()).toBe(true);
     });
 
-    it("returns false when no active account", () => {
+    it("returns false when no active account", async () => {
       vi.mocked(msalInstance.getActiveAccount).mockReturnValue(null);
-      expect(isAuthenticated()).toBe(false);
+      expect(await isAuthenticated()).toBe(false);
     });
   });
 });
