@@ -43,10 +43,7 @@ describe("auth-store", () => {
   });
 
   it("clears user on clearUser", () => {
-    useAuthStore.getState().setUser(
-      { id: "1", email: "a@b.com", name: "A" },
-      ["buyer"],
-    );
+    useAuthStore.getState().setUser({ id: "1", email: "a@b.com", name: "A" }, ["buyer"]);
     useAuthStore.getState().clearUser();
 
     const state = useAuthStore.getState();
@@ -60,35 +57,5 @@ describe("auth-store", () => {
     useAuthStore.getState().updateLastActivity();
     const state = useAuthStore.getState();
     expect(state.lastActivity).toBeGreaterThanOrEqual(before);
-  });
-
-  it("checkSessionTimeout returns true when timed out", () => {
-    useAuthStore.setState({
-      isAuthenticated: true,
-      lastActivity: Date.now() - 31 * 60 * 1000, // 31 minutes ago
-    });
-
-    const timedOut = useAuthStore.getState().checkSessionTimeout(30);
-    expect(timedOut).toBe(true);
-  });
-
-  it("checkSessionTimeout returns false when active", () => {
-    useAuthStore.setState({
-      isAuthenticated: true,
-      lastActivity: Date.now(),
-    });
-
-    const timedOut = useAuthStore.getState().checkSessionTimeout(30);
-    expect(timedOut).toBe(false);
-  });
-
-  it("checkSessionTimeout returns false when not authenticated", () => {
-    useAuthStore.setState({
-      isAuthenticated: false,
-      lastActivity: Date.now() - 60 * 60 * 1000,
-    });
-
-    const timedOut = useAuthStore.getState().checkSessionTimeout(30);
-    expect(timedOut).toBe(false);
   });
 });

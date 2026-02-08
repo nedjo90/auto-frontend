@@ -59,7 +59,13 @@ export function UserMenu() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => logoutRedirect()}>
+        <DropdownMenuItem
+          onClick={() =>
+            logoutRedirect().catch((err) => {
+              console.error("[user-menu] Logout failed:", err);
+            })
+          }
+        >
           <LogOut className="mr-2 size-4" />
           Se déconnecter
         </DropdownMenuItem>

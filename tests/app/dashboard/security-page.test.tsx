@@ -33,16 +33,14 @@ describe("SecuritySettingsPage", () => {
     vi.mocked(useAuth).mockReturnValue({
       user: { id: "1", email: "seller@test.com", name: "Seller" },
       isAuthenticated: true,
-      roles: ["private_seller"],
+      roles: ["seller"],
       login: vi.fn(),
       logout: vi.fn(),
-      hasRole: (role: string) => role === "private_seller",
+      hasRole: (role: string) => role === "seller",
     });
 
     render(<SecuritySettingsPage />);
-    expect(
-      screen.getByText("Authentification à deux facteurs (2FA)"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Authentification à deux facteurs (2FA)")).toBeInTheDocument();
     expect(screen.getByText("Activer")).toBeInTheDocument();
   });
 
@@ -57,9 +55,7 @@ describe("SecuritySettingsPage", () => {
     });
 
     render(<SecuritySettingsPage />);
-    expect(
-      screen.getByText(/disponible pour les comptes vendeurs/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/disponible pour les comptes vendeurs/)).toBeInTheDocument();
   });
 
   it("renders page title", () => {

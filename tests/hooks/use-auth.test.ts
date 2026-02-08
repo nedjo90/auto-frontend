@@ -55,17 +55,17 @@ describe("use-auth hook", () => {
   });
 
   it("hasRole returns true for matching role", () => {
-    useAuthStore.setState({ roles: ["buyer", "admin"] });
+    useAuthStore.setState({ roles: ["buyer", "administrator"] });
 
     const { result } = renderHook(() => useAuth());
     expect(result.current.hasRole("buyer")).toBe(true);
-    expect(result.current.hasRole("admin")).toBe(true);
+    expect(result.current.hasRole("administrator")).toBe(true);
   });
 
   it("hasRole returns false for non-matching role", () => {
     useAuthStore.setState({ roles: ["buyer"] });
 
     const { result } = renderHook(() => useAuth());
-    expect(result.current.hasRole("admin")).toBe(false);
+    expect(result.current.hasRole("administrator")).toBe(false);
   });
 });

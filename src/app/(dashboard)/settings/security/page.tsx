@@ -11,7 +11,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 export default function SecuritySettingsPage() {
   const { hasRole } = useAuth();
-  const isSeller = hasRole("private_seller") || hasRole("professional_seller");
+  const isSeller = hasRole("seller");
 
   const [mfaEnabled, setMfaEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,11 +32,17 @@ export default function SecuritySettingsPage() {
         body: JSON.stringify({ enable: !mfaEnabled }),
       });
 
-      const result = await response.json();
-
       if (!response.ok) {
-        throw new Error(result.detail || "Erreur lors de la mise à jour");
+        let detail = "";
+        try {
+          const body = await response.json();
+          detail = body.detail;
+        } catch {
+          /* non-JSON error body */
+        }
+        throw new Error(detail || "Erreur lors de la mise à jour");
       }
+      const result = await response.json();
       setMfaEnabled(result.mfaStatus === "enabled");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur lors de la mise à jour du 2FA");

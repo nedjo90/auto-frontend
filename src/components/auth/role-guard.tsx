@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
-import type { Role } from "@auto/shared";
+import type { RoleCode } from "@auto/shared";
 
 interface RoleGuardProps {
   requiredRole: string | string[];
@@ -29,7 +29,7 @@ export function RoleGuard({ requiredRole, children, fallback }: RoleGuardProps) 
 
   const requiredRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
 
-  const hasRequiredRole = requiredRoles.some((r) => roles.includes(r as Role));
+  const hasRequiredRole = requiredRoles.some((r) => roles.includes(r as RoleCode));
 
   useEffect(() => {
     if (!isAuthenticated) {
