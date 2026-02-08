@@ -3,12 +3,23 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
+import { Loader2 } from "lucide-react";
 import type { Role } from "@auto/shared";
 
 interface RoleGuardProps {
   requiredRole: string | string[];
   children: React.ReactNode;
   fallback?: React.ReactNode;
+}
+
+/**
+ * Validates that a return URL is a safe relative path (no open redirect).
+ */
+function safeReturnUrl(pathname: string): string {
+  if (pathname.startsWith("/") && !pathname.startsWith("//")) {
+    return pathname;
+  }
+  return "/";
 }
 
 export function RoleGuard({ requiredRole, children, fallback }: RoleGuardProps) {
@@ -22,14 +33,20 @@ export function RoleGuard({ requiredRole, children, fallback }: RoleGuardProps) 
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+      router.push(`/login?returnUrl=${encodeURIComponent(safeReturnUrl(pathname))}`);
     } else if (!hasRequiredRole) {
       router.push("/unauthorized");
     }
   }, [isAuthenticated, hasRequiredRole, router, pathname]);
 
   if (!isAuthenticated || !hasRequiredRole) {
-    return fallback ?? null;
+    return (
+      fallback ?? (
+        <div className="flex items-center justify-center p-8" aria-busy="true">
+          <Loader2 className="size-6 animate-spin text-muted-foreground" />
+        </div>
+      )
+    );
   }
 
   return <>{children}</>;

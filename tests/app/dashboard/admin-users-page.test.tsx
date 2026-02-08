@@ -98,20 +98,21 @@ describe("AdminUsersPage", () => {
     });
   });
 
-  it("renders table column headers", async () => {
+  it("renders sortable table column headers", async () => {
     setupFetch();
     render(<AdminUsersPage />);
 
     await waitFor(() => {
-      expect(screen.getByText("Nom")).toBeInTheDocument();
-      expect(screen.getByText("Email")).toBeInTheDocument();
+      expect(screen.getByText(/Nom/)).toBeInTheDocument();
+      expect(screen.getByText(/Email/)).toBeInTheDocument();
+      expect(screen.getByText(/Role/)).toBeInTheDocument();
     });
   });
 
   it("shows loading state initially", () => {
     mockFetch.mockImplementation(() => new Promise(() => {})); // never resolves
     render(<AdminUsersPage />);
-    expect(screen.getByText(/Chargement/i)).toBeInTheDocument();
+    expect(screen.getByText("Chargement...")).toBeInTheDocument();
   });
 
   it("shows error state on fetch failure", async () => {
@@ -119,7 +120,7 @@ describe("AdminUsersPage", () => {
     render(<AdminUsersPage />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Impossible de charger/i)).toBeInTheDocument();
+      expect(screen.getByText("Impossible de charger les utilisateurs")).toBeInTheDocument();
     });
   });
 });

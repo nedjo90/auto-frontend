@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFeatureConfigStore } from "@/stores/feature-config-store";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
@@ -9,6 +9,7 @@ export function useFeatureConfig() {
   const isLoaded = useFeatureConfigStore((s) => s.isLoaded);
   const setFeatures = useFeatureConfigStore((s) => s.setFeatures);
   const isFeatureAuthRequired = useFeatureConfigStore((s) => s.isFeatureAuthRequired);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isLoaded) return;
@@ -21,13 +22,14 @@ export function useFeatureConfig() {
       .then((data) => {
         setFeatures(data.value ?? data);
       })
-      .catch(() => {
-        // Silently fail — non-blocking for app functionality
+      .catch((err) => {
+        setError(err instanceof Error ? err.message : "Feature config load failed");
       });
   }, [isLoaded, setFeatures]);
 
   return {
     isFeatureAuthRequired,
     isLoaded,
+    error,
   };
 }

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, waitFor, cleanup } from "@testing-library/react";
 import { useFeatureConfigStore } from "@/stores/feature-config-store";
-import type { IConfigFeature } from "@/types/config-feature";
+import type { IConfigFeature } from "@auto/shared";
 
 // Mock global fetch
 const mockFetch = vi.fn();
@@ -85,29 +85,29 @@ describe("useFeatureConfig", () => {
     expect(result.current.isFeatureAuthRequired("unknown")).toBe(false);
   });
 
-  it("handles fetch error gracefully", async () => {
+  it("handles fetch error and exposes error state", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
       status: 500,
     });
 
-    renderHook(() => useFeatureConfig());
+    const { result } = renderHook(() => useFeatureConfig());
 
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalled();
+      expect(result.current.error).toBe("Failed to fetch feature config");
     });
 
     const state = useFeatureConfigStore.getState();
     expect(state.features).toEqual([]);
   });
 
-  it("handles network error gracefully", async () => {
+  it("handles network error and exposes error state", async () => {
     mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
-    renderHook(() => useFeatureConfig());
+    const { result } = renderHook(() => useFeatureConfig());
 
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalled();
+      expect(result.current.error).toBe("Network error");
     });
 
     const state = useFeatureConfigStore.getState();

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { useFeatureConfigStore } from "@/stores/feature-config-store";
-import type { IConfigFeature } from "@/types/config-feature";
+import type { IConfigFeature } from "@auto/shared";
 
 const mockFeatures: IConfigFeature[] = [
   {

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { IConfigFeature } from "@/types/config-feature";
+import type { IConfigFeature } from "@auto/shared";
 
 interface FeatureConfigState {
   features: IConfigFeature[];

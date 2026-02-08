@@ -78,14 +78,15 @@ describe("RoleGuard", () => {
       roles: ["buyer"],
     });
 
-    const { container } = render(
+    render(
       <RoleGuard requiredRole="seller">
         <div>Seller Content</div>
       </RoleGuard>,
     );
 
-    expect(container.textContent).toBe("");
     expect(screen.queryByText("Seller Content")).toBeNull();
+    // Default fallback shows loading spinner
+    expect(screen.getByRole("generic", { busy: true })).toBeInTheDocument();
   });
 
   it("does not render children when unauthenticated", () => {
@@ -94,14 +95,15 @@ describe("RoleGuard", () => {
       roles: [],
     });
 
-    const { container } = render(
+    render(
       <RoleGuard requiredRole="seller">
         <div>Seller Content</div>
       </RoleGuard>,
     );
 
-    expect(container.textContent).toBe("");
     expect(screen.queryByText("Seller Content")).toBeNull();
+    // Default fallback shows loading spinner
+    expect(screen.getByRole("generic", { busy: true })).toBeInTheDocument();
   });
 
   it("renders fallback when unauthorized and fallback is provided", () => {
@@ -121,20 +123,20 @@ describe("RoleGuard", () => {
     expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
-  it("renders nothing when unauthorized and no fallback provided", () => {
+  it("shows loading spinner when unauthorized and no fallback provided", () => {
     setupAuth({
       user: { id: "1", email: "buyer@test.com", name: "Buyer" },
       isAuthenticated: true,
       roles: ["buyer"],
     });
 
-    const { container } = render(
+    render(
       <RoleGuard requiredRole="administrator">
         <div>Admin Content</div>
       </RoleGuard>,
     );
 
     expect(screen.queryByText("Admin Content")).not.toBeInTheDocument();
-    expect(container.innerHTML).toBe("");
+    expect(screen.getByRole("generic", { busy: true })).toBeInTheDocument();
   });
 });

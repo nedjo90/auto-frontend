@@ -47,4 +47,12 @@ describe("RegistrationWall", () => {
     );
     expect(screen.getByText("Hidden Content")).toBeInTheDocument();
   });
+
+  it("has accessible dialog role", () => {
+    const { container } = render(<RegistrationWall />);
+    const dialog = container.querySelector('[role="dialog"]');
+    expect(dialog).not.toBeNull();
+    expect(dialog).toHaveAttribute("aria-modal", "true");
+    expect(dialog).toHaveAttribute("aria-label", "Connexion requise");
+  });
 });
