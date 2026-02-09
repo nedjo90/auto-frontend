@@ -55,13 +55,15 @@ export default function ProvidersConfigPage() {
       const data = await fetchConfigEntities<IConfigApiProvider>("ConfigApiProviders");
       setProviders(data);
 
-      // Load analytics for each provider
+      // Load analytics for all providers in parallel
       const analyticsMap: Record<string, ProviderAnalytics> = {};
-      for (const provider of data) {
-        try {
-          analyticsMap[provider.key] = await fetchProviderAnalytics(provider.key);
-        } catch {
-          // Non-blocking: analytics are optional
+      const results = await Promise.allSettled(
+        data.map((provider) => fetchProviderAnalytics(provider.key)),
+      );
+      for (let i = 0; i < data.length; i++) {
+        const result = results[i];
+        if (result.status === "fulfilled") {
+          analyticsMap[data[i].key] = result.value;
         }
       }
       setAnalytics(analyticsMap);

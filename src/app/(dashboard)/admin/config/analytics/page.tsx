@@ -35,15 +35,16 @@ export default function AnalyticsComparisonPage() {
       setError(null);
       const providers = await fetchConfigEntities<IConfigApiProvider>("ConfigApiProviders");
 
-      const results: ProviderWithAnalytics[] = [];
-      for (const provider of providers) {
-        try {
-          const analytics = await fetchProviderAnalytics(provider.key);
-          results.push({ provider, analytics });
-        } catch {
-          results.push({ provider, analytics: null });
-        }
-      }
+      const analyticsResults = await Promise.allSettled(
+        providers.map((provider) => fetchProviderAnalytics(provider.key)),
+      );
+      const results: ProviderWithAnalytics[] = providers.map((provider, i) => {
+        const result = analyticsResults[i];
+        return {
+          provider,
+          analytics: result.status === "fulfilled" ? result.value : null,
+        };
+      });
       setData(results);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur de chargement");

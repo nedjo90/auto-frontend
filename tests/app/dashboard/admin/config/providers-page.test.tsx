@@ -42,6 +42,15 @@ const mockProviders = [
     costPerCall: 0.0005,
     callCount: 200,
   },
+  {
+    ID: "p4",
+    key: "s3.legacy",
+    adapterInterface: "IBlobStorageAdapter",
+    status: "deprecated",
+    baseUrl: "https://s3.amazonaws.com",
+    costPerCall: 0.002,
+    callCount: 50,
+  },
 ];
 
 const mockAnalytics = {
@@ -68,6 +77,14 @@ const mockAnalytics = {
     totalCost: 0.1,
     avgCostPerCall: 0.0005,
     lastCallTimestamp: "2026-02-09T08:15:00.000Z",
+  },
+  "s3.legacy": {
+    avgResponseTimeMs: 200,
+    successRate: 95,
+    totalCalls: 50,
+    totalCost: 0.1,
+    avgCostPerCall: 0.002,
+    lastCallTimestamp: "2025-12-01T10:00:00.000Z",
   },
 };
 
@@ -98,6 +115,7 @@ describe("ProvidersConfigPage", () => {
       expect(screen.getByText("azure.adb2c")).toBeInTheDocument();
       expect(screen.getByText("keycloak")).toBeInTheDocument();
       expect(screen.getByText("azure.blob")).toBeInTheDocument();
+      expect(screen.getByText("s3.legacy")).toBeInTheDocument();
     });
   });
 
@@ -245,6 +263,20 @@ describe("ProvidersConfigPage", () => {
     await waitFor(() => {
       expect(mockSwitchProvider).toHaveBeenCalledWith("IIdentityProviderAdapter", "keycloak");
     });
+  });
+
+  it("should not show Activer button for deprecated providers", async () => {
+    setupMocks();
+    render(<ProvidersConfigPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("s3.legacy")).toBeInTheDocument();
+      expect(screen.getByText("Obsolete")).toBeInTheDocument();
+    });
+
+    // Only 1 Activer button (keycloak), not for deprecated s3.legacy
+    const activateButtons = screen.getAllByText("Activer");
+    expect(activateButtons).toHaveLength(1);
   });
 
   it("should show description text", async () => {
