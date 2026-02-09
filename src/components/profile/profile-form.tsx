@@ -67,7 +67,11 @@ export function ProfileForm({ initialData, avatarUrl, isSeller, onSaved }: Profi
   }
 
   function handleAvatarUpload(url: string) {
-    setValue("avatarUrl", url);
+    // Only set HTTPS URLs (not data: URLs from local preview) into the form
+    if (url.startsWith("https://")) {
+      setValue("avatarUrl", url, { shouldValidate: true, shouldDirty: true });
+    }
+    // Data URLs are only used for local preview, not submitted to backend
   }
 
   return (
@@ -189,6 +193,7 @@ export function ProfileForm({ initialData, avatarUrl, isSeller, onSaved }: Profi
               className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
               maxLength={500}
               placeholder="Présentez-vous en quelques mots..."
+              aria-invalid={!!errors.bio}
               disabled={isSubmitting}
               {...register("bio")}
             />

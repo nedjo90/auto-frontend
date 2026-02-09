@@ -29,6 +29,8 @@ export default function ProfilePage() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     try {
       const [profileRes, completionRes] = await Promise.all([
         apiClient(`${API_BASE}/api/profile/UserProfiles`),

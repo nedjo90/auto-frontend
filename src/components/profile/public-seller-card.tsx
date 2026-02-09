@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { StarRating } from "@/components/ui/star-rating";
+import { cn } from "@/lib/utils";
 import type { IPublicSellerProfile } from "@auto/shared";
 
 interface PublicSellerCardProps {
@@ -44,7 +45,7 @@ function formatMemberSince(dateStr: string): string {
 export function PublicSellerCard({ seller, className }: PublicSellerCardProps) {
   if (seller.isAnonymized) {
     return (
-      <Card className={`p-4 ${className || ""}`}>
+      <Card className={cn("p-4", className)}>
         <p className="text-sm text-muted-foreground">Utilisateur anonymisé</p>
       </Card>
     );
@@ -53,7 +54,7 @@ export function PublicSellerCard({ seller, className }: PublicSellerCardProps) {
   const initials = seller.displayName ? seller.displayName.substring(0, 2).toUpperCase() : "??";
 
   return (
-    <Card className={`p-4 ${className || ""}`}>
+    <Card className={cn("p-4", className)}>
       <Link href={`/sellers/${seller.userId}`} className="block space-y-3 hover:opacity-90">
         <div className="flex items-center gap-3">
           <Avatar className="size-10">
@@ -68,7 +69,7 @@ export function PublicSellerCard({ seller, className }: PublicSellerCardProps) {
 
         <div className="flex items-center gap-2">
           <StarRating rating={seller.rating} size="sm" />
-          <span className="text-sm text-muted-foreground">({seller.rating.toFixed(1)})</span>
+          <span className="text-sm text-muted-foreground">({(seller.rating ?? 0).toFixed(1)})</span>
         </div>
 
         <div className="flex items-center gap-2">

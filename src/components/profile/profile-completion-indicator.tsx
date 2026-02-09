@@ -54,7 +54,14 @@ export function ProfileCompletionIndicator({
     <div className={cn("space-y-3", className)}>
       <div className="flex items-center gap-4">
         {/* Circular progress */}
-        <div className="relative size-20 shrink-0">
+        <div
+          className="relative size-20 shrink-0"
+          role="progressbar"
+          aria-valuenow={completion.percentage}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Complétion du profil"
+        >
           <svg
             className="-rotate-90"
             width="80"

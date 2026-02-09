@@ -30,7 +30,7 @@ export default function SellerPublicPage() {
     async function fetchSeller() {
       try {
         const res = await fetch(
-          `${API_BASE}/api/profile/getPublicSellerProfile(sellerId=${sellerId})`,
+          `${API_BASE}/api/profile/getPublicSellerProfile(sellerId=${encodeURIComponent(sellerId)})`,
         );
         if (!res.ok) {
           throw new Error("Vendeur non trouvé");
@@ -103,7 +103,7 @@ export default function SellerPublicPage() {
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-1.5">
             <StarRating rating={seller.rating} size="md" />
-            <span className="text-sm font-medium">{seller.rating.toFixed(1)}</span>
+            <span className="text-sm font-medium">{(seller.rating ?? 0).toFixed(1)}</span>
           </div>
           <Badge>
             {badgeLabels[seller.profileCompletionBadge] || seller.profileCompletionBadge}
