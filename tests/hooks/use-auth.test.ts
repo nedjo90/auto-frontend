@@ -39,7 +39,8 @@ describe("use-auth hook", () => {
     const { result } = renderHook(() => useAuth());
     expect(result.current.user).toEqual({ id: "1", email: "a@b.com", name: "A" });
     expect(result.current.isAuthenticated).toBe(true);
-    expect(result.current.roles).toEqual(["buyer"]);
+    // FR54: Roles are expanded with hierarchy (buyer includes visitor)
+    expect(result.current.roles).toEqual(["visitor", "buyer"]);
   });
 
   it("provides login function that calls loginRedirect", async () => {
@@ -67,5 +68,21 @@ describe("use-auth hook", () => {
 
     const { result } = renderHook(() => useAuth());
     expect(result.current.hasRole("administrator")).toBe(false);
+  });
+
+  it("FR54: admin role expands to include all lower-level roles", () => {
+    useAuthStore.setState({ roles: ["administrator"] });
+
+    const { result } = renderHook(() => useAuth());
+    expect(result.current.roles).toEqual([
+      "visitor",
+      "buyer",
+      "seller",
+      "moderator",
+      "administrator",
+    ]);
+    expect(result.current.hasRole("seller")).toBe(true);
+    expect(result.current.hasRole("moderator")).toBe(true);
+    expect(result.current.hasRole("buyer")).toBe(true);
   });
 });
