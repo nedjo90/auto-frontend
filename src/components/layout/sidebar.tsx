@@ -10,11 +10,14 @@ export function Sidebar() {
           </Link>
         </div>
         <nav className="flex-1 space-y-1 px-3 py-4">
-          <Link
-            href="/dashboard"
-            className="block rounded-md px-3 py-2 text-sm hover:bg-accent"
-          >
+          <Link href="/dashboard" className="block rounded-md px-3 py-2 text-sm hover:bg-accent">
             Overview
+          </Link>
+          <Link href="/admin/config" className="block rounded-md px-3 py-2 text-sm hover:bg-accent">
+            Configuration
+          </Link>
+          <Link href="/admin/users" className="block rounded-md px-3 py-2 text-sm hover:bg-accent">
+            Utilisateurs
           </Link>
         </nav>
       </div>
