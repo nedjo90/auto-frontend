@@ -11,6 +11,9 @@ const CONFIG_TABS = [
   { href: "/admin/config/features", label: "Fonctionnalites" },
   { href: "/admin/config/registration", label: "Inscription" },
   { href: "/admin/config/card-display", label: "Affichage carte" },
+  { href: "/admin/config/providers", label: "Fournisseurs API" },
+  { href: "/admin/config/costs", label: "Couts API" },
+  { href: "/admin/config/analytics", label: "Analytique API" },
 ] as const;
 
 export default function ConfigLayout({ children }: { children: React.ReactNode }) {

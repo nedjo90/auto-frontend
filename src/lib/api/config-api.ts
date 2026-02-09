@@ -115,3 +115,75 @@ export async function estimateConfigImpact(parameterKey: string): Promise<Config
   }
   return res.json();
 }
+
+/** Cost summary result from backend */
+export interface ApiCostSummary {
+  totalCost: number;
+  callCount: number;
+  avgCostPerCall: number;
+  byProvider: string;
+}
+
+/** Provider analytics result from backend */
+export interface ProviderAnalytics {
+  avgResponseTimeMs: number;
+  successRate: number;
+  totalCalls: number;
+  totalCost: number;
+  avgCostPerCall: number;
+  lastCallTimestamp: string | null;
+}
+
+/** Switch provider result from backend */
+export interface SwitchProviderResult {
+  success: boolean;
+  message: string;
+}
+
+/**
+ * Fetch API cost summary for a given period.
+ */
+export async function fetchApiCostSummary(period: string): Promise<ApiCostSummary> {
+  const res = await apiClient(`${API_BASE}/api/admin/getApiCostSummary`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ period }),
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to fetch cost summary: ${res.status}`);
+  }
+  return res.json();
+}
+
+/**
+ * Fetch analytics for a specific provider.
+ */
+export async function fetchProviderAnalytics(providerKey: string): Promise<ProviderAnalytics> {
+  const res = await apiClient(`${API_BASE}/api/admin/getProviderAnalytics`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ providerKey }),
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to fetch provider analytics: ${res.status}`);
+  }
+  return res.json();
+}
+
+/**
+ * Switch the active provider for an adapter interface.
+ */
+export async function switchProvider(
+  adapterInterface: string,
+  newProviderKey: string,
+): Promise<SwitchProviderResult> {
+  const res = await apiClient(`${API_BASE}/api/admin/switchProvider`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ adapterInterface, newProviderKey }),
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to switch provider: ${res.status}`);
+  }
+  return res.json();
+}

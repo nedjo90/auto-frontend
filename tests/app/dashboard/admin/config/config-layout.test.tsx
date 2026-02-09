@@ -22,6 +22,8 @@ describe("ConfigLayout", () => {
     expect(screen.getByText("Fonctionnalites")).toBeInTheDocument();
     expect(screen.getByText("Inscription")).toBeInTheDocument();
     expect(screen.getByText("Affichage carte")).toBeInTheDocument();
+    expect(screen.getByText("Fournisseurs API")).toBeInTheDocument();
+    expect(screen.getByText("Couts API")).toBeInTheDocument();
   });
 
   it("should render children content", () => {

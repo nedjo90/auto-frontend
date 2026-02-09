@@ -10,6 +10,8 @@ describe("ConfigOverviewPage", () => {
     expect(screen.getByText("Fonctionnalites")).toBeInTheDocument();
     expect(screen.getByText("Inscription")).toBeInTheDocument();
     expect(screen.getByText("Affichage carte")).toBeInTheDocument();
+    expect(screen.getByText("Fournisseurs API")).toBeInTheDocument();
+    expect(screen.getByText("Couts API")).toBeInTheDocument();
   });
 
   it("should render descriptions for each section", () => {
@@ -22,7 +24,7 @@ describe("ConfigOverviewPage", () => {
   it("should render section cards as links", () => {
     render(<ConfigOverviewPage />);
     const links = screen.getAllByRole("link");
-    expect(links.length).toBe(5);
+    expect(links.length).toBe(7);
     expect(links[0]).toHaveAttribute("href", "/admin/config/pricing");
   });
 });

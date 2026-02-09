@@ -29,6 +29,16 @@ const CONFIG_SECTIONS = [
     title: "Affichage carte",
     description: "Configuration des champs affiches sur les cartes d'annonces.",
   },
+  {
+    href: "/admin/config/providers",
+    title: "Fournisseurs API",
+    description: "Gestion des fournisseurs API externes et basculement a chaud.",
+  },
+  {
+    href: "/admin/config/costs",
+    title: "Couts API",
+    description: "Suivi des couts API, marge par annonce et repartition par fournisseur.",
+  },
 ] as const;
 
 export default function ConfigOverviewPage() {
