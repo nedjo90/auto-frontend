@@ -149,16 +149,21 @@ export function DataExportSection() {
               <p>Taille : {Math.round((downloadResult.fileSizeBytes || 0) / 1024)} Ko</p>
               <p>
                 Lien valide jusqu&apos;au :{" "}
-                {new Date(downloadResult.expiresAt).toLocaleDateString("fr-FR")}
+                {(() => {
+                  const d = new Date(downloadResult.expiresAt);
+                  return isNaN(d.getTime()) ? "Date inconnue" : d.toLocaleDateString("fr-FR");
+                })()}
               </p>
-              <a
-                href={downloadResult.downloadUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary underline"
-              >
-                Ouvrir le lien de téléchargement
-              </a>
+              {downloadResult.downloadUrl.startsWith("https://") && (
+                <a
+                  href={downloadResult.downloadUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline"
+                >
+                  Ouvrir le lien de téléchargement
+                </a>
+              )}
             </div>
           )}
 

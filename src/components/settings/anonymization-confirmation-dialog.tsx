@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,8 +33,18 @@ export function AnonymizationConfirmationDialog({
   const [confirmText, setConfirmText] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const loadingRef = useRef(false);
 
   const isConfirmTextValid = confirmText === ANONYMIZATION_CONFIRMATION_WORD;
+
+  // F6: Reset internal state when dialog opens
+  useEffect(() => {
+    if (open) {
+      setStep(1);
+      setConfirmText("");
+      setError(null);
+    }
+  }, [open]);
 
   function handleClose() {
     setStep(1);
@@ -50,7 +60,9 @@ export function AnonymizationConfirmationDialog({
       return;
     }
 
-    // Step 2: Execute anonymization
+    // F4: Prevent double-click with ref guard
+    if (loadingRef.current) return;
+    loadingRef.current = true;
     setLoading(true);
     setError(null);
     try {
@@ -63,13 +75,13 @@ export function AnonymizationConfirmationDialog({
       if (!reqRes.ok) throw new Error("Erreur lors de la demande d'anonymisation");
       const reqData = await reqRes.json();
 
-      // Confirm anonymization
+      // F2: Use the actual confirmation code from the API response
       const confirmRes = await apiClient(`${API_BASE}/api/rgpd/confirmAnonymization`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           requestId: reqData.requestId,
-          confirmationCode: reqData.requestId, // The code is embedded in the request flow
+          confirmationCode: reqData.confirmationCode,
         }),
       });
 
@@ -82,11 +94,12 @@ export function AnonymizationConfirmationDialog({
 
       // Success - logout and redirect
       handleClose();
-      logout();
+      await logout();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur inconnue");
     } finally {
       setLoading(false);
+      loadingRef.current = false;
     }
   }
 
