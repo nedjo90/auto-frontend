@@ -37,7 +37,7 @@ export function ConfigChangeConfirmDialog({
   title = "Confirmer les modifications",
 }: ConfigChangeConfirmDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+    <Dialog open={open} onOpenChange={(v) => !v && !loading && onClose()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>

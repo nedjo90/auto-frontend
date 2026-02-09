@@ -2,6 +2,28 @@ import { apiClient } from "@/lib/auth/api-client";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
+/** Allowlisted entity names that can be accessed via the config API. */
+const VALID_ENTITIES = new Set([
+  "ConfigParameters",
+  "ConfigTexts",
+  "ConfigFeatures",
+  "ConfigBoostFactors",
+  "ConfigVehicleTypes",
+  "ConfigListingDurations",
+  "ConfigReportReasons",
+  "ConfigChatActions",
+  "ConfigModerationRules",
+  "ConfigApiProviders",
+  "ConfigRegistrationFields",
+  "ConfigProfileFields",
+]);
+
+function validateEntityName(entityName: string): void {
+  if (!VALID_ENTITIES.has(entityName)) {
+    throw new Error(`Invalid config entity name: ${entityName}`);
+  }
+}
+
 /** OData response wrapper */
 interface ODataResponse<T> {
   value: T[];
@@ -11,6 +33,7 @@ interface ODataResponse<T> {
  * Fetch all entries from a config entity via the AdminService.
  */
 export async function fetchConfigEntities<T>(entityName: string): Promise<T[]> {
+  validateEntityName(entityName);
   const res = await apiClient(`${API_BASE}/api/admin/${entityName}`);
   if (!res.ok) {
     throw new Error(`Failed to fetch ${entityName}: ${res.status}`);
@@ -27,6 +50,7 @@ export async function updateConfigEntity<T extends Record<string, unknown>>(
   id: string,
   payload: Partial<T>,
 ): Promise<void> {
+  validateEntityName(entityName);
   const res = await apiClient(`${API_BASE}/api/admin/${entityName}(${id})`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -45,6 +69,7 @@ export async function createConfigEntity<T extends Record<string, unknown>>(
   entityName: string,
   payload: T,
 ): Promise<T> {
+  validateEntityName(entityName);
   const res = await apiClient(`${API_BASE}/api/admin/${entityName}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -61,6 +86,7 @@ export async function createConfigEntity<T extends Record<string, unknown>>(
  * Delete a config entity by ID via OData DELETE.
  */
 export async function deleteConfigEntity(entityName: string, id: string): Promise<void> {
+  validateEntityName(entityName);
   const res = await apiClient(`${API_BASE}/api/admin/${entityName}(${id})`, {
     method: "DELETE",
   });

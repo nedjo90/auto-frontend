@@ -28,6 +28,8 @@ export default function CardDisplayConfigPage() {
   const [pendingChange, setPendingChange] = useState<{
     fieldId: string;
     updates: Record<string, unknown>;
+    swapFieldId?: string;
+    swapUpdates?: Record<string, unknown>;
     changes: ConfigChange[];
   } | null>(null);
 
@@ -70,11 +72,18 @@ export default function CardDisplayConfigPage() {
     setPendingChange({
       fieldId: field.ID,
       updates: { displayOrder: aboveField.displayOrder },
+      swapFieldId: aboveField.ID,
+      swapUpdates: { displayOrder: field.displayOrder },
       changes: [
         {
           field: `${field.fieldName} - Ordre`,
           oldValue: String(field.displayOrder),
           newValue: String(aboveField.displayOrder),
+        },
+        {
+          field: `${aboveField.fieldName} - Ordre`,
+          oldValue: String(aboveField.displayOrder),
+          newValue: String(field.displayOrder),
         },
       ],
     });
@@ -88,11 +97,18 @@ export default function CardDisplayConfigPage() {
     setPendingChange({
       fieldId: field.ID,
       updates: { displayOrder: belowField.displayOrder },
+      swapFieldId: belowField.ID,
+      swapUpdates: { displayOrder: field.displayOrder },
       changes: [
         {
           field: `${field.fieldName} - Ordre`,
           oldValue: String(field.displayOrder),
           newValue: String(belowField.displayOrder),
+        },
+        {
+          field: `${belowField.fieldName} - Ordre`,
+          oldValue: String(belowField.displayOrder),
+          newValue: String(field.displayOrder),
         },
       ],
     });
@@ -103,7 +119,15 @@ export default function CardDisplayConfigPage() {
     if (!pendingChange) return;
     try {
       setSaving(true);
+      setError(null);
       await updateConfigEntity("ConfigProfileFields", pendingChange.fieldId, pendingChange.updates);
+      if (pendingChange.swapFieldId && pendingChange.swapUpdates) {
+        await updateConfigEntity(
+          "ConfigProfileFields",
+          pendingChange.swapFieldId,
+          pendingChange.swapUpdates,
+        );
+      }
       setConfirmOpen(false);
       setPendingChange(null);
       await loadFields();

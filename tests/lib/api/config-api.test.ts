@@ -110,4 +110,21 @@ describe("config-api", () => {
       );
     });
   });
+
+  describe("entity name validation", () => {
+    it("should reject invalid entity names", async () => {
+      await expect(fetchConfigEntities("../../sensitive")).rejects.toThrow(
+        "Invalid config entity name",
+      );
+      expect(mockApiClient).not.toHaveBeenCalled();
+    });
+
+    it("should accept valid entity names", async () => {
+      mockApiClient.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ value: [] }),
+      });
+      await expect(fetchConfigEntities("ConfigParameters")).resolves.toEqual([]);
+    });
+  });
 });

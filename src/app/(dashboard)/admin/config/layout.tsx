@@ -18,7 +18,7 @@ export default function ConfigLayout({ children }: { children: React.ReactNode }
 
   const isActive = (tab: (typeof CONFIG_TABS)[number]) => {
     if (tab.exact) return pathname === tab.href;
-    return pathname.startsWith(tab.href);
+    return pathname === tab.href || pathname.startsWith(tab.href + "/");
   };
 
   return (
