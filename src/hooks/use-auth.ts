@@ -9,7 +9,9 @@ export function useAuth() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const roles = useAuthStore((s) => s.roles);
 
-  // FR54: Expand roles with hierarchy so admin gains all lower-level capabilities
+  // FR54: Expand roles with hierarchy so admin gains all lower-level capabilities.
+  // Note: backend auth-middleware also expands roles for API authorization.
+  // Frontend expansion is needed because MSAL provides raw roles to the auth store.
   const expandedRoles = useMemo(() => expandRolesWithHierarchy(roles), [roles]);
 
   const login = useCallback(async () => {

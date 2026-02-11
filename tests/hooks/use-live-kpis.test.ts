@@ -11,6 +11,11 @@ vi.mock("@/hooks/use-signalr", () => ({
   }),
 }));
 
+const mockClearDashboardCache = vi.fn();
+vi.mock("@/lib/api/dashboard-api", () => ({
+  clearDashboardCache: (...args: unknown[]) => mockClearDashboardCache(...args),
+}));
+
 import { useLiveKpis } from "@/hooks/use-live-kpis";
 
 const mockKpis: IDashboardKpis = {
@@ -27,6 +32,7 @@ describe("useLiveKpis", () => {
   beforeEach(() => {
     cleanup();
     vi.clearAllMocks();
+    mockClearDashboardCache.mockReset();
     (globalThis as any).__signalrHandlers = {};
   });
 
@@ -85,6 +91,22 @@ describe("useLiveKpis", () => {
     });
 
     expect(result.current.kpis?.visitors.current).toBe(100);
+  });
+
+  it("should clear dashboard cache when receiving kpiUpdate event", () => {
+    renderHook(() => useLiveKpis({ initialData: mockKpis }));
+
+    const handlers = (globalThis as any).__signalrHandlers;
+
+    act(() => {
+      handlers.kpiUpdate({
+        metric: "visitors",
+        value: { current: 200 },
+        timestamp: "2026-02-09T16:00:00Z",
+      });
+    });
+
+    expect(mockClearDashboardCache).toHaveBeenCalledTimes(1);
   });
 
   it("should update initial data via updateInitialData", () => {

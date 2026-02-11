@@ -3,6 +3,7 @@
 import { Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
+import { ROLE_HIERARCHY } from "@auto/shared";
 import type { RoleCode } from "@auto/shared";
 
 const ROLE_LABELS: Record<RoleCode, string> = {
@@ -16,7 +17,10 @@ const ROLE_LABELS: Record<RoleCode, string> = {
 export function AdminRoleIndicator() {
   const { roles } = useAuth();
 
-  const highestRole = roles[roles.length - 1] ?? "visitor";
+  const highestRole = roles.reduce<RoleCode>(
+    (max, r) => ((ROLE_HIERARCHY[r] ?? 0) > (ROLE_HIERARCHY[max] ?? 0) ? r : max),
+    roles[0] ?? "visitor",
+  );
   const isAdmin = roles.includes("administrator");
 
   return (

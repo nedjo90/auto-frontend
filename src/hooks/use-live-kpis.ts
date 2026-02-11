@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useSignalR } from "./use-signalr";
+import { clearDashboardCache } from "@/lib/api/dashboard-api";
 import type { IDashboardKpis, IKpiValue } from "@auto/shared";
 
 export interface UseLiveKpisOptions {
@@ -51,6 +52,9 @@ export function useLiveKpis({ initialData, enabled = true }: UseLiveKpisOptions)
     });
 
     setLastUpdate(payload.timestamp || new Date().toISOString());
+
+    // Invalidate API cache so next fetch reflects real-time data
+    clearDashboardCache();
   }, []);
 
   const { status } = useSignalR({
