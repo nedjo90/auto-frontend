@@ -17,6 +17,7 @@ const VALID_ENTITIES = new Set([
   "ConfigRegistrationFields",
   "ConfigProfileFields",
   "ConfigAlerts",
+  "ConfigSeoTemplates",
 ]);
 
 function validateEntityName(entityName: string): void {
