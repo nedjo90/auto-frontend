@@ -1,40 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { SeoPreview, renderTemplate } from "@/components/admin/seo-preview";
-
-describe("renderTemplate", () => {
-  it("should replace placeholders with data values", () => {
-    const result = renderTemplate("{{brand}} {{model}} - Auto", {
-      brand: "Peugeot",
-      model: "308",
-    });
-    expect(result).toBe("Peugeot 308 - Auto");
-  });
-
-  it("should remove unreplaced placeholders", () => {
-    const result = renderTemplate("{{brand}} {{model}} - Auto", {
-      brand: "Peugeot",
-    });
-    expect(result).toBe("Peugeot  - Auto");
-  });
-
-  it("should handle empty template", () => {
-    expect(renderTemplate("", { brand: "test" })).toBe("");
-  });
-
-  it("should handle empty data", () => {
-    expect(renderTemplate("{{brand}} {{model}}", {})).toBe(" ");
-  });
-
-  it("should handle template with no placeholders", () => {
-    expect(renderTemplate("Static text", { brand: "test" })).toBe("Static text");
-  });
-
-  it("should handle multiple occurrences of same placeholder", () => {
-    const result = renderTemplate("{{brand}} - {{brand}}", { brand: "Peugeot" });
-    expect(result).toBe("Peugeot - Peugeot");
-  });
-});
+import { SeoPreview } from "@/components/admin/seo-preview";
 
 describe("SeoPreview", () => {
   it("should render SERP-style preview with sample data", () => {

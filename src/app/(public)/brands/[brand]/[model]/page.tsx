@@ -6,7 +6,9 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { brand, model } = await params;
+  const { brand: rawBrand, model: rawModel } = await params;
+  const brand = decodeURIComponent(rawBrand);
+  const model = decodeURIComponent(rawModel);
 
   const seo = await getSeoMeta("model_page", { brand, model, count: "0" });
 
@@ -26,7 +28,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ModelPage({ params }: Props) {
-  const { brand, model } = await params;
+  const { brand: rawBrand, model: rawModel } = await params;
+  const brand = decodeURIComponent(rawBrand);
+  const model = decodeURIComponent(rawModel);
 
   return (
     <div>

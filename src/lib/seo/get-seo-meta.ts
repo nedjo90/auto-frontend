@@ -1,5 +1,5 @@
 import type { SeoPageType } from "@auto/shared";
-import { SEO_SAMPLE_DATA } from "@auto/shared";
+import { SEO_SAMPLE_DATA, renderSeoTemplate } from "@auto/shared";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
@@ -12,17 +12,8 @@ export interface SeoMeta {
 }
 
 /**
- * Replace {{placeholder}} tokens with values from data object.
- * Used for client-side fallback rendering.
- */
-function renderTemplate(template: string, data: Record<string, string>): string {
-  if (!template) return "";
-  return template.replace(/\{\{(\w+)\}\}/g, (_, key: string) => data[key] ?? "");
-}
-
-/**
  * Fetch resolved SEO meta from the backend API.
- * Falls back to client-side template rendering if the API is unavailable.
+ * Falls back to null if the API is unavailable.
  */
 export async function getSeoMeta(
   pageType: SeoPageType,
@@ -30,11 +21,12 @@ export async function getSeoMeta(
   language = "fr",
 ): Promise<SeoMeta | null> {
   try {
-    const params = new URLSearchParams({
-      pageType,
-      language,
-      ...data,
-    });
+    const params = new URLSearchParams({ pageType, language });
+    for (const [key, value] of Object.entries(data)) {
+      if (key !== "pageType" && key !== "language") {
+        params.set(key, value);
+      }
+    }
     const res = await fetch(`${API_BASE}/api/seo/resolve?${params.toString()}`, {
       next: { revalidate: 3600 }, // Cache for 1 hour
     });
@@ -58,6 +50,6 @@ export function getSampleData(pageType: SeoPageType): Record<string, string> {
 }
 
 /**
- * Render a template string with data (client-side utility).
+ * Re-export renderSeoTemplate for convenience.
  */
-export { renderTemplate };
+export { renderSeoTemplate };

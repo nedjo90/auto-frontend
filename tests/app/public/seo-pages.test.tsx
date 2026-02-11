@@ -5,7 +5,7 @@ import { render, screen } from "@testing-library/react";
 vi.mock("@/lib/seo/get-seo-meta", () => ({
   getSeoMeta: vi.fn().mockResolvedValue(null),
   getSampleData: vi.fn().mockReturnValue({}),
-  renderTemplate: vi.fn((t: string) => t),
+  renderSeoTemplate: vi.fn((t: string) => t),
 }));
 
 // Mock structured data

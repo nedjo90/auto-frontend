@@ -179,5 +179,22 @@ describe("structured-data", () => {
 
       expect(() => JSON.parse(jsonLd)).not.toThrow();
     });
+
+    it("escapes < characters to prevent XSS", () => {
+      const xssListing: ListingData = {
+        ...baseListing,
+        title: '</script><script>alert("xss")</script>',
+        description: '<img onerror="alert(1)">',
+      };
+      const jsonLd = generateListingJsonLd(xssListing);
+
+      expect(jsonLd).not.toContain("</script>");
+      expect(jsonLd).not.toContain("<script>");
+      expect(jsonLd).not.toContain("<img");
+      expect(jsonLd).toContain("\\u003c");
+
+      // Should still be valid JSON when unescaped
+      expect(() => JSON.parse(jsonLd)).not.toThrow();
+    });
   });
 });

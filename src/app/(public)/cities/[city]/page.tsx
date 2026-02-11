@@ -6,7 +6,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { city } = await params;
+  const city = decodeURIComponent((await params).city);
 
   const seo = await getSeoMeta("city_page", { city, count: "0" });
 
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CityPage({ params }: Props) {
-  const { city } = await params;
+  const city = decodeURIComponent((await params).city);
 
   return (
     <div>

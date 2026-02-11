@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { getSeoMeta, getSampleData, renderTemplate } from "@/lib/seo/get-seo-meta";
+import { getSeoMeta, getSampleData, renderSeoTemplate } from "@/lib/seo/get-seo-meta";
 
 // Mock fetch globally
 const mockFetch = vi.fn();
@@ -91,6 +91,21 @@ describe("get-seo-meta", () => {
       const calledUrl = mockFetch.mock.calls[0][0] as string;
       expect(calledUrl).toContain("language=fr");
     });
+
+    it("prevents data keys from overwriting pageType and language", async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ metaTitle: "test" }),
+      });
+
+      await getSeoMeta("listing_detail", { pageType: "hacked", language: "hacked", id: "1" });
+
+      const calledUrl = mockFetch.mock.calls[0][0] as string;
+      expect(calledUrl).toContain("pageType=listing_detail");
+      expect(calledUrl).toContain("language=fr");
+      expect(calledUrl).not.toContain("hacked");
+      expect(calledUrl).toContain("id=1");
+    });
   });
 
   describe("getSampleData", () => {
@@ -116,9 +131,9 @@ describe("get-seo-meta", () => {
     });
   });
 
-  describe("renderTemplate", () => {
+  describe("renderSeoTemplate", () => {
     it("replaces placeholders with data values", () => {
-      const result = renderTemplate("{{brand}} {{model}} occasion", {
+      const result = renderSeoTemplate("{{brand}} {{model}} occasion", {
         brand: "Renault",
         model: "Clio",
       });
@@ -127,7 +142,7 @@ describe("get-seo-meta", () => {
     });
 
     it("replaces unknown placeholders with empty string", () => {
-      const result = renderTemplate("{{brand}} {{unknown}}", {
+      const result = renderSeoTemplate("{{brand}} {{unknown}}", {
         brand: "Renault",
       });
 
@@ -135,13 +150,13 @@ describe("get-seo-meta", () => {
     });
 
     it("returns empty string for empty template", () => {
-      const result = renderTemplate("", { brand: "Renault" });
+      const result = renderSeoTemplate("", { brand: "Renault" });
 
       expect(result).toBe("");
     });
 
     it("handles template with no placeholders", () => {
-      const result = renderTemplate("Static text", {});
+      const result = renderSeoTemplate("Static text", {});
 
       expect(result).toBe("Static text");
     });

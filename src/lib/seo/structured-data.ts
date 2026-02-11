@@ -114,5 +114,6 @@ export function generateListingJsonLd(listing: ListingData): string {
     "@graph": [generateVehicleSchema(listing.vehicle), generateProductSchema(listing)],
   };
 
-  return JSON.stringify(jsonLd);
+  // Escape </script> to prevent XSS when injected via dangerouslySetInnerHTML
+  return JSON.stringify(jsonLd).replace(/</g, "\\u003c");
 }

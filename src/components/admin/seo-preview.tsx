@@ -1,14 +1,7 @@
 "use client";
 
 import type { SeoPageType } from "@auto/shared";
-import { SEO_SAMPLE_DATA, SEO_CHAR_LIMITS } from "@auto/shared";
-
-/**
- * Replace {{placeholder}} tokens with values from a data object.
- */
-export function renderTemplate(template: string, data: Record<string, string>): string {
-  return template.replace(/\{\{(\w+)\}\}/g, (_, key: string) => data[key] ?? "");
-}
+import { SEO_SAMPLE_DATA, SEO_CHAR_LIMITS, renderSeoTemplate } from "@auto/shared";
 
 interface SeoPreviewProps {
   metaTitleTemplate: string;
@@ -22,8 +15,8 @@ export function SeoPreview({
   pageType,
 }: SeoPreviewProps) {
   const sampleData = SEO_SAMPLE_DATA[pageType];
-  const renderedTitle = renderTemplate(metaTitleTemplate, sampleData);
-  const renderedDescription = renderTemplate(metaDescriptionTemplate, sampleData);
+  const renderedTitle = renderSeoTemplate(metaTitleTemplate, sampleData);
+  const renderedDescription = renderSeoTemplate(metaDescriptionTemplate, sampleData);
 
   const titleOverLimit = renderedTitle.length > SEO_CHAR_LIMITS.metaTitle;
   const descriptionOverLimit = renderedDescription.length > SEO_CHAR_LIMITS.metaDescription;
