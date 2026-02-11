@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { useMsal } from "@azure/msal-react";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { getAuthHeaders } from "@/lib/auth/get-auth-headers";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
@@ -17,8 +17,7 @@ interface ConsentStatus {
 }
 
 export default function ConsentSettingsPage() {
-  const { accounts } = useMsal();
-  const userId = accounts[0]?.localAccountId ?? null;
+  const { userId } = useCurrentUser();
   const [statuses, setStatuses] = useState<ConsentStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
@@ -121,34 +120,24 @@ export default function ConsentSettingsPage() {
           const isSaving = saving === ct.ID;
 
           return (
-            <div
-              key={ct.ID}
-              className="rounded-lg border p-4"
-            >
+            <div key={ct.ID} className="rounded-lg border p-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3">
                   <Checkbox
                     id={`consent-setting-${ct.ID}`}
                     checked={isGranted}
-                    onCheckedChange={(checked) =>
-                      toggleConsent(ct.ID, checked === true)
-                    }
+                    onCheckedChange={(checked) => toggleConsent(ct.ID, checked === true)}
                     disabled={ct.isMandatory || isSaving}
                     aria-label={ct.labelKey}
                   />
                   <div>
-                    <Label
-                      htmlFor={`consent-setting-${ct.ID}`}
-                      className="font-medium"
-                    >
+                    <Label htmlFor={`consent-setting-${ct.ID}`} className="font-medium">
                       {ct.labelKey}
                       {ct.isMandatory && (
                         <span className="ml-2 text-xs text-muted-foreground">(obligatoire)</span>
                       )}
                     </Label>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {ct.descriptionKey}
-                    </p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{ct.descriptionKey}</p>
                     {latestDecision && (
                       <p className="mt-1 text-xs text-muted-foreground">
                         {isGranted ? "Accordé" : "Révoqué"} le{" "}
@@ -157,13 +146,12 @@ export default function ConsentSettingsPage() {
                     )}
                   </div>
                 </div>
-                {isSaving && (
-                  <Loader2 className="size-4 animate-spin text-muted-foreground" />
-                )}
+                {isSaving && <Loader2 className="size-4 animate-spin text-muted-foreground" />}
               </div>
               {ct.isMandatory && (
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Ce consentement est nécessaire au fonctionnement du service et ne peut pas être révoqué.
+                  Ce consentement est nécessaire au fonctionnement du service et ne peut pas être
+                  révoqué.
                 </p>
               )}
             </div>

@@ -1,8 +1,8 @@
 "use client";
 
-import { useMsal } from "@azure/msal-react";
 import { LogOut, Settings, User } from "lucide-react";
 import Link from "next/link";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { logoutRedirect } from "@/lib/auth/auth-utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-function getInitials(name: string | undefined): string {
+function getInitials(name: string | undefined | null): string {
   if (!name) return "?";
   return name
     .split(" ")
@@ -24,12 +24,11 @@ function getInitials(name: string | undefined): string {
 }
 
 export function UserMenu() {
-  const { accounts } = useMsal();
-  const account = accounts[0];
+  const { isAuthenticated, displayName, email } = useCurrentUser();
 
-  if (!account) return null;
+  if (!isAuthenticated) return null;
 
-  const initials = getInitials(account.name);
+  const initials = getInitials(displayName);
 
   return (
     <DropdownMenu>
@@ -42,8 +41,8 @@ export function UserMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         <div className="px-2 py-1.5">
-          <p className="text-sm font-medium">{account.name}</p>
-          <p className="text-xs text-muted-foreground">{account.username}</p>
+          <p className="text-sm font-medium">{displayName}</p>
+          <p className="text-xs text-muted-foreground">{email}</p>
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>

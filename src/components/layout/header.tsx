@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useMsal } from "@azure/msal-react";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { UserMenu } from "@/components/layout/user-menu";
 
 export function Header() {
-  const { accounts } = useMsal();
-  const isAuthenticated = accounts.length > 0;
+  const { isAuthenticated } = useCurrentUser();
 
   return (
     <header className="border-b bg-background">
@@ -19,10 +18,7 @@ export function Header() {
             <UserMenu />
           ) : (
             <>
-              <Link
-                href="/login"
-                className="text-sm text-muted-foreground hover:text-foreground"
-              >
+              <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
                 Se connecter
               </Link>
               <Link

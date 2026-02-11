@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
-vi.mock("@azure/msal-react", () => ({
-  useMsal: vi.fn(),
+vi.mock("@/hooks/use-current-user", () => ({
+  useCurrentUser: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/auth-utils", () => ({
@@ -10,16 +10,7 @@ vi.mock("@/lib/auth/auth-utils", () => ({
 }));
 
 import { UserMenu } from "@/components/layout/user-menu";
-import { useMsal } from "@azure/msal-react";
-
-const mockAccount = {
-  homeAccountId: "home-id",
-  localAccountId: "local-id",
-  environment: "login.microsoftonline.com",
-  tenantId: "tenant-id",
-  username: "test@example.com",
-  name: "Jean Dupont",
-};
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 describe("UserMenu", () => {
   beforeEach(() => {
@@ -27,21 +18,23 @@ describe("UserMenu", () => {
   });
 
   it("renders user avatar with initials", () => {
-    vi.mocked(useMsal).mockReturnValue({
-      instance: {} as never,
-      accounts: [mockAccount as never],
-      inProgress: "none" as never,
+    vi.mocked(useCurrentUser).mockReturnValue({
+      isAuthenticated: true,
+      userId: "local-id",
+      displayName: "Jean Dupont",
+      email: "test@example.com",
     });
 
     render(<UserMenu />);
     expect(screen.getByText("JD")).toBeInTheDocument();
   });
 
-  it("renders nothing when no account", () => {
-    vi.mocked(useMsal).mockReturnValue({
-      instance: {} as never,
-      accounts: [],
-      inProgress: "none" as never,
+  it("renders nothing when not authenticated", () => {
+    vi.mocked(useCurrentUser).mockReturnValue({
+      isAuthenticated: false,
+      userId: null,
+      displayName: null,
+      email: null,
     });
 
     const { container } = render(<UserMenu />);
@@ -49,10 +42,11 @@ describe("UserMenu", () => {
   });
 
   it("renders a trigger button", () => {
-    vi.mocked(useMsal).mockReturnValue({
-      instance: {} as never,
-      accounts: [mockAccount as never],
-      inProgress: "none" as never,
+    vi.mocked(useCurrentUser).mockReturnValue({
+      isAuthenticated: true,
+      userId: "local-id",
+      displayName: "Jean Dupont",
+      email: "test@example.com",
     });
 
     render(<UserMenu />);
@@ -61,10 +55,11 @@ describe("UserMenu", () => {
   });
 
   it("computes initials correctly for single-word names", () => {
-    vi.mocked(useMsal).mockReturnValue({
-      instance: {} as never,
-      accounts: [{ ...mockAccount, name: "Admin" } as never],
-      inProgress: "none" as never,
+    vi.mocked(useCurrentUser).mockReturnValue({
+      isAuthenticated: true,
+      userId: "local-id",
+      displayName: "Admin",
+      email: "admin@localhost",
     });
 
     render(<UserMenu />);

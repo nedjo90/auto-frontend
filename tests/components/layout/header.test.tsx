@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 
-vi.mock("@azure/msal-react", () => ({
-  useMsal: vi.fn(),
+vi.mock("@/hooks/use-current-user", () => ({
+  useCurrentUser: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/auth-utils", () => ({
@@ -10,14 +10,15 @@ vi.mock("@/lib/auth/auth-utils", () => ({
 }));
 
 import { Header } from "@/components/layout/header";
-import { useMsal } from "@azure/msal-react";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 describe("Header", () => {
   it("shows Sign In link when not authenticated", () => {
-    vi.mocked(useMsal).mockReturnValue({
-      instance: {} as never,
-      accounts: [],
-      inProgress: "none" as never,
+    vi.mocked(useCurrentUser).mockReturnValue({
+      isAuthenticated: false,
+      userId: null,
+      displayName: null,
+      email: null,
     });
 
     render(<Header />);
@@ -25,19 +26,11 @@ describe("Header", () => {
   });
 
   it("shows user menu when authenticated", () => {
-    vi.mocked(useMsal).mockReturnValue({
-      instance: {} as never,
-      accounts: [
-        {
-          homeAccountId: "id",
-          localAccountId: "id",
-          environment: "env",
-          tenantId: "tid",
-          username: "user@test.com",
-          name: "Test User",
-        } as never,
-      ],
-      inProgress: "none" as never,
+    vi.mocked(useCurrentUser).mockReturnValue({
+      isAuthenticated: true,
+      userId: "user-id",
+      displayName: "Test User",
+      email: "user@test.com",
     });
 
     render(<Header />);

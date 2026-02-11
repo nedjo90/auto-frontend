@@ -1,8 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 
+// Set Azure env var so loginRedirect path is taken (not dev mode redirect)
+vi.hoisted(() => {
+  process.env.NEXT_PUBLIC_AZURE_AD_B2C_CLIENT_ID = "test-client-id";
+});
+
 vi.mock("@/lib/auth/auth-utils", () => ({
   loginRedirect: vi.fn(),
+}));
+
+vi.mock("@/lib/auth/msal-instance", () => ({
+  isAzureConfigured: true,
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(() => ({ push: vi.fn() })),
 }));
 
 import LoginPage from "@/app/(auth)/login/page";
