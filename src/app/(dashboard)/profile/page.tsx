@@ -11,7 +11,7 @@ import type { IProfileCompletionResult, IProfileUpdateInput } from "@auto/shared
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
-interface UserProfile extends IProfileUpdateInput {
+interface UserProfile extends Omit<IProfileUpdateInput, "avatarUrl"> {
   ID: string;
   email: string;
   firstName: string;
@@ -95,7 +95,7 @@ export default function ProfilePage() {
       {/* Profile form */}
       <Card className="p-6">
         <ProfileForm
-          initialData={profile}
+          initialData={{ ...profile, avatarUrl: profile.avatarUrl ?? undefined }}
           avatarUrl={profile.avatarUrl}
           isSeller={isSeller}
           onSaved={fetchData}

@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
+// Set Azure env var BEFORE any module imports to ensure isDevMode = false
+vi.hoisted(() => {
+  process.env.NEXT_PUBLIC_AZURE_AD_B2C_CLIENT_ID = "test-client-id";
+});
+
 vi.mock("@/lib/auth/auth-utils", () => ({
   getAccessToken: vi.fn(),
   loginRedirect: vi.fn(() => Promise.resolve()),

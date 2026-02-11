@@ -82,9 +82,13 @@ export default function AlertsConfigPage() {
       setSaving(true);
       setError(null);
       if (editingAlert) {
-        await updateConfigEntity("ConfigAlerts", editingAlert.ID, data);
+        await updateConfigEntity(
+          "ConfigAlerts",
+          editingAlert.ID,
+          data as unknown as Partial<Record<string, unknown>>,
+        );
       } else {
-        await createConfigEntity("ConfigAlerts", data as Record<string, unknown>);
+        await createConfigEntity("ConfigAlerts", data as unknown as Record<string, unknown>);
       }
       setDialogOpen(false);
       setEditingAlert(null);

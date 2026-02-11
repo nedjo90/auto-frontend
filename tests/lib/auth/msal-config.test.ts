@@ -15,10 +15,6 @@ describe("msal-config", () => {
     it("uses sessionStorage for cache", () => {
       expect(msalConfig.cache!.cacheLocation).toBe("sessionStorage");
     });
-
-    it("disables auth state in cookie", () => {
-      expect(msalConfig.cache!.storeAuthStateInCookie).toBe(false);
-    });
   });
 
   describe("loginRequest", () => {

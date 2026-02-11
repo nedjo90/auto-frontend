@@ -5,8 +5,12 @@ const tenantName = process.env.NEXT_PUBLIC_AZURE_AD_B2C_TENANT_NAME || "";
 const policyName =
   process.env.NEXT_PUBLIC_AZURE_AD_B2C_SIGN_UP_SIGN_IN_FLOW || "B2C_1_signupsignin";
 
-// M7: Warn at load time if critical env vars are missing
-if (typeof window !== "undefined" && (!clientId || !tenantName)) {
+// M7: Warn at load time if critical env vars are missing (skip in dev mode — expected)
+if (
+  typeof window !== "undefined" &&
+  (!clientId || !tenantName) &&
+  process.env.NODE_ENV === "production"
+) {
   console.error(
     "[msal-config] Missing required env vars: NEXT_PUBLIC_AZURE_AD_B2C_CLIENT_ID and NEXT_PUBLIC_AZURE_AD_B2C_TENANT_NAME must be set",
   );
@@ -22,7 +26,6 @@ export const msalConfig: Configuration = {
   },
   cache: {
     cacheLocation: "sessionStorage",
-    storeAuthStateInCookie: false,
   },
 };
 

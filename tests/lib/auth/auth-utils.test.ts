@@ -11,6 +11,7 @@ vi.mock("@/lib/auth/msal-instance", () => ({
     getAllAccounts: vi.fn(() => []),
   },
   msalInitPromise: Promise.resolve(),
+  isAzureConfigured: true,
 }));
 
 vi.mock("@/lib/auth/msal-config", () => ({
