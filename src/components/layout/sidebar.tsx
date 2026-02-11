@@ -27,6 +27,12 @@ export function Sidebar() {
                 Configuration
               </Link>
               <Link
+                href="/admin/alerts"
+                className="block rounded-md px-3 py-2 text-sm hover:bg-accent"
+              >
+                Alertes
+              </Link>
+              <Link
                 href="/admin/users"
                 className="block rounded-md px-3 py-2 text-sm hover:bg-accent"
               >

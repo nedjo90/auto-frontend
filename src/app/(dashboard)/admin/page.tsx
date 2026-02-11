@@ -6,6 +6,7 @@ import { Wifi, WifiOff } from "lucide-react";
 import { KpiCard } from "@/components/admin/kpi-card";
 import { KpiCardSkeleton } from "@/components/admin/kpi-card-skeleton";
 import { TrendChart } from "@/components/admin/trend-chart";
+import { AlertBanner } from "@/components/admin/alert-banner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchDashboardKpis, fetchDashboardTrend } from "@/lib/api/dashboard-api";
 import { useLiveKpis } from "@/hooks/use-live-kpis";
@@ -78,6 +79,8 @@ export default function AdminDashboardPage() {
           {connectionStatus === "connected" ? "Temps reel" : "Hors ligne"}
         </div>
       </div>
+
+      <AlertBanner />
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 

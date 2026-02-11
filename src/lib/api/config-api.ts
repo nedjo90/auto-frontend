@@ -16,6 +16,7 @@ const VALID_ENTITIES = new Set([
   "ConfigApiProviders",
   "ConfigRegistrationFields",
   "ConfigProfileFields",
+  "ConfigAlerts",
 ]);
 
 function validateEntityName(entityName: string): void {
