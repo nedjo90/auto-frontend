@@ -12,21 +12,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Pencil } from "lucide-react";
-import type { IConfigSeoTemplate, SeoPageType } from "@auto/shared";
+import type { IConfigSeoTemplate } from "@auto/shared";
+import { SEO_PAGE_TYPE_LABELS } from "@auto/shared";
 import { fetchConfigEntities, updateConfigEntity } from "@/lib/api/config-api";
 import {
   SeoTemplateFormDialog,
   type SeoTemplateFormData,
 } from "@/components/admin/seo-template-form-dialog";
-
-const PAGE_TYPE_LABELS: Record<SeoPageType, string> = {
-  listing_detail: "Fiche annonce",
-  search_results: "Resultats de recherche",
-  brand_page: "Page marque",
-  model_page: "Page modele",
-  city_page: "Page ville",
-  landing_page: "Page d'atterrissage",
-};
 
 function truncate(text: string, max: number): string {
   return text.length > max ? text.slice(0, max) + "..." : text;
@@ -143,7 +135,7 @@ export default function SeoConfigPage() {
             {templates.map((template) => (
               <TableRow key={template.ID} data-testid={`seo-row-${template.ID}`}>
                 <TableCell className="text-sm font-medium">
-                  {PAGE_TYPE_LABELS[template.pageType] || template.pageType}
+                  {SEO_PAGE_TYPE_LABELS[template.pageType] || template.pageType}
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground max-w-48">
                   {truncate(template.metaTitleTemplate, 50)}

@@ -14,17 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import type { IConfigSeoTemplate, SeoPageType } from "@auto/shared";
-import { SEO_PLACEHOLDERS } from "@auto/shared";
+import { SEO_PLACEHOLDERS, SEO_PAGE_TYPE_LABELS } from "@auto/shared";
 import { SeoPreview } from "./seo-preview";
-
-const PAGE_TYPE_LABELS: Record<SeoPageType, string> = {
-  listing_detail: "Fiche annonce",
-  search_results: "Resultats de recherche",
-  brand_page: "Page marque",
-  model_page: "Page modele",
-  city_page: "Page ville",
-  landing_page: "Page d'atterrissage",
-};
 
 export interface SeoTemplateFormData {
   metaTitleTemplate: string;
@@ -107,7 +98,7 @@ function SeoTemplateFormFields({
       <DialogHeader>
         <DialogTitle>
           Modifier le template SEO
-          {pageType && ` — ${PAGE_TYPE_LABELS[pageType]}`}
+          {pageType && ` — ${SEO_PAGE_TYPE_LABELS[pageType]}`}
         </DialogTitle>
         <DialogDescription>
           Modifiez les templates de meta tags pour ce type de page.

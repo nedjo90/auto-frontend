@@ -94,7 +94,7 @@ describe("SEO Public Pages", () => {
       const { container } = render(page);
 
       const script = container.querySelector('script[type="application/ld+json"]');
-      expect(script).toBeDefined();
+      expect(script).not.toBeNull();
     });
   });
 });
