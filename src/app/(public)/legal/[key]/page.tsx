@@ -1,0 +1,65 @@
+import type { Metadata } from "next";
+import { LEGAL_DOCUMENT_LABELS } from "@auto/shared";
+import type { LegalDocumentKey } from "@auto/shared";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+
+interface LegalPageProps {
+  params: Promise<{ key: string }>;
+}
+
+async function fetchLegalContent(key: string) {
+  const res = await fetch(
+    `${API_BASE}/api/legal/getCurrentVersion(documentKey='${encodeURIComponent(key)}')`,
+    { next: { revalidate: 3600 } },
+  );
+  if (!res.ok) return null;
+  return res.json();
+}
+
+export async function generateMetadata({ params }: LegalPageProps): Promise<Metadata> {
+  const { key } = await params;
+  const decodedKey = decodeURIComponent(key);
+  const label = LEGAL_DOCUMENT_LABELS[decodedKey as LegalDocumentKey] || decodedKey;
+
+  return {
+    title: `${label} | Auto`,
+    description: `${label} de la plateforme Auto.`,
+  };
+}
+
+export default async function LegalPage({ params }: LegalPageProps) {
+  const { key } = await params;
+  const decodedKey = decodeURIComponent(key);
+  const label = LEGAL_DOCUMENT_LABELS[decodedKey as LegalDocumentKey] || decodedKey;
+
+  const versionData = await fetchLegalContent(decodedKey);
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-8">
+      <h1 className="mb-6 text-3xl font-bold" data-testid="legal-page-title">
+        {label}
+      </h1>
+
+      {versionData ? (
+        <div className="space-y-4">
+          <div
+            className="prose prose-sm max-w-none whitespace-pre-wrap"
+            data-testid="legal-page-content"
+          >
+            {versionData.content}
+          </div>
+          <p className="text-xs text-muted-foreground" data-testid="legal-page-version">
+            Version {versionData.version}
+            {versionData.publishedAt &&
+              ` — Publiee le ${new Date(versionData.publishedAt).toLocaleDateString("fr-FR")}`}
+          </p>
+        </div>
+      ) : (
+        <p className="text-muted-foreground" data-testid="legal-page-not-found">
+          Document non disponible.
+        </p>
+      )}
+    </div>
+  );
+}
