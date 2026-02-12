@@ -70,7 +70,7 @@ describe("Legal API", () => {
       const result = await getLegalAcceptanceCount("doc-1");
       expect(result).toBe(42);
       expect(mockApiClient).toHaveBeenCalledWith(
-        expect.stringContaining("getLegalAcceptanceCount"),
+        expect.stringContaining("getLegalAcceptanceCount(documentId='doc-1')"),
       );
     });
 

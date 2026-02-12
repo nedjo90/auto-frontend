@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -33,25 +33,51 @@ export function LegalAcceptanceModal({
   const [accepted, setAccepted] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const currentDoc = pendingDocuments[currentIndex];
 
-  const loadContent = async (documentKey: string) => {
-    try {
-      setLoadingContent(true);
-      const version = await getCurrentLegalVersion(documentKey);
-      setContent(version.content);
-    } catch {
-      setContent(null);
-    } finally {
-      setLoadingContent(false);
-    }
-  };
+  // Reset state when pendingDocuments change or modal closes
+  useEffect(() => {
+    setCurrentIndex(0);
+    setContent(null);
+    setAccepted(false);
+    setError(null);
+  }, [pendingDocuments]);
 
-  // Load content when current doc changes
-  if (currentDoc && content === null && !loadingContent) {
-    loadContent(currentDoc.documentKey);
-  }
+  // Load content when current document changes (via useEffect, not render-phase)
+  useEffect(() => {
+    if (!currentDoc || !open) return;
+
+    // Abort any pending fetch
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    const loadContent = async () => {
+      try {
+        setLoadingContent(true);
+        const version = await getCurrentLegalVersion(currentDoc.documentKey);
+        if (!controller.signal.aborted) {
+          setContent(version.content);
+        }
+      } catch {
+        if (!controller.signal.aborted) {
+          setContent(null);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoadingContent(false);
+        }
+      }
+    };
+
+    loadContent();
+
+    return () => {
+      controller.abort();
+    };
+  }, [currentDoc?.documentKey, open]);
 
   const handleAccept = async () => {
     if (!currentDoc || !accepted) return;

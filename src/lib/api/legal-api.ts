@@ -65,7 +65,7 @@ export async function publishLegalVersion(
  */
 export async function getLegalAcceptanceCount(documentId: string): Promise<number> {
   const res = await apiClient(
-    `${API_BASE}/api/admin/getLegalAcceptanceCount(documentId=${documentId})`,
+    `${API_BASE}/api/admin/getLegalAcceptanceCount(documentId='${encodeURIComponent(documentId)}')`,
   );
   if (!res.ok) {
     throw new Error(`Failed to get acceptance count: ${res.status}`);

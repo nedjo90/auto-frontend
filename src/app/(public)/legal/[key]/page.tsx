@@ -9,12 +9,18 @@ interface LegalPageProps {
 }
 
 async function fetchLegalContent(key: string) {
-  const res = await fetch(
-    `${API_BASE}/api/legal/getCurrentVersion(documentKey='${encodeURIComponent(key)}')`,
-    { next: { revalidate: 3600 } },
-  );
-  if (!res.ok) return null;
-  return res.json();
+  try {
+    const res = await fetch(
+      `${API_BASE}/api/legal/getCurrentVersion(documentKey='${encodeURIComponent(key)}')`,
+      { next: { revalidate: 3600 } },
+    );
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error(`Failed to fetch legal content: ${res.status}`);
+    return res.json();
+  } catch (error) {
+    console.error("Error fetching legal content:", error);
+    return null;
+  }
 }
 
 export async function generateMetadata({ params }: LegalPageProps): Promise<Metadata> {
