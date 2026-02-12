@@ -28,6 +28,11 @@ export interface ApiCallLogFilters {
   listingId?: string;
 }
 
+/** Escape single quotes for OData string literals. */
+function escapeOData(value: string): string {
+  return value.replace(/'/g, "''");
+}
+
 /**
  * Fetch audit trail entries with OData filtering, sorting, and pagination.
  */
@@ -46,11 +51,11 @@ export async function fetchAuditTrailEntries(
   const filterParts: string[] = [];
   if (filters.dateFrom) filterParts.push(`timestamp ge ${filters.dateFrom}`);
   if (filters.dateTo) filterParts.push(`timestamp le ${filters.dateTo}`);
-  if (filters.action) filterParts.push(`action eq '${filters.action}'`);
-  if (filters.actorId) filterParts.push(`contains(actorId,'${filters.actorId}')`);
-  if (filters.targetType) filterParts.push(`targetType eq '${filters.targetType}'`);
-  if (filters.targetId) filterParts.push(`contains(targetId,'${filters.targetId}')`);
-  if (filters.severity) filterParts.push(`severity eq '${filters.severity}'`);
+  if (filters.action) filterParts.push(`action eq '${escapeOData(filters.action)}'`);
+  if (filters.actorId) filterParts.push(`contains(actorId,'${escapeOData(filters.actorId)}')`);
+  if (filters.targetType) filterParts.push(`targetType eq '${escapeOData(filters.targetType)}'`);
+  if (filters.targetId) filterParts.push(`contains(targetId,'${escapeOData(filters.targetId)}')`);
+  if (filters.severity) filterParts.push(`severity eq '${escapeOData(filters.severity)}'`);
 
   if (filterParts.length > 0) {
     params.set("$filter", filterParts.join(" and "));
@@ -85,9 +90,10 @@ export async function fetchApiCallLogs(
   const filterParts: string[] = [];
   if (filters.dateFrom) filterParts.push(`timestamp ge ${filters.dateFrom}`);
   if (filters.dateTo) filterParts.push(`timestamp le ${filters.dateTo}`);
-  if (filters.provider) filterParts.push(`providerKey eq '${filters.provider}'`);
-  if (filters.adapter) filterParts.push(`adapterInterface eq '${filters.adapter}'`);
-  if (filters.listingId) filterParts.push(`contains(listingId,'${filters.listingId}')`);
+  if (filters.provider) filterParts.push(`providerKey eq '${escapeOData(filters.provider)}'`);
+  if (filters.adapter) filterParts.push(`adapterInterface eq '${escapeOData(filters.adapter)}'`);
+  if (filters.listingId)
+    filterParts.push(`contains(listingId,'${escapeOData(filters.listingId)}')`);
 
   if (filterParts.length > 0) {
     params.set("$filter", filterParts.join(" and "));

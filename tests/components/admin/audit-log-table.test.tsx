@@ -1,11 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, cleanup, waitFor } from "@testing-library/react";
 
-const mockFetch = vi.fn();
-vi.stubGlobal("fetch", mockFetch);
-
-vi.mock("@/lib/auth/get-auth-headers", () => ({
-  getAuthHeaders: vi.fn().mockResolvedValue({ Authorization: "Bearer test" }),
+const mockApiClient = vi.fn();
+vi.mock("@/lib/auth/api-client", () => ({
+  apiClient: (...args: unknown[]) => mockApiClient(...args),
 }));
 
 import { AuditLogTable } from "@/components/admin/audit-log-table";
@@ -14,18 +12,18 @@ const mockAuditResponse = {
   value: [
     {
       ID: "a1",
-      userId: "admin-1",
+      actorId: "admin-1",
       action: "role.assign",
-      resource: "user/u1",
+      targetType: "User",
       details: "Assigned role 'seller' to user u1",
       ipAddress: "127.0.0.1",
       timestamp: "2026-02-08T10:00:00Z",
     },
     {
       ID: "a2",
-      userId: "admin-1",
+      actorId: "admin-1",
       action: "role.remove",
-      resource: "user/u2",
+      targetType: "User",
       details: "Removed role 'buyer' from user u2",
       ipAddress: null,
       timestamp: "2026-02-08T09:00:00Z",
@@ -36,11 +34,11 @@ const mockAuditResponse = {
 describe("AuditLogTable", () => {
   beforeEach(() => {
     cleanup();
-    mockFetch.mockReset();
+    mockApiClient.mockReset();
   });
 
   it("renders audit entries", async () => {
-    mockFetch.mockResolvedValueOnce({
+    mockApiClient.mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve(mockAuditResponse),
     });
@@ -54,13 +52,13 @@ describe("AuditLogTable", () => {
   });
 
   it("shows loading state initially", () => {
-    mockFetch.mockImplementation(() => new Promise(() => {}));
+    mockApiClient.mockImplementation(() => new Promise(() => {}));
     render(<AuditLogTable />);
     expect(screen.getByText(/Chargement du journal/i)).toBeInTheDocument();
   });
 
   it("shows error on fetch failure", async () => {
-    mockFetch.mockResolvedValueOnce({ ok: false, status: 500 });
+    mockApiClient.mockResolvedValueOnce({ ok: false, status: 500 });
     render(<AuditLogTable />);
 
     await waitFor(() => {
@@ -69,7 +67,7 @@ describe("AuditLogTable", () => {
   });
 
   it("shows empty state when no entries", async () => {
-    mockFetch.mockResolvedValueOnce({
+    mockApiClient.mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve({ value: [] }),
     });
@@ -81,7 +79,7 @@ describe("AuditLogTable", () => {
   });
 
   it("renders table headers", async () => {
-    mockFetch.mockResolvedValueOnce({
+    mockApiClient.mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve(mockAuditResponse),
     });
@@ -90,7 +88,7 @@ describe("AuditLogTable", () => {
     await waitFor(() => {
       expect(screen.getByText("Date")).toBeInTheDocument();
       expect(screen.getByText("Action")).toBeInTheDocument();
-      expect(screen.getByText("Ressource")).toBeInTheDocument();
+      expect(screen.getByText("Cible")).toBeInTheDocument();
       expect(screen.getByText("Details")).toBeInTheDocument();
     });
   });

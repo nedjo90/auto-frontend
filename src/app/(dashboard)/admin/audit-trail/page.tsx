@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Fragment } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -87,11 +87,11 @@ export default function AuditTrailPage() {
     const filters: AuditTrailFilters = {};
     if (dateFrom) filters.dateFrom = dateFrom;
     if (dateTo) filters.dateTo = dateTo;
-    if (actionFilter) filters.action = actionFilter;
+    if (actionFilter?.trim()) filters.action = actionFilter.trim();
     if (actorFilter) filters.actorId = actorFilter;
-    if (targetTypeFilter) filters.targetType = targetTypeFilter;
+    if (targetTypeFilter?.trim()) filters.targetType = targetTypeFilter.trim();
     if (targetIdFilter) filters.targetId = targetIdFilter;
-    if (severityFilter) filters.severity = severityFilter;
+    if (severityFilter?.trim()) filters.severity = severityFilter.trim();
     return filters;
   }, [
     dateFrom,
@@ -157,7 +157,6 @@ export default function AuditTrailPage() {
 
   const handleApplyFilters = () => {
     setPage(0);
-    loadData();
   };
 
   const handleResetFilters = () => {
@@ -395,9 +394,8 @@ export default function AuditTrailPage() {
               </TableRow>
             ) : (
               entries.map((entry) => (
-                <>
+                <Fragment key={entry.ID}>
                   <TableRow
-                    key={entry.ID}
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => setExpandedRow(expandedRow === entry.ID ? null : entry.ID)}
                     data-testid={`audit-row-${entry.ID}`}
@@ -463,7 +461,7 @@ export default function AuditTrailPage() {
                       </TableCell>
                     </TableRow>
                   )}
-                </>
+                </Fragment>
               ))
             )}
           </TableBody>

@@ -10,15 +10,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Loader2 } from "lucide-react";
-import { getAuthHeaders } from "@/lib/auth/get-auth-headers";
+import { apiClient } from "@/lib/auth/api-client";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 interface AuditEntry {
   ID: string;
-  userId: string;
+  actorId: string;
   action: string;
-  resource: string;
+  targetType: string;
   details: string | null;
   ipAddress: string | null;
   timestamp: string;
@@ -49,10 +49,9 @@ export function AuditLogTable({ refreshKey = 0 }: AuditLogTableProps) {
 
     (async () => {
       try {
-        const authHeaders = await getAuthHeaders();
-        const res = await fetch(
+        const res = await apiClient(
           `${API_BASE}/api/rbac/AuditLogs?$orderby=timestamp desc&$top=50&$filter=startswith(action,'role.')`,
-          { signal: controller.signal, headers: authHeaders },
+          { signal: controller.signal },
         );
         if (!res.ok) throw new Error("Failed to fetch audit logs");
         const data = await res.json();
@@ -97,7 +96,7 @@ export function AuditLogTable({ refreshKey = 0 }: AuditLogTableProps) {
         <TableRow>
           <TableHead>Date</TableHead>
           <TableHead>Action</TableHead>
-          <TableHead>Ressource</TableHead>
+          <TableHead>Cible</TableHead>
           <TableHead>Details</TableHead>
         </TableRow>
       </TableHeader>
@@ -106,7 +105,7 @@ export function AuditLogTable({ refreshKey = 0 }: AuditLogTableProps) {
           <TableRow key={entry.ID}>
             <TableCell className="whitespace-nowrap">{formatTimestamp(entry.timestamp)}</TableCell>
             <TableCell>{entry.action}</TableCell>
-            <TableCell>{entry.resource}</TableCell>
+            <TableCell>{entry.targetType}</TableCell>
             <TableCell className="max-w-xs truncate">{entry.details ?? "-"}</TableCell>
           </TableRow>
         ))}

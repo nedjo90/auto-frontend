@@ -119,7 +119,6 @@ export default function ApiCallLogPage() {
 
   const handleApplyFilters = () => {
     setPage(0);
-    loadData();
   };
 
   const handleResetFilters = () => {
