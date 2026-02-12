@@ -21,6 +21,9 @@ const VALID_ENTITIES = new Set([
   "LegalDocuments",
   "LegalDocumentVersions",
   "LegalAcceptances",
+  "AuditTrailEntries",
+  "ApiCallLogs",
+  "AlertEvents",
 ]);
 
 function validateEntityName(entityName: string): void {
