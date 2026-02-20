@@ -90,7 +90,9 @@ describe("auto-fill-trigger", () => {
       const onSearch = vi.fn();
       render(<AutoFillTrigger onSearch={onSearch} />);
 
-      expect(screen.getByTestId("auto-fill-label")).toHaveTextContent("Identifiez votre vehicule");
+      expect(screen.getByTestId("auto-fill-label")).toHaveTextContent(
+        "Identifiez votre v\u00e9hicule",
+      );
       expect(screen.getByTestId("auto-fill-input")).toHaveAttribute(
         "placeholder",
         "AA-123-BB ou numero VIN",
@@ -112,7 +114,7 @@ describe("auto-fill-trigger", () => {
       const input = screen.getByTestId("auto-fill-input");
       await user.type(input, "AB1");
 
-      expect(screen.getByTestId("auto-fill-label")).toHaveTextContent("Plaque detectee");
+      expect(screen.getByTestId("auto-fill-label")).toHaveTextContent("Plaque d\u00e9tect\u00e9e");
     });
 
     it("should update label to 'VIN detecte' when VIN format detected", async () => {
@@ -123,7 +125,7 @@ describe("auto-fill-trigger", () => {
       const input = screen.getByTestId("auto-fill-input");
       await user.type(input, "VF1RFB0");
 
-      expect(screen.getByTestId("auto-fill-label")).toHaveTextContent("VIN detecte");
+      expect(screen.getByTestId("auto-fill-label")).toHaveTextContent("VIN d\u00e9tect\u00e9");
     });
 
     it("should auto-format plate input with dashes", async () => {

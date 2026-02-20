@@ -126,10 +126,10 @@ export function AutoFillTrigger({
 
   const labelText =
     detectedFormat === "plate"
-      ? "Plaque detectee"
+      ? "Plaque d\u00e9tect\u00e9e"
       : detectedFormat === "vin"
-        ? "VIN detecte"
-        : "Identifiez votre vehicule";
+        ? "VIN d\u00e9tect\u00e9"
+        : "Identifiez votre v\u00e9hicule";
 
   return (
     <div className="w-full max-w-lg space-y-2" data-testid="auto-fill-trigger">
@@ -156,7 +156,7 @@ export function AutoFillTrigger({
           maxLength={20}
           className="flex-1 text-lg font-mono tracking-wider"
           data-testid="auto-fill-input"
-          aria-label="Identifiant du vehicule"
+          aria-label="Identifiant du véhicule"
         />
 
         <Button
@@ -181,7 +181,7 @@ export function AutoFillTrigger({
 
       <p className="text-xs text-muted-foreground" data-testid="auto-fill-help">
         Entrez votre plaque d&apos;immatriculation ou votre numero VIN pour remplir automatiquement
-        les donnees de votre vehicule.
+        les données de votre véhicule.
       </p>
     </div>
   );

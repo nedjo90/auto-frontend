@@ -43,10 +43,10 @@ export function CertifiedField({ field, index, reducedMotion = false }: Certifie
         <Badge
           variant="default"
           className="bg-green-600 text-white text-xs"
-          aria-label={`Certifie par ${field.source}, le ${formattedDate}`}
+          aria-label={`Certifi\u00e9 par ${field.source}, le ${formattedDate}`}
           data-testid="certified-badge"
         >
-          Certifie {field.source} - {formattedDate}
+          Certifié {field.source} - {formattedDate}
         </Badge>
       )}
     </div>
@@ -58,22 +58,22 @@ const FIELD_LABELS: Record<string, string> = {
   plate: "Plaque",
   vin: "VIN",
   make: "Marque",
-  model: "Modele",
+  model: "Mod\u00e8le",
   variant: "Variante",
-  year: "Annee",
+  year: "Ann\u00e9e",
   registrationDate: "Date de mise en circulation",
   fuelType: "Carburant",
   engineCapacityCc: "Cylindree (cc)",
   powerKw: "Puissance (kW)",
   powerHp: "Puissance (ch)",
-  gearbox: "Boite de vitesses",
+  gearbox: "Bo\u00eete de vitesses",
   bodyType: "Carrosserie",
   doors: "Portes",
   seats: "Places",
   color: "Couleur",
   co2GKm: "CO2 (g/km)",
   euroNorm: "Norme Euro",
-  energyClass: "Classe energetique",
+  energyClass: "Classe \u00e9nerg\u00e9tique",
   recallCount: "Rappels",
   critAirLevel: "Vignette Crit'Air",
   critAirLabel: "Label Crit'Air",
@@ -82,7 +82,7 @@ const FIELD_LABELS: Record<string, string> = {
   driveType: "Transmission",
   engineCylinders: "Cylindres",
   manufacturer: "Constructeur",
-  vehicleType: "Type de vehicule",
+  vehicleType: "Type de v\u00e9hicule",
   plantCountry: "Pays de fabrication",
 };
 
@@ -91,14 +91,11 @@ function formatFieldLabel(fieldName: string): string {
 }
 
 function formatTimestamp(timestamp: string): string {
-  try {
-    const date = new Date(timestamp);
-    return date.toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  } catch {
-    return timestamp;
-  }
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return timestamp;
+  return date.toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 }

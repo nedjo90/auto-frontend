@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { apiClient } from "@/lib/auth/api-client";
 import type { IdentifierType, CertifiedFieldResult, ApiSourceStatus } from "@auto/shared";
 
@@ -20,14 +20,17 @@ export interface UseVehicleLookupResult {
 /**
  * Custom hook for managing vehicle auto-fill state.
  * Calls the backend autoFillByPlate action and manages response state.
+ * Uses a request counter to prevent stale responses from overwriting newer ones.
  */
 export function useVehicleLookup(): UseVehicleLookupResult {
   const [state, setState] = useState<AutoFillState>("idle");
   const [fields, setFields] = useState<CertifiedFieldResult[]>([]);
   const [sources, setSources] = useState<ApiSourceStatus[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const requestIdRef = useRef(0);
 
   const lookup = useCallback(async (identifier: string, identifierType: IdentifierType) => {
+    const currentRequestId = ++requestIdRef.current;
     setState("loading");
     setError(null);
     setFields([]);
@@ -40,6 +43,9 @@ export function useVehicleLookup(): UseVehicleLookupResult {
         body: JSON.stringify({ identifier, identifierType }),
       });
 
+      // Ignore stale responses
+      if (requestIdRef.current !== currentRequestId) return;
+
       if (!res.ok) {
         const errData = await res.json().catch(() => null);
         const message = errData?.error?.message || `Erreur ${res.status}`;
@@ -51,6 +57,9 @@ export function useVehicleLookup(): UseVehicleLookupResult {
       const data = await res.json();
       const parsedFields: CertifiedFieldResult[] = data.fields ? JSON.parse(data.fields) : [];
       const parsedSources: ApiSourceStatus[] = data.sources ? JSON.parse(data.sources) : [];
+
+      // Ignore stale responses (check again after parsing)
+      if (requestIdRef.current !== currentRequestId) return;
 
       setFields(parsedFields);
       setSources(parsedSources);
@@ -66,6 +75,7 @@ export function useVehicleLookup(): UseVehicleLookupResult {
         setError("Tous les services sont indisponibles");
       }
     } catch (err) {
+      if (requestIdRef.current !== currentRequestId) return;
       setError(err instanceof Error ? err.message : "Erreur de connexion");
       setState("error");
     }

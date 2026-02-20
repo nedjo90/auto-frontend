@@ -30,14 +30,14 @@ describe("CertifiedField", () => {
   it("should render certified badge with source and date", () => {
     render(<CertifiedField field={mockField} index={0} />);
     const badge = screen.getByTestId("certified-badge");
-    expect(badge).toHaveTextContent("Certifie SIV");
+    expect(badge).toHaveTextContent("Certifi\u00e9 SIV");
     expect(badge).toHaveTextContent("15/01/2026");
   });
 
   it("should have accessible aria-label on badge", () => {
     render(<CertifiedField field={mockField} index={0} />);
     const badge = screen.getByTestId("certified-badge");
-    expect(badge.getAttribute("aria-label")).toContain("Certifie par SIV");
+    expect(badge.getAttribute("aria-label")).toContain("Certifi\u00e9 par SIV");
   });
 
   it("should not render badge when isCertified is false", () => {
