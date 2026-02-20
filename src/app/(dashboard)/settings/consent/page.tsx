@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import type { IConfigConsentType, IUserConsent } from "@auto/shared";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { getAuthHeaders } from "@/lib/auth/get-auth-headers";

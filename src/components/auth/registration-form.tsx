@@ -61,8 +61,8 @@ export function RegistrationForm() {
     register,
     handleSubmit,
     formState: { errors },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useForm<FieldValues>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(schema) as any,
     mode: "onBlur",
   });
@@ -152,11 +152,7 @@ export function RegistrationForm() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      noValidate
-      className="space-y-4"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
       {/* Dynamic config-driven fields */}
       {fields.map((field) => {
         const errorId = `${field.fieldName}-error`;
@@ -167,14 +163,19 @@ export function RegistrationForm() {
             <Label htmlFor={field.fieldName}>
               {field.labelKey}
               {field.isRequired ? (
-                <span className="text-destructive" aria-hidden="true"> *</span>
+                <span className="text-destructive" aria-hidden="true">
+                  {" "}
+                  *
+                </span>
               ) : (
                 <span className="text-muted-foreground text-xs"> (optionnel)</span>
               )}
             </Label>
             <Input
               id={field.fieldName}
-              type={field.fieldType === "email" ? "email" : field.fieldType === "tel" ? "tel" : "text"}
+              type={
+                field.fieldType === "email" ? "email" : field.fieldType === "tel" ? "tel" : "text"
+              }
               placeholder={field.placeholderKey}
               aria-required={field.isRequired}
               aria-invalid={!!error}
@@ -202,7 +203,10 @@ export function RegistrationForm() {
       <div className="space-y-1.5">
         <Label htmlFor="password">
           Mot de passe
-          <span className="text-destructive" aria-hidden="true"> *</span>
+          <span className="text-destructive" aria-hidden="true">
+            {" "}
+            *
+          </span>
         </Label>
         <Input
           id="password"
@@ -245,11 +249,7 @@ export function RegistrationForm() {
       )}
 
       {/* Submit button */}
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={submitting || fields.length === 0}
-      >
+      <Button type="submit" className="w-full" disabled={submitting || fields.length === 0}>
         {submitting ? (
           <>
             <Loader2 className="size-4 animate-spin" />

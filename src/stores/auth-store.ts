@@ -10,7 +10,7 @@ interface AuthStoreState extends IAuthState {
   updateLastActivity: () => void;
 }
 
-export const useAuthStore = create<AuthStoreState>((set, get) => ({
+export const useAuthStore = create<AuthStoreState>((set) => ({
   user: null,
   isAuthenticated: false,
   roles: [],

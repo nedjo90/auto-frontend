@@ -38,6 +38,7 @@ function setupFeatureConfig(overrides: Partial<ReturnType<typeof useFeatureConfi
   mockFeatureConfig.mockReturnValue({
     isFeatureAuthRequired: vi.fn().mockReturnValue(false),
     isLoaded: true,
+    error: null,
     ...overrides,
   });
 }

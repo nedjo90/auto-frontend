@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, cleanup, waitFor } from "@testing-library/react";
+import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SeoTemplateFormDialog } from "@/components/admin/seo-template-form-dialog";
 import type { IConfigSeoTemplate } from "@auto/shared";

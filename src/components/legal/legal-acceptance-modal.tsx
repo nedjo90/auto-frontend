@@ -77,7 +77,7 @@ export function LegalAcceptanceModal({
     return () => {
       controller.abort();
     };
-  }, [currentDoc?.documentKey, open]);
+  }, [currentDoc, open]);
 
   const handleAccept = async () => {
     if (!currentDoc || !accepted) return;

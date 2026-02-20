@@ -1,7 +1,7 @@
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { ConsentStep, type ConsentDecisions } from "@/components/auth/consent-step";
+import { ConsentStep } from "@/components/auth/consent-step";
 import type { IConfigConsentType } from "@auto/shared";
 
 const mockConsentTypes: IConfigConsentType[] = [
@@ -41,33 +41,19 @@ afterEach(() => {
 
 describe("ConsentStep", () => {
   it("should render consent types as checkboxes", () => {
-    render(
-      <ConsentStep
-        consentTypes={mockConsentTypes}
-        value={{}}
-        onChange={() => {}}
-      />,
-    );
+    render(<ConsentStep consentTypes={mockConsentTypes} value={{}} onChange={() => {}} />);
 
     expect(screen.getByLabelText(/Traitement essentiel/)).toBeInTheDocument();
     expect(screen.getByLabelText(/Communications marketing/)).toBeInTheDocument();
   });
 
   it("should render nothing when no consent types", () => {
-    const { container } = render(
-      <ConsentStep consentTypes={[]} value={{}} onChange={() => {}} />,
-    );
+    const { container } = render(<ConsentStep consentTypes={[]} value={{}} onChange={() => {}} />);
     expect(container.innerHTML).toBe("");
   });
 
   it("should mark mandatory consents with asterisk", () => {
-    render(
-      <ConsentStep
-        consentTypes={mockConsentTypes}
-        value={{}}
-        onChange={() => {}}
-      />,
-    );
+    render(<ConsentStep consentTypes={mockConsentTypes} value={{}} onChange={() => {}} />);
 
     // Mandatory consent has * marker
     const mandatory = screen.getByLabelText(/Traitement essentiel/);
@@ -75,43 +61,22 @@ describe("ConsentStep", () => {
   });
 
   it("should mark optional consents with (optionnel)", () => {
-    render(
-      <ConsentStep
-        consentTypes={mockConsentTypes}
-        value={{}}
-        onChange={() => {}}
-      />,
-    );
+    render(<ConsentStep consentTypes={mockConsentTypes} value={{}} onChange={() => {}} />);
 
     expect(screen.getByText("(optionnel)")).toBeInTheDocument();
   });
 
   it("should set aria-required on mandatory consents", () => {
-    render(
-      <ConsentStep
-        consentTypes={mockConsentTypes}
-        value={{}}
-        onChange={() => {}}
-      />,
-    );
+    render(<ConsentStep consentTypes={mockConsentTypes} value={{}} onChange={() => {}} />);
 
-    expect(screen.getByLabelText(/Traitement essentiel/)).toHaveAttribute(
-      "aria-required",
-      "true",
-    );
+    expect(screen.getByLabelText(/Traitement essentiel/)).toHaveAttribute("aria-required", "true");
   });
 
   it("should call onChange when checkbox is toggled", async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
 
-    render(
-      <ConsentStep
-        consentTypes={mockConsentTypes}
-        value={{}}
-        onChange={onChange}
-      />,
-    );
+    render(<ConsentStep consentTypes={mockConsentTypes} value={{}} onChange={onChange} />);
 
     await user.click(screen.getByLabelText(/Communications marketing/));
     expect(onChange).toHaveBeenCalledWith({ "ct-2": true });
@@ -134,13 +99,7 @@ describe("ConsentStep", () => {
   });
 
   it("should never pre-check checkboxes (RGPD)", () => {
-    render(
-      <ConsentStep
-        consentTypes={mockConsentTypes}
-        value={{}}
-        onChange={() => {}}
-      />,
-    );
+    render(<ConsentStep consentTypes={mockConsentTypes} value={{}} onChange={() => {}} />);
 
     const checkboxes = screen.getAllByRole("checkbox");
     for (const cb of checkboxes) {
@@ -159,34 +118,21 @@ describe("ConsentStep", () => {
     );
 
     expect(screen.getByText("Ce consentement est requis")).toBeInTheDocument();
-    expect(screen.getByText("Ce consentement est requis")).toHaveAttribute(
-      "role",
-      "alert",
-    );
+    expect(screen.getByText("Ce consentement est requis")).toHaveAttribute("role", "alert");
   });
 
   it("should toggle description visibility", async () => {
     const user = userEvent.setup();
-    render(
-      <ConsentStep
-        consentTypes={mockConsentTypes}
-        value={{}}
-        onChange={() => {}}
-      />,
-    );
+    render(<ConsentStep consentTypes={mockConsentTypes} value={{}} onChange={() => {}} />);
 
     // Description not visible initially
-    expect(
-      screen.queryByText("Nécessaire au fonctionnement du service"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Nécessaire au fonctionnement du service")).not.toBeInTheDocument();
 
     // Click "Voir les détails"
     const detailButtons = screen.getAllByText("Voir les détails");
     await user.click(detailButtons[0]);
 
-    expect(
-      screen.getByText("Nécessaire au fonctionnement du service"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Nécessaire au fonctionnement du service")).toBeInTheDocument();
   });
 
   it("should disable all checkboxes when disabled prop is true", () => {

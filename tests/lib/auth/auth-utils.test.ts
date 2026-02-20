@@ -50,7 +50,6 @@ const mockAuthResult: AuthenticationResult = {
   expiresOn: new Date(Date.now() + 3600000),
   tokenType: "Bearer",
   correlationId: "corr-id",
-  fromNativeBroker: false,
   requestId: "",
 };
 
