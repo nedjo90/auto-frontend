@@ -23,7 +23,7 @@ export function SourceStatus({ sources }: SourceStatusProps) {
   if (sources.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap gap-2" data-testid="source-status">
+    <div className="flex flex-wrap gap-2" data-testid="source-status" aria-live="polite">
       {sources.map((source) => (
         <SourceIndicator key={source.adapterInterface} source={source} />
       ))}
@@ -39,24 +39,28 @@ function SourceIndicator({ source }: { source: ApiSourceStatus }) {
       className={cn(
         "flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
         source.status === "pending" && "bg-muted text-muted-foreground",
-        source.status === "success" && "bg-green-100 text-green-800",
-        source.status === "failed" && "bg-red-100 text-red-800",
-        source.status === "cached" && "bg-blue-100 text-blue-800",
+        source.status === "success" &&
+          "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+        source.status === "failed" && "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+        source.status === "cached" &&
+          "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
       )}
       data-testid={`source-${source.adapterInterface}`}
     >
-      {source.status === "pending" && <Loader2 className="size-3 animate-spin" />}
+      {source.status === "pending" && (
+        <Loader2 className="size-3 animate-spin motion-reduce:animate-none" />
+      )}
       {source.status === "success" && <CheckCircle2 className="size-3" />}
       {source.status === "failed" && <XCircle className="size-3" />}
       {source.status === "cached" && <Database className="size-3" />}
       <span>
         {label}{" "}
         {source.status === "success"
-          ? "done"
+          ? "terminé"
           : source.status === "cached"
-            ? "cached"
+            ? "en cache"
             : source.status === "failed"
-              ? "failed"
+              ? "échoué"
               : "..."}
       </span>
     </div>

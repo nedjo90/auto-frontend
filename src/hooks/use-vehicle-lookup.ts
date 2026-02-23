@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { apiClient } from "@/lib/auth/api-client";
 import type { IdentifierType, CertifiedFieldResult, ApiSourceStatus } from "@auto/shared";
 
@@ -20,17 +20,30 @@ export interface UseVehicleLookupResult {
 /**
  * Custom hook for managing vehicle auto-fill state.
  * Calls the backend autoFillByPlate action and manages response state.
- * Uses a request counter to prevent stale responses from overwriting newer ones.
+ * Uses AbortController for request cancellation and cleanup on unmount.
  */
 export function useVehicleLookup(): UseVehicleLookupResult {
   const [state, setState] = useState<AutoFillState>("idle");
   const [fields, setFields] = useState<CertifiedFieldResult[]>([]);
   const [sources, setSources] = useState<ApiSourceStatus[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const requestIdRef = useRef(0);
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
+
   const lookup = useCallback(async (identifier: string, identifierType: IdentifierType) => {
+    // Abort any in-flight request
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
     const currentRequestId = ++requestIdRef.current;
+
     setState("loading");
     setError(null);
     setFields([]);
@@ -41,6 +54,7 @@ export function useVehicleLookup(): UseVehicleLookupResult {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ identifier, identifierType }),
+        signal: controller.signal,
       });
 
       // Ignore stale responses
@@ -55,8 +69,26 @@ export function useVehicleLookup(): UseVehicleLookupResult {
       }
 
       const data = await res.json();
-      const parsedFields: CertifiedFieldResult[] = data.fields ? JSON.parse(data.fields) : [];
-      const parsedSources: ApiSourceStatus[] = data.sources ? JSON.parse(data.sources) : [];
+
+      // Safe JSON parse with error handling
+      let parsedFields: CertifiedFieldResult[] = [];
+      let parsedSources: ApiSourceStatus[] = [];
+
+      try {
+        parsedFields = data.fields ? JSON.parse(data.fields) : [];
+      } catch {
+        setError("Réponse invalide du serveur (fields)");
+        setState("error");
+        return;
+      }
+
+      try {
+        parsedSources = data.sources ? JSON.parse(data.sources) : [];
+      } catch {
+        setError("Réponse invalide du serveur (sources)");
+        setState("error");
+        return;
+      }
 
       // Ignore stale responses (check again after parsing)
       if (requestIdRef.current !== currentRequestId) return;
@@ -75,6 +107,8 @@ export function useVehicleLookup(): UseVehicleLookupResult {
         setError("Tous les services sont indisponibles");
       }
     } catch (err) {
+      // Ignore abort errors
+      if (err instanceof DOMException && err.name === "AbortError") return;
       if (requestIdRef.current !== currentRequestId) return;
       setError(err instanceof Error ? err.message : "Erreur de connexion");
       setState("error");
@@ -82,6 +116,9 @@ export function useVehicleLookup(): UseVehicleLookupResult {
   }, []);
 
   const reset = useCallback(() => {
+    // Cancel any in-flight request
+    abortRef.current?.abort();
+    requestIdRef.current++;
     setState("idle");
     setFields([]);
     setSources([]);

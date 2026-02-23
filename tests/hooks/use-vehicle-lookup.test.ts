@@ -209,6 +209,46 @@ describe("useVehicleLookup", () => {
     expect(result.current.error).toBeNull();
   });
 
+  it("should handle malformed fields JSON gracefully", async () => {
+    mockApiClient.mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          fields: "not-valid-json",
+          sources: "[]",
+        }),
+    });
+
+    const { result } = renderHook(() => useVehicleLookup());
+
+    await act(async () => {
+      await result.current.lookup("AB-123-CD", "plate");
+    });
+
+    expect(result.current.state).toBe("error");
+    expect(result.current.error).toContain("Réponse invalide");
+  });
+
+  it("should not update state after reset during in-flight request", async () => {
+    mockApiClient.mockImplementation(
+      () => new Promise(() => {}), // Never resolves
+    );
+
+    const { result } = renderHook(() => useVehicleLookup());
+
+    act(() => {
+      result.current.lookup("AB-123-CD", "plate");
+    });
+
+    expect(result.current.state).toBe("loading");
+
+    act(() => {
+      result.current.reset();
+    });
+
+    expect(result.current.state).toBe("idle");
+  });
+
   it("should call apiClient with correct URL and body", async () => {
     mockApiClient.mockResolvedValue({
       ok: true,

@@ -29,7 +29,7 @@ describe("auto-fill-trigger", () => {
     });
 
     it("should detect VIN format", () => {
-      expect(detectFormat("VF1RFB0")).toBe("vin");
+      expect(detectFormat("VF1RFB00X")).toBe("vin");
       expect(detectFormat("VF1RFB00X56789012")).toBe("vin");
       expect(detectFormat("WVWZZZ3CZWE123456")).toBe("vin");
     });
@@ -123,7 +123,7 @@ describe("auto-fill-trigger", () => {
       render(<AutoFillTrigger onSearch={onSearch} />);
 
       const input = screen.getByTestId("auto-fill-input");
-      await user.type(input, "VF1RFB0");
+      await user.type(input, "VF1RFB00X");
 
       expect(screen.getByTestId("auto-fill-label")).toHaveTextContent("VIN d\u00e9tect\u00e9");
     });

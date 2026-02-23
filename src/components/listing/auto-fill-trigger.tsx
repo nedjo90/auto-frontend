@@ -39,27 +39,14 @@ export function detectFormat(value: string): DetectedFormat {
     return "vin";
   }
 
-  // Check VIN pattern first: if all chars match VIN charset and no plate structure
-  if (/^[A-HJ-NPR-Z0-9]+$/.test(clean) && clean.length >= 3) {
-    // VIN-like: contains letters beyond the plate positions (pos 0-1 and 5-6)
-    // A plate has exactly: [A-Z]{2}[0-9]{3}[A-Z]{2}
-    // If chars at position 2+ are not all digits (for plate middle), likely VIN
-    if (clean.length >= 4) {
-      const middlePart = clean.slice(2);
-      const hasLettersInMiddle = /[A-Z]/.test(middlePart.slice(0, Math.min(middlePart.length, 3)));
-      if (hasLettersInMiddle) {
-        return "vin";
-      }
-    }
-  }
-
+  // At 7 or fewer chars, prioritize plate detection
   // Check plate pattern (with or without dashes)
   if (PLATE_PARTIAL_REGEX.test(upper) && /[A-Z]/.test(upper) && /\d/.test(upper)) {
     return "plate";
   }
 
-  // Fallback: pure alphanumeric with VIN-valid chars → VIN
-  if (/^[A-HJ-NPR-Z0-9]+$/.test(clean) && clean.length >= 3) {
+  // Only consider VIN if input exceeds plate max length (7 alphanumeric)
+  if (clean.length > 7 && /^[A-HJ-NPR-Z0-9]+$/.test(clean)) {
     return "vin";
   }
 
@@ -135,9 +122,10 @@ export function AutoFillTrigger({
     <div className="w-full max-w-lg space-y-2" data-testid="auto-fill-trigger">
       <label
         htmlFor="vehicle-identifier"
+        aria-live="polite"
         className={cn(
           "block text-sm font-medium",
-          detectedFormat !== "unknown" ? "text-green-600" : "text-foreground",
+          detectedFormat !== "unknown" ? "text-green-600 dark:text-green-400" : "text-foreground",
         )}
         data-testid="auto-fill-label"
       >
@@ -167,7 +155,7 @@ export function AutoFillTrigger({
         >
           {loading ? (
             <>
-              <Loader2 className="size-4 animate-spin" />
+              <Loader2 className="size-4 animate-spin motion-reduce:animate-none" />
               Recherche en cours...
             </>
           ) : (

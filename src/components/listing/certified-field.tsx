@@ -21,7 +21,7 @@ export function CertifiedField({ field, index, reducedMotion = false }: Certifie
     <div
       className={cn(
         "flex items-center justify-between rounded-md border px-3 py-2",
-        !reducedMotion && "animate-in fade-in slide-in-from-left-2",
+        !reducedMotion && "animate-in fade-in slide-in-from-left-2 motion-reduce:animate-none",
       )}
       style={
         !reducedMotion
@@ -42,7 +42,7 @@ export function CertifiedField({ field, index, reducedMotion = false }: Certifie
       {field.isCertified && (
         <Badge
           variant="default"
-          className="bg-green-600 text-white text-xs"
+          className="bg-green-600 text-white text-xs dark:bg-green-700"
           aria-label={`Certifi\u00e9 par ${field.source}, le ${formattedDate}`}
           data-testid="certified-badge"
         >

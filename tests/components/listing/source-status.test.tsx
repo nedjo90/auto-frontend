@@ -52,7 +52,7 @@ describe("SourceStatus", () => {
     ];
 
     render(<SourceStatus sources={sources} />);
-    expect(screen.getByTestId("source-IVehicleLookupAdapter")).toHaveTextContent("SIV done");
+    expect(screen.getByTestId("source-IVehicleLookupAdapter")).toHaveTextContent("SIV terminé");
   });
 
   it("should show 'cached' for cached status", () => {
@@ -65,7 +65,7 @@ describe("SourceStatus", () => {
     ];
 
     render(<SourceStatus sources={sources} />);
-    expect(screen.getByTestId("source-IVehicleLookupAdapter")).toHaveTextContent("SIV cached");
+    expect(screen.getByTestId("source-IVehicleLookupAdapter")).toHaveTextContent("SIV en cache");
   });
 
   it("should show 'failed' for failed status", () => {
@@ -78,7 +78,7 @@ describe("SourceStatus", () => {
     ];
 
     render(<SourceStatus sources={sources} />);
-    expect(screen.getByTestId("source-IEmissionAdapter")).toHaveTextContent("ADEME failed");
+    expect(screen.getByTestId("source-IEmissionAdapter")).toHaveTextContent("ADEME échoué");
   });
 
   it("should show '...' for pending status", () => {
@@ -104,7 +104,7 @@ describe("SourceStatus", () => {
     ];
 
     render(<SourceStatus sources={sources} />);
-    expect(screen.getByTestId("source-ICustomAdapter")).toHaveTextContent("ICustomAdapter done");
+    expect(screen.getByTestId("source-ICustomAdapter")).toHaveTextContent("ICustomAdapter terminé");
   });
 
   it("should display human-readable labels for known adapters", () => {
