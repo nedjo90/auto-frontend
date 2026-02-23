@@ -18,8 +18,7 @@ import { getAuthHeaders } from "@/lib/auth/get-auth-headers";
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 export function ConsentReviewDialog() {
-  const { pendingConsents, hasPendingConsents, clearPendingConsents } =
-    useConsentStore();
+  const { pendingConsents, hasPendingConsents, clearPendingConsents } = useConsentStore();
   const [decisions, setDecisions] = useState<ConsentDecisions>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -70,8 +69,8 @@ export function ConsentReviewDialog() {
         <DialogHeader>
           <DialogTitle>Mise à jour des consentements</DialogTitle>
           <DialogDescription id="consent-review-desc">
-            Nos conditions de traitement des données ont été mises à jour.
-            Veuillez revoir vos choix avant de continuer.
+            Nos conditions de traitement des données ont été mises à jour. Veuillez revoir vos choix
+            avant de continuer.
           </DialogDescription>
         </DialogHeader>
 

@@ -13,6 +13,5 @@ export const useConsentStore = create<ConsentState>((set) => ({
   hasPendingConsents: false,
   setPendingConsents: (consents) =>
     set({ pendingConsents: consents, hasPendingConsents: consents.length > 0 }),
-  clearPendingConsents: () =>
-    set({ pendingConsents: [], hasPendingConsents: false }),
+  clearPendingConsents: () => set({ pendingConsents: [], hasPendingConsents: false }),
 }));

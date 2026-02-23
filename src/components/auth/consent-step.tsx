@@ -45,9 +45,7 @@ export function ConsentStep({ consentTypes, value, onChange, errors, disabled }:
               <Checkbox
                 id={`consent-${ct.ID}`}
                 checked={isChecked}
-                onCheckedChange={(checked) =>
-                  toggleConsent(ct.ID, checked === true)
-                }
+                onCheckedChange={(checked) => toggleConsent(ct.ID, checked === true)}
                 aria-required={ct.isMandatory}
                 aria-invalid={!!error}
                 aria-describedby={
@@ -64,7 +62,10 @@ export function ConsentStep({ consentTypes, value, onChange, errors, disabled }:
                 >
                   {ct.labelKey}
                   {ct.isMandatory ? (
-                    <span className="text-destructive" aria-hidden="true"> *</span>
+                    <span className="text-destructive" aria-hidden="true">
+                      {" "}
+                      *
+                    </span>
                   ) : (
                     <span className="text-muted-foreground text-xs"> (optionnel)</span>
                   )}

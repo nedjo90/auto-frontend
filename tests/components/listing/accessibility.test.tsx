@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, cleanup, within } from "@testing-library/react";
+import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ListingForm } from "@/components/listing/listing-form";
 import type { ListingFieldState } from "@auto/shared";
@@ -62,7 +62,6 @@ describe("Accessibility Audit (WCAG 2.1 AA)", () => {
     it("should have required indicator on required fields", () => {
       renderFormWithFields();
       // Required fields have aria-required
-      const makeInput = screen.getByTestId("input-make");
       // Certified fields are readonly, so aria-required doesn't apply to them
       // Check a non-certified required field
       const conditionInput = screen.getByTestId("input-condition");

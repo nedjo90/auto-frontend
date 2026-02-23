@@ -237,7 +237,6 @@ describe("ListingForm", () => {
   describe("accessibility", () => {
     it("should have section landmarks with labels", () => {
       renderForm();
-      const sections = screen.getAllByRole("region", { hidden: false });
       // Each section has aria-labelledby pointing to a heading
       // Note: sections use <section> element with aria-labelledby
       const vehicleSection = screen.getByTestId("section-vehicle_identity");
@@ -274,7 +273,6 @@ describe("ListingForm", () => {
       renderForm({});
       // Price validation: empty string won't trigger validation since it's the default
       // Type a non-numeric value
-      const conditionSelect = screen.getByTestId("input-condition");
       // Condition field is a select, so let's test price with an out-of-range value
       const priceInput = screen.getByTestId("input-price");
       await user.clear(priceInput);
