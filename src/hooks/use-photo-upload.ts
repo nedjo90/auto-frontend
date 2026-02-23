@@ -52,21 +52,14 @@ export function usePhotoUpload(listingId: string | null) {
 
           // Replace temp with real photo
           const realPhoto = photoFromUploadResult(result);
-          updatePhoto(tempId, {
-            ...realPhoto,
-            id: undefined, // keep temp id for now
-            localPreviewUrl: undefined, // CDN URL now available
-            uploadStatus: "success",
-            uploadProgress: 100,
-          });
-          // Actually replace with real ID
           removePhoto(tempId);
           URL.revokeObjectURL(localPreviewUrl);
           addPhoto({ ...realPhoto, uploadStatus: "success", uploadProgress: 100 });
         } catch (err) {
+          URL.revokeObjectURL(localPreviewUrl);
           updatePhoto(tempId, {
             uploadStatus: "error",
-            errorMessage: err instanceof Error ? err.message : "Upload failed",
+            errorMessage: err instanceof Error ? err.message : "Erreur lors de l'envoi de la photo",
             uploadProgress: 0,
           });
         }

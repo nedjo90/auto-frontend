@@ -70,8 +70,9 @@ export async function deletePhoto(listingId: string, photoId: string): Promise<v
 }
 
 export async function fetchListingPhotos(listingId: string): Promise<UploadPhotoResult[]> {
+  const safeId = listingId.replace(/'/g, "''");
   const res = await apiClient(
-    `${API_BASE}/api/seller/ListingPhotos?$filter=listingId eq '${listingId}'&$orderby=sortOrder asc`,
+    `${API_BASE}/api/seller/ListingPhotos?$filter=listingId eq '${safeId}'&$orderby=sortOrder asc`,
   );
 
   if (!res.ok) {
