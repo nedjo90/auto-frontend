@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Lora, JetBrains_Mono } from "next/font/google";
 import { MsalProvider } from "@/components/auth/msal-provider";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const inter = Inter({
@@ -32,6 +33,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${lora.variable} ${jetbrainsMono.variable} antialiased`}>
         <MsalProvider>{children}</MsalProvider>
+        <Toaster />
       </body>
     </html>
   );

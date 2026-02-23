@@ -6,23 +6,39 @@ export interface ListingFormState {
   listingId: string | null;
   fields: Record<string, ListingFieldState>;
   visibilityScore: number;
+  visibilityLabel: string;
+  completionPercentage: number;
   isLoading: boolean;
+  isDirty: boolean;
+  lastSavedAt: Date | null;
+  isSaving: boolean;
 
   setListingId: (id: string) => void;
   initializeFields: (certifiedFields: CertifiedFieldResult[]) => void;
   updateField: (fieldName: string, value: string | number | null, status: FieldStatus) => void;
   setFieldStatus: (fieldName: string, status: FieldStatus, certifiedSource?: string) => void;
   setVisibilityScore: (score: number) => void;
+  setVisibilityLabel: (label: string) => void;
+  setCompletionPercentage: (pct: number) => void;
   setLoading: (loading: boolean) => void;
+  setDirty: (dirty: boolean) => void;
+  setLastSavedAt: (date: Date | null) => void;
+  setSaving: (saving: boolean) => void;
   getFieldState: (fieldName: string) => ListingFieldState | undefined;
   setOriginalCertifiedValue: (fieldName: string, originalValue: string) => void;
+  resetDraftState: () => void;
 }
 
 export const useListingStore = create<ListingFormState>((set, get) => ({
   listingId: null,
   fields: {},
   visibilityScore: 0,
+  visibilityLabel: "Partiellement documenté",
+  completionPercentage: 0,
   isLoading: false,
+  isDirty: false,
+  lastSavedAt: null,
+  isSaving: false,
 
   setListingId: (id) => set({ listingId: id }),
 
@@ -54,6 +70,7 @@ export const useListingStore = create<ListingFormState>((set, get) => ({
           status,
         },
       },
+      isDirty: true,
     });
   },
 
@@ -73,8 +90,13 @@ export const useListingStore = create<ListingFormState>((set, get) => ({
   },
 
   setVisibilityScore: (score) => set({ visibilityScore: score }),
+  setVisibilityLabel: (label) => set({ visibilityLabel: label }),
+  setCompletionPercentage: (pct) => set({ completionPercentage: pct }),
 
   setLoading: (loading) => set({ isLoading: loading }),
+  setDirty: (dirty) => set({ isDirty: dirty }),
+  setLastSavedAt: (date) => set({ lastSavedAt: date }),
+  setSaving: (saving) => set({ isSaving: saving }),
 
   getFieldState: (fieldName) => get().fields[fieldName],
 
@@ -93,4 +115,17 @@ export const useListingStore = create<ListingFormState>((set, get) => ({
       });
     }
   },
+
+  resetDraftState: () =>
+    set({
+      listingId: null,
+      fields: {},
+      visibilityScore: 0,
+      visibilityLabel: "Partiellement documenté",
+      completionPercentage: 0,
+      isLoading: false,
+      isDirty: false,
+      lastSavedAt: null,
+      isSaving: false,
+    }),
 }));

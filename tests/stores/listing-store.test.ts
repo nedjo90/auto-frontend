@@ -5,12 +5,7 @@ import type { CertifiedFieldResult } from "@auto/shared";
 describe("listing-store", () => {
   beforeEach(() => {
     // Reset store state
-    useListingStore.setState({
-      listingId: null,
-      fields: {},
-      visibilityScore: 0,
-      isLoading: false,
-    });
+    useListingStore.getState().resetDraftState();
   });
 
   describe("setListingId", () => {
@@ -182,6 +177,69 @@ describe("listing-store", () => {
     it("should not crash for non-existing field", () => {
       useListingStore.getState().setOriginalCertifiedValue("unknown", "value");
       expect(useListingStore.getState().fields.unknown).toBeUndefined();
+    });
+  });
+
+  describe("draft state management", () => {
+    it("should mark dirty on field update", () => {
+      expect(useListingStore.getState().isDirty).toBe(false);
+      useListingStore.getState().updateField("make", "Renault", "declared");
+      expect(useListingStore.getState().isDirty).toBe(true);
+    });
+
+    it("should set isDirty via setDirty", () => {
+      useListingStore.getState().setDirty(true);
+      expect(useListingStore.getState().isDirty).toBe(true);
+      useListingStore.getState().setDirty(false);
+      expect(useListingStore.getState().isDirty).toBe(false);
+    });
+
+    it("should set lastSavedAt", () => {
+      const date = new Date();
+      useListingStore.getState().setLastSavedAt(date);
+      expect(useListingStore.getState().lastSavedAt).toBe(date);
+    });
+
+    it("should set isSaving", () => {
+      useListingStore.getState().setSaving(true);
+      expect(useListingStore.getState().isSaving).toBe(true);
+      useListingStore.getState().setSaving(false);
+      expect(useListingStore.getState().isSaving).toBe(false);
+    });
+
+    it("should set visibilityLabel", () => {
+      useListingStore.getState().setVisibilityLabel("Très bien documenté");
+      expect(useListingStore.getState().visibilityLabel).toBe("Très bien documenté");
+    });
+
+    it("should set completionPercentage", () => {
+      useListingStore.getState().setCompletionPercentage(75);
+      expect(useListingStore.getState().completionPercentage).toBe(75);
+    });
+
+    it("should reset all draft state", () => {
+      useListingStore.setState({
+        listingId: "some-id",
+        fields: { make: { fieldName: "make", value: "Renault", status: "declared" } },
+        visibilityScore: 80,
+        visibilityLabel: "Bon",
+        completionPercentage: 60,
+        isDirty: true,
+        lastSavedAt: new Date(),
+        isSaving: true,
+      });
+
+      useListingStore.getState().resetDraftState();
+
+      const state = useListingStore.getState();
+      expect(state.listingId).toBeNull();
+      expect(state.fields).toEqual({});
+      expect(state.visibilityScore).toBe(0);
+      expect(state.visibilityLabel).toBe("Partiellement documenté");
+      expect(state.completionPercentage).toBe(0);
+      expect(state.isDirty).toBe(false);
+      expect(state.lastSavedAt).toBeNull();
+      expect(state.isSaving).toBe(false);
     });
   });
 });
