@@ -1,12 +1,13 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { LISTING_FIELDS, FIELD_CATEGORY_LABELS, FIELD_CATEGORY_ORDER } from "@auto/shared";
 import type { FieldCategory } from "@auto/shared";
 import type { ListingFieldState } from "@auto/shared";
 import { ListingFormField } from "./listing-form-field";
+import { OverrideConfirmDialog } from "./override-confirm-dialog";
 
 export interface ListingFormProps {
   fields: Record<string, ListingFieldState>;
@@ -15,6 +16,13 @@ export interface ListingFormProps {
   onCertifiedOverride: (fieldName: string) => void;
   isLoading?: boolean;
 }
+
+// F5: Module-level constant — LISTING_FIELDS and FIELD_CATEGORY_ORDER never change
+const fieldsByCategory = FIELD_CATEGORY_ORDER.map((category) => ({
+  category,
+  label: FIELD_CATEGORY_LABELS[category],
+  fields: LISTING_FIELDS.filter((f) => f.category === category),
+}));
 
 /**
  * Single scrollable listing form with section anchors.
@@ -29,6 +37,14 @@ export function ListingForm({
 }: ListingFormProps) {
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
+  // F2: Override confirmation dialog state
+  const [overrideField, setOverrideField] = useState<string | null>(null);
+
+  const overrideFieldMeta = overrideField
+    ? LISTING_FIELDS.find((f) => f.fieldName === overrideField)
+    : null;
+  const overrideFieldState = overrideField ? fields[overrideField] : null;
+
   const scrollToSection = useCallback((category: FieldCategory) => {
     const el = sectionRefs.current[category];
     if (el) {
@@ -36,12 +52,21 @@ export function ListingForm({
     }
   }, []);
 
-  // Group fields by category
-  const fieldsByCategory = FIELD_CATEGORY_ORDER.map((category) => ({
-    category,
-    label: FIELD_CATEGORY_LABELS[category],
-    fields: LISTING_FIELDS.filter((f) => f.category === category),
-  }));
+  // F2: Show confirmation dialog instead of immediately overriding
+  const handleOverrideClick = useCallback((fieldName: string) => {
+    setOverrideField(fieldName);
+  }, []);
+
+  const handleOverrideConfirm = useCallback(() => {
+    if (overrideField) {
+      onCertifiedOverride(overrideField);
+      setOverrideField(null);
+    }
+  }, [overrideField, onCertifiedOverride]);
+
+  const handleOverrideCancel = useCallback(() => {
+    setOverrideField(null);
+  }, []);
 
   return (
     <div className="space-y-6" data-testid="listing-form">
@@ -108,7 +133,7 @@ export function ListingForm({
                   fieldMeta={fieldMeta}
                   fieldState={fieldState}
                   onFieldChange={onFieldChange}
-                  onCertifiedOverride={onCertifiedOverride}
+                  onCertifiedOverride={handleOverrideClick}
                   disabled={isLoading}
                 />
               );
@@ -116,6 +141,16 @@ export function ListingForm({
           </div>
         </section>
       ))}
+
+      {/* F2: Override confirmation dialog */}
+      <OverrideConfirmDialog
+        open={!!overrideField}
+        fieldName={overrideField || ""}
+        fieldLabel={overrideFieldMeta?.labelFr || ""}
+        certifiedValue={overrideFieldState ? String(overrideFieldState.value || "") : ""}
+        onConfirm={handleOverrideConfirm}
+        onCancel={handleOverrideCancel}
+      />
     </div>
   );
 }

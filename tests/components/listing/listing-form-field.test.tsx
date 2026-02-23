@@ -104,7 +104,8 @@ describe("ListingFormField", () => {
       );
       const input = screen.getByTestId("input-make");
       expect(input).toHaveAttribute("readonly");
-      expect(input).toBeDisabled();
+      expect(input).toHaveAttribute("aria-readonly", "true");
+      expect(input).not.toBeDisabled();
     });
 
     it("should render Modifier button", () => {

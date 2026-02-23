@@ -111,7 +111,16 @@ describe("useListingField", () => {
       expect(useListingStore.getState().visibilityScore).toBe(75);
     });
 
-    it("should handle backend errors gracefully", async () => {
+    it("should rollback optimistic update on backend error", async () => {
+      // Set up initial state with existing field
+      useListingStore.setState({
+        listingId: "listing-123",
+        fields: {
+          price: { fieldName: "price", value: "10000", status: "declared" },
+        },
+        visibilityScore: 50,
+      });
+
       mockFetch.mockResolvedValue({
         ok: false,
         json: () => Promise.resolve({ error: { message: "Server error" } }),
@@ -123,16 +132,19 @@ describe("useListingField", () => {
         result.current.handleFieldChange("price", "15000");
       });
 
+      // Optimistic: value should be updated
+      expect(useListingStore.getState().fields.price.value).toBe("15000");
+
       await act(async () => {
         vi.advanceTimersByTime(300);
       });
-
       await act(async () => {
         await Promise.resolve();
       });
 
-      // Store should still have the optimistic value
-      expect(useListingStore.getState().fields.price.value).toBe("15000");
+      // After error: value should be rolled back
+      expect(useListingStore.getState().fields.price.value).toBe("10000");
+      expect(useListingStore.getState().fields.price.status).toBe("declared");
     });
 
     it("should not call backend when no listingId", async () => {

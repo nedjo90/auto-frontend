@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, useCallback } from "react";
+import { useId, useState, useCallback, memo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +20,7 @@ export interface ListingFormFieldProps {
  * A single field in the listing form.
  * Renders certified (green), declared (yellow), or empty (grey) state.
  */
-export function ListingFormField({
+export const ListingFormField = memo(function ListingFormField({
   fieldMeta,
   fieldState,
   onFieldChange,
@@ -72,8 +72,9 @@ export function ListingFormField({
             id={inputId}
             value={String(value)}
             readOnly
-            disabled
-            className="bg-green-50 border-green-300"
+            aria-readonly="true"
+            tabIndex={0}
+            className="bg-green-50 border-green-300 cursor-default"
             aria-describedby={error ? errorId : undefined}
             data-testid={`input-${fieldMeta.fieldName}`}
           />
@@ -193,7 +194,7 @@ export function ListingFormField({
       )}
     </div>
   );
-}
+});
 
 function FieldStatusBadge({
   status,
@@ -237,19 +238,22 @@ function FieldStatusBadge({
   }
 }
 
+// Numeric field names — corresponds to Integer/Decimal fields in CDS schema
+const NUMERIC_FIELD_NAMES = new Set([
+  "price",
+  "mileage",
+  "year",
+  "engineCapacityCc",
+  "powerKw",
+  "powerHp",
+  "doors",
+  "seats",
+  "co2GKm",
+  "numberOfDoors",
+  "engineCylinders",
+  "recallCount",
+]);
+
 function isNumericField(fieldName: string): boolean {
-  return [
-    "price",
-    "mileage",
-    "year",
-    "engineCapacityCc",
-    "powerKw",
-    "powerHp",
-    "doors",
-    "seats",
-    "co2GKm",
-    "numberOfDoors",
-    "engineCylinders",
-    "recallCount",
-  ].includes(fieldName);
+  return NUMERIC_FIELD_NAMES.has(fieldName);
 }

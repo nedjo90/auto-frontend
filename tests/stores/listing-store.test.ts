@@ -59,6 +59,32 @@ describe("listing-store", () => {
       });
     });
 
+    it("should preserve existing user-input fields when initializing certified fields", () => {
+      // User has already typed in a price (declared field)
+      useListingStore.getState().updateField("price", 15000, "declared");
+
+      const certifiedFields: CertifiedFieldResult[] = [
+        {
+          fieldName: "make",
+          fieldValue: "Renault",
+          source: "SIV",
+          sourceTimestamp: "2026-02-23T10:00:00Z",
+          isCertified: true,
+        },
+      ];
+
+      useListingStore.getState().initializeFields(certifiedFields);
+      const fields = useListingStore.getState().fields;
+
+      // Certified field should be added
+      expect(fields.make.value).toBe("Renault");
+      expect(fields.make.status).toBe("certified");
+
+      // Existing declared field should be preserved
+      expect(fields.price.value).toBe(15000);
+      expect(fields.price.status).toBe("declared");
+    });
+
     it("should mark non-certified fields as declared", () => {
       const fields: CertifiedFieldResult[] = [
         {

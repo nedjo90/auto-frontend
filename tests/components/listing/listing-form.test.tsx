@@ -159,7 +159,7 @@ describe("ListingForm", () => {
       expect(input).toHaveAttribute("readonly");
     });
 
-    it("should call onCertifiedOverride when Modifier is clicked", async () => {
+    it("should open confirmation dialog when Modifier is clicked", async () => {
       const user = userEvent.setup();
       const fields: Record<string, ListingFieldState> = {
         make: {
@@ -170,7 +170,39 @@ describe("ListingForm", () => {
       };
       renderForm(fields);
       await user.click(screen.getByTestId("override-btn-make"));
+      // Dialog should be shown, onCertifiedOverride not yet called
+      expect(screen.getByTestId("override-confirm-dialog")).toBeInTheDocument();
+      expect(mockOnCertifiedOverride).not.toHaveBeenCalled();
+    });
+
+    it("should call onCertifiedOverride when dialog is confirmed", async () => {
+      const user = userEvent.setup();
+      const fields: Record<string, ListingFieldState> = {
+        make: {
+          fieldName: "make",
+          value: "Renault",
+          status: "certified",
+        },
+      };
+      renderForm(fields);
+      await user.click(screen.getByTestId("override-btn-make"));
+      await user.click(screen.getByTestId("override-confirm-btn"));
       expect(mockOnCertifiedOverride).toHaveBeenCalledWith("make");
+    });
+
+    it("should not call onCertifiedOverride when dialog is cancelled", async () => {
+      const user = userEvent.setup();
+      const fields: Record<string, ListingFieldState> = {
+        make: {
+          fieldName: "make",
+          value: "Renault",
+          status: "certified",
+        },
+      };
+      renderForm(fields);
+      await user.click(screen.getByTestId("override-btn-make"));
+      await user.click(screen.getByTestId("override-cancel-btn"));
+      expect(mockOnCertifiedOverride).not.toHaveBeenCalled();
     });
   });
 

@@ -198,6 +198,10 @@ describe("Accessibility Audit (WCAG 2.1 AA)", () => {
       const overrideBtn = screen.getByTestId("override-btn-make");
       overrideBtn.focus();
       await user.keyboard("{Enter}");
+      // Override button now opens confirmation dialog
+      expect(screen.getByTestId("override-confirm-dialog")).toBeInTheDocument();
+      // Confirming the dialog should call onCertifiedOverride
+      await user.click(screen.getByTestId("override-confirm-btn"));
       expect(mockOnCertifiedOverride).toHaveBeenCalledWith("make");
     });
   });

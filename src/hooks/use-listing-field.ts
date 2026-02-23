@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useEffect } from "react";
 import { useListingStore } from "@/stores/listing-store";
 import type { UpdateListingFieldResult, FieldStatus } from "@auto/shared";
 
@@ -10,19 +10,33 @@ const DEBOUNCE_MS = 300;
  * Hook for updating listing fields with backend sync and debounced score updates.
  */
 export function useListingField() {
-  const { listingId, updateField, setVisibilityScore, setLoading, setOriginalCertifiedValue } =
+  const { listingId, updateField, setVisibilityScore, setOriginalCertifiedValue } =
     useListingStore();
   const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const listingIdRef = useRef(listingId);
+  listingIdRef.current = listingId;
+
+  // F1: Clean up all debounce timers on unmount
+  useEffect(() => {
+    const timers = debounceTimers.current;
+    return () => {
+      for (const timer of Object.values(timers)) {
+        clearTimeout(timer);
+      }
+    };
+  }, []);
 
   const updateFieldOnBackend = useCallback(
     async (fieldName: string, value: string): Promise<UpdateListingFieldResult | null> => {
-      if (!listingId) return null;
+      // F3: Use ref to avoid stale closure on listingId
+      const currentListingId = listingIdRef.current;
+      if (!currentListingId) return null;
 
       try {
         const response = await fetch("/api/seller/updateListingField", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ listingId, fieldName, value }),
+          body: JSON.stringify({ listingId: currentListingId, fieldName, value }),
         });
 
         if (!response.ok) {
@@ -39,7 +53,7 @@ export function useListingField() {
         return null;
       }
     },
-    [listingId],
+    [],
   );
 
   /**
@@ -47,6 +61,9 @@ export function useListingField() {
    */
   const handleFieldChange = useCallback(
     (fieldName: string, value: string) => {
+      // F4: Capture previous value before optimistic update for rollback on failure
+      const previousField = useListingStore.getState().getFieldState(fieldName);
+
       // Optimistic UI update
       const status: FieldStatus = value === "" ? "empty" : "declared";
       updateField(fieldName, value, status);
@@ -57,18 +74,23 @@ export function useListingField() {
       }
 
       debounceTimers.current[fieldName] = setTimeout(async () => {
-        setLoading(true);
         const result = await updateFieldOnBackend(fieldName, value);
         if (result) {
           setVisibilityScore(result.visibilityScore);
           if (result.previousCertifiedValue) {
             setOriginalCertifiedValue(fieldName, result.previousCertifiedValue);
           }
+        } else {
+          // F4: Rollback optimistic update on backend failure
+          if (previousField) {
+            updateField(fieldName, previousField.value, previousField.status);
+          } else {
+            updateField(fieldName, null, "empty");
+          }
         }
-        setLoading(false);
       }, DEBOUNCE_MS);
     },
-    [updateField, updateFieldOnBackend, setVisibilityScore, setLoading, setOriginalCertifiedValue],
+    [updateField, updateFieldOnBackend, setVisibilityScore, setOriginalCertifiedValue],
   );
 
   /**
@@ -77,7 +99,8 @@ export function useListingField() {
    */
   const handleCertifiedOverride = useCallback(
     async (fieldName: string) => {
-      if (!listingId) return;
+      // F3: Use ref to avoid stale closure on listingId
+      if (!listingIdRef.current) return;
 
       // The override flow: user clicks "Modifier" -> field becomes editable
       // The actual backend override happens when the user types a new value
@@ -90,7 +113,7 @@ export function useListingField() {
         }
       }
     },
-    [listingId, updateField, setOriginalCertifiedValue],
+    [updateField, setOriginalCertifiedValue],
   );
 
   return {

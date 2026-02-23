@@ -27,9 +27,11 @@ export const useListingStore = create<ListingFormState>((set, get) => ({
   setListingId: (id) => set({ listingId: id }),
 
   initializeFields: (certifiedFields) => {
-    const fields: Record<string, ListingFieldState> = {};
+    // F7: Merge certified fields into existing fields to preserve user-input declared fields
+    const currentFields = get().fields;
+    const newFields: Record<string, ListingFieldState> = { ...currentFields };
     for (const cf of certifiedFields) {
-      fields[cf.fieldName] = {
+      newFields[cf.fieldName] = {
         fieldName: cf.fieldName,
         value: cf.fieldValue,
         status: cf.isCertified ? "certified" : "declared",
@@ -37,7 +39,7 @@ export const useListingStore = create<ListingFormState>((set, get) => ({
         certifiedTimestamp: cf.sourceTimestamp,
       };
     }
-    set({ fields });
+    set({ fields: newFields });
   },
 
   updateField: (fieldName, value, status) => {
