@@ -76,6 +76,16 @@ describe("VisibilityScoreGauge", () => {
       render(<VisibilityScoreGauge score={67} />);
       expect(screen.getByTestId("gauge-label")).toHaveTextContent("document");
     });
+
+    it("should prefer backend-provided label over client-side default", () => {
+      render(<VisibilityScoreGauge score={20} label="Custom Backend Label" />);
+      expect(screen.getByTestId("gauge-label")).toHaveTextContent("Custom Backend Label");
+    });
+
+    it("should fall back to client-side label when label prop is not provided", () => {
+      render(<VisibilityScoreGauge score={50} />);
+      expect(screen.getByTestId("gauge-label")).toHaveTextContent("Bien document");
+    });
   });
 
   describe("score clamping", () => {

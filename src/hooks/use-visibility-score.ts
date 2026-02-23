@@ -75,8 +75,10 @@ export function useVisibilityScore({
   const pollScore = useCallback(async () => {
     if (!listingId) return;
     try {
-      const response = await apiClient(`/api/listings/${listingId}/recalculateScore`, {
+      const response = await apiClient("/api/seller/recalculateScore", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listingId }),
       });
       if (response.ok) {
         const result: VisibilityScoreResult = await response.json();

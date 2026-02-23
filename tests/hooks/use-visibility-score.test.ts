@@ -131,8 +131,10 @@ describe("useVisibilityScore", () => {
       await vi.runOnlyPendingTimersAsync();
     });
 
-    expect(mockApiClient).toHaveBeenCalledWith("/api/listings/listing-1/recalculateScore", {
+    expect(mockApiClient).toHaveBeenCalledWith("/api/seller/recalculateScore", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ listingId: "listing-1" }),
     });
     expect(result.current.score).toBe(72);
   });

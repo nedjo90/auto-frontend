@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 
 export interface VisibilityScoreGaugeProps {
   score: number;
+  label?: string;
   previousScore?: number;
   normalizationMessage?: string;
   className?: string;
@@ -69,6 +70,7 @@ function describeArc(
  */
 export const VisibilityScoreGauge = memo(function VisibilityScoreGauge({
   score,
+  label: labelProp,
   previousScore,
   normalizationMessage,
   className,
@@ -76,7 +78,8 @@ export const VisibilityScoreGauge = memo(function VisibilityScoreGauge({
   const reducedMotion = useReducedMotion();
   const clampedScore = Math.min(Math.max(Math.round(score), 0), 100);
   const angle = scoreToAngle(clampedScore);
-  const label = getScoreLabel(clampedScore);
+  // Prefer backend-provided label (respects admin-configured thresholds), fall back to client-side default
+  const label = labelProp || getScoreLabel(clampedScore);
   const strokeColor = getStrokeColor(clampedScore);
   const colorClass = getScoreColor(clampedScore);
 
