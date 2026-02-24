@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getSeoMeta } from "@/lib/seo/get-seo-meta";
 import { generateListingJsonLd } from "@/lib/seo/structured-data";
 import type { ListingData } from "@/lib/seo/structured-data";
+import { ListingDetailClient } from "./listing-detail-client";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -10,7 +11,6 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
 
-  // TODO: Fetch actual listing data from backend when Listing entity exists (Epic 3)
   const seo = await getSeoMeta("listing_detail", {
     id,
     brand: "",
@@ -38,7 +38,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ListingDetailPage({ params }: Props) {
   const { id } = await params;
 
-  // TODO: Fetch listing data and render page (Epic 3)
   // Stub JSON-LD for structured data integration
   const stubListing: ListingData = {
     id,
@@ -55,10 +54,7 @@ export default async function ListingDetailPage({ params }: Props) {
   return (
     <div className="container mx-auto px-4 py-6 sm:py-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
-      <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl mb-4">Annonce</h1>
-      <p className="text-sm sm:text-base text-muted-foreground">
-        Annonce {id} - Page en construction (Epic 3)
-      </p>
+      <ListingDetailClient listingId={id} />
     </div>
   );
 }

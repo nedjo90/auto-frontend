@@ -1,3 +1,34 @@
+import Link from "next/link";
+import { FileText, ShoppingBag, Upload, History } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+
+const SELLER_SECTIONS = [
+  {
+    href: "/seller/drafts",
+    icon: FileText,
+    title: "Mes brouillons",
+    description: "Creez et editez vos annonces",
+  },
+  {
+    href: "/seller/listings",
+    icon: ShoppingBag,
+    title: "Mes annonces en ligne",
+    description: "Gerez vos annonces publiees",
+  },
+  {
+    href: "/seller/publish",
+    icon: Upload,
+    title: "Publier",
+    description: "Publiez vos brouillons prets",
+  },
+  {
+    href: "/seller/history",
+    icon: History,
+    title: "Historique",
+    description: "Consultez vos annonces passees",
+  },
+];
+
 export default function SellerCockpitPage() {
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -6,6 +37,26 @@ export default function SellerCockpitPage() {
         <p className="text-sm text-muted-foreground mt-1 sm:mt-2 sm:text-base">
           Gerez vos annonces et suivez vos performances.
         </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        {SELLER_SECTIONS.map((section) => (
+          <Link key={section.href} href={section.href}>
+            <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
+              <CardContent className="p-4 sm:p-5 flex items-start gap-3 sm:gap-4">
+                <div className="rounded-lg bg-primary/10 p-2.5 flex-shrink-0">
+                  <section.icon className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h2 className="font-semibold text-sm sm:text-base">{section.title}</h2>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+                    {section.description}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
       </div>
     </div>
   );

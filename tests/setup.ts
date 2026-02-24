@@ -13,6 +13,14 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
 };
 
+// Polyfill pointer capture for Radix UI Select in jsdom
+HTMLElement.prototype.hasPointerCapture = (() => false) as never;
+HTMLElement.prototype.setPointerCapture = (() => {}) as never;
+HTMLElement.prototype.releasePointerCapture = (() => {}) as never;
+
+// Polyfill scrollIntoView for Radix UI in jsdom
+HTMLElement.prototype.scrollIntoView = (() => {}) as never;
+
 // Polyfill matchMedia for useIsMobile / useBreakpoint hooks in jsdom
 Object.defineProperty(window, "matchMedia", {
   writable: true,
