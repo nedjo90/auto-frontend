@@ -13,6 +13,7 @@ export interface UseVehicleLookupResult {
   fields: CertifiedFieldResult[];
   sources: ApiSourceStatus[];
   error: string | null;
+  hasStaleSources: boolean;
   lookup: (identifier: string, identifierType: IdentifierType) => Promise<void>;
   reset: () => void;
 }
@@ -125,5 +126,7 @@ export function useVehicleLookup(): UseVehicleLookupResult {
     setError(null);
   }, []);
 
-  return { state, fields, sources, error, lookup, reset };
+  const hasStaleSources = sources.some((s) => s.status === "cached" && s.cacheStatus === "stale");
+
+  return { state, fields, sources, error, hasStaleSources, lookup, reset };
 }

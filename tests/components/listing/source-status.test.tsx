@@ -123,4 +123,57 @@ describe("SourceStatus", () => {
     expect(screen.getByTestId("source-ICritAirCalculator")).toHaveTextContent("Crit'Air");
     expect(screen.getByTestId("source-IVINTechnicalAdapter")).toHaveTextContent("VIN Tech");
   });
+
+  it("should show 'stale' indicator for cached source with stale cache status", () => {
+    const sources: ApiSourceStatus[] = [
+      {
+        adapterInterface: "IEmissionAdapter",
+        providerKey: "ademe",
+        status: "cached",
+        cacheStatus: "stale",
+      },
+    ];
+
+    render(<SourceStatus sources={sources} />);
+    const el = screen.getByTestId("source-IEmissionAdapter");
+    expect(el).toHaveTextContent("ADEME obsolète");
+  });
+
+  it("should show regular cache indicator for cached source without stale status", () => {
+    const sources: ApiSourceStatus[] = [
+      {
+        adapterInterface: "IEmissionAdapter",
+        providerKey: "ademe",
+        status: "cached",
+        cacheStatus: "cached",
+      },
+    ];
+
+    render(<SourceStatus sources={sources} />);
+    expect(screen.getByTestId("source-IEmissionAdapter")).toHaveTextContent("ADEME en cache");
+  });
+
+  it("should differentiate stale and fresh cache indicators visually", () => {
+    const sources: ApiSourceStatus[] = [
+      {
+        adapterInterface: "IVehicleLookupAdapter",
+        providerKey: "cache",
+        status: "cached",
+        cacheStatus: "cached",
+      },
+      {
+        adapterInterface: "IEmissionAdapter",
+        providerKey: "ademe",
+        status: "cached",
+        cacheStatus: "stale",
+      },
+    ];
+
+    render(<SourceStatus sources={sources} />);
+    const cachedEl = screen.getByTestId("source-IVehicleLookupAdapter");
+    const staleEl = screen.getByTestId("source-IEmissionAdapter");
+    // Cached = blue, Stale = orange
+    expect(cachedEl.className).toContain("blue");
+    expect(staleEl.className).toContain("orange");
+  });
 });

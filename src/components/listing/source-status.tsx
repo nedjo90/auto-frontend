@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, CheckCircle2, XCircle, Database } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Database, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ApiSourceStatus } from "@auto/shared";
 
@@ -17,7 +17,7 @@ const SOURCE_LABELS: Record<string, string> = {
 };
 
 /**
- * Displays per-adapter progress indicators (pending/done/failed/cached).
+ * Displays per-adapter progress indicators (pending/done/failed/cached/stale).
  */
 export function SourceStatus({ sources }: SourceStatusProps) {
   if (sources.length === 0) return null;
@@ -31,8 +31,17 @@ export function SourceStatus({ sources }: SourceStatusProps) {
   );
 }
 
+function getStatusLabel(source: ApiSourceStatus): string {
+  if (source.status === "success") return "terminé";
+  if (source.status === "cached" && source.cacheStatus === "stale") return "obsolète";
+  if (source.status === "cached") return "en cache";
+  if (source.status === "failed") return "échoué";
+  return "...";
+}
+
 function SourceIndicator({ source }: { source: ApiSourceStatus }) {
   const label = SOURCE_LABELS[source.adapterInterface] || source.adapterInterface;
+  const isStale = source.status === "cached" && source.cacheStatus === "stale";
 
   return (
     <div
@@ -43,7 +52,9 @@ function SourceIndicator({ source }: { source: ApiSourceStatus }) {
           "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
         source.status === "failed" && "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
         source.status === "cached" &&
+          !isStale &&
           "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+        isStale && "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
       )}
       data-testid={`source-${source.adapterInterface}`}
     >
@@ -52,16 +63,10 @@ function SourceIndicator({ source }: { source: ApiSourceStatus }) {
       )}
       {source.status === "success" && <CheckCircle2 className="size-3" />}
       {source.status === "failed" && <XCircle className="size-3" />}
-      {source.status === "cached" && <Database className="size-3" />}
+      {source.status === "cached" && !isStale && <Database className="size-3" />}
+      {isStale && <Clock className="size-3" />}
       <span>
-        {label}{" "}
-        {source.status === "success"
-          ? "terminé"
-          : source.status === "cached"
-            ? "en cache"
-            : source.status === "failed"
-              ? "échoué"
-              : "..."}
+        {label} {getStatusLabel(source)}
       </span>
     </div>
   );

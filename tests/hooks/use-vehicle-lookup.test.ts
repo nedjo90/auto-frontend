@@ -19,6 +19,7 @@ describe("useVehicleLookup", () => {
     expect(result.current.fields).toEqual([]);
     expect(result.current.sources).toEqual([]);
     expect(result.current.error).toBeNull();
+    expect(result.current.hasStaleSources).toBe(false);
   });
 
   it("should transition to loading state on lookup", async () => {
@@ -247,6 +248,71 @@ describe("useVehicleLookup", () => {
     });
 
     expect(result.current.state).toBe("idle");
+  });
+
+  it("should set hasStaleSources when a source has stale cache status", async () => {
+    const mockResponse = {
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          fields: JSON.stringify([]),
+          sources: JSON.stringify([
+            {
+              adapterInterface: "IVehicleLookupAdapter",
+              providerKey: "mock",
+              status: "success",
+            },
+            {
+              adapterInterface: "IEmissionAdapter",
+              providerKey: "ademe",
+              status: "cached",
+              cacheStatus: "stale",
+              cachedAt: "2026-01-01T00:00:00.000Z",
+            },
+          ]),
+        }),
+    };
+    mockApiClient.mockResolvedValue(mockResponse);
+
+    const { result } = renderHook(() => useVehicleLookup());
+
+    await act(async () => {
+      await result.current.lookup("AB-123-CD", "plate");
+    });
+
+    expect(result.current.hasStaleSources).toBe(true);
+  });
+
+  it("should set hasStaleSources to false when no stale sources", async () => {
+    const mockResponse = {
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          fields: JSON.stringify([]),
+          sources: JSON.stringify([
+            {
+              adapterInterface: "IVehicleLookupAdapter",
+              providerKey: "mock",
+              status: "success",
+            },
+            {
+              adapterInterface: "IEmissionAdapter",
+              providerKey: "ademe",
+              status: "cached",
+              cacheStatus: "cached",
+            },
+          ]),
+        }),
+    };
+    mockApiClient.mockResolvedValue(mockResponse);
+
+    const { result } = renderHook(() => useVehicleLookup());
+
+    await act(async () => {
+      await result.current.lookup("AB-123-CD", "plate");
+    });
+
+    expect(result.current.hasStaleSources).toBe(false);
   });
 
   it("should call apiClient with correct URL and body", async () => {
