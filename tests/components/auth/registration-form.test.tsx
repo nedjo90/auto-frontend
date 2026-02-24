@@ -135,14 +135,8 @@ describe("RegistrationForm", () => {
     render(<RegistrationForm />);
     await waitForFormLoaded();
 
-    expect(screen.getByLabelText(/Email/)).toHaveAttribute(
-      "aria-required",
-      "true",
-    );
-    expect(screen.getByLabelText(/Prénom/)).toHaveAttribute(
-      "aria-required",
-      "true",
-    );
+    expect(screen.getByLabelText(/Email/)).toHaveAttribute("aria-required", "true");
+    expect(screen.getByLabelText(/Prénom/)).toHaveAttribute("aria-required", "true");
   });
 
   it("should label optional fields with (optionnel)", async () => {
@@ -161,10 +155,7 @@ describe("RegistrationForm", () => {
     await waitForFormLoaded();
 
     expect(screen.getByLabelText(/Mot de passe/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Mot de passe/)).toHaveAttribute(
-      "type",
-      "password",
-    );
+    expect(screen.getByLabelText(/Mot de passe/)).toHaveAttribute("type", "password");
   });
 
   it("should render config-driven consent checkboxes", async () => {
@@ -172,12 +163,8 @@ describe("RegistrationForm", () => {
     render(<RegistrationForm />);
     await waitForFormLoaded();
 
-    expect(
-      screen.getByLabelText(/Traitement essentiel/),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText(/Communications marketing/),
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/Traitement essentiel/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Communications marketing/)).toBeInTheDocument();
   });
 
   it("should render submit button", async () => {
@@ -185,9 +172,7 @@ describe("RegistrationForm", () => {
     render(<RegistrationForm />);
     await waitForFormLoaded();
 
-    expect(
-      screen.getByRole("button", { name: /créer mon compte/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /créer mon compte/i })).toBeInTheDocument();
   });
 
   it("should show error when API fails to load fields", async () => {
@@ -196,9 +181,7 @@ describe("RegistrationForm", () => {
     render(<RegistrationForm />);
 
     await waitFor(() => {
-      expect(
-        screen.getByText("Impossible de charger le formulaire"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Impossible de charger le formulaire")).toBeInTheDocument();
     });
   });
 
@@ -208,9 +191,7 @@ describe("RegistrationForm", () => {
     render(<RegistrationForm />);
     await waitForFormLoaded();
 
-    await user.click(
-      screen.getByRole("button", { name: /créer mon compte/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /créer mon compte/i }));
 
     await waitFor(() => {
       const alerts = screen.getAllByRole("alert");
@@ -243,19 +224,14 @@ describe("RegistrationForm", () => {
     await user.type(screen.getByLabelText(/Email/), "test@example.com");
     await user.type(screen.getByLabelText(/Prénom/), "Jean");
     await user.type(screen.getByLabelText(/Nom/), "Dupont");
-    await user.type(
-      screen.getByLabelText(/Mot de passe/),
-      "SecureP@ss1",
-    );
+    await user.type(screen.getByLabelText(/Mot de passe/), "SecureP@ss1");
     // Check mandatory consent
     await user.click(screen.getByLabelText(/Traitement essentiel/));
 
     // Mock slow registration
     mockFetch.mockReturnValueOnce(new Promise(() => {}));
 
-    await user.click(
-      screen.getByRole("button", { name: /créer mon compte/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /créer mon compte/i }));
 
     await waitFor(() => {
       expect(screen.getByText(/inscription en cours/i)).toBeInTheDocument();
@@ -271,10 +247,7 @@ describe("RegistrationForm", () => {
     await user.type(screen.getByLabelText(/Email/), "test@example.com");
     await user.type(screen.getByLabelText(/Prénom/), "Jean");
     await user.type(screen.getByLabelText(/Nom/), "Dupont");
-    await user.type(
-      screen.getByLabelText(/Mot de passe/),
-      "SecureP@ss1",
-    );
+    await user.type(screen.getByLabelText(/Mot de passe/), "SecureP@ss1");
     // Check mandatory consent
     await user.click(screen.getByLabelText(/Traitement essentiel/));
 
@@ -286,14 +259,10 @@ describe("RegistrationForm", () => {
         }),
     });
 
-    await user.click(
-      screen.getByRole("button", { name: /créer mon compte/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /créer mon compte/i }));
 
     await waitFor(() => {
-      expect(
-        screen.getByText("Email already registered"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Email already registered")).toBeInTheDocument();
     });
   });
 
@@ -306,10 +275,7 @@ describe("RegistrationForm", () => {
     await user.type(screen.getByLabelText(/Email/), "test@example.com");
     await user.type(screen.getByLabelText(/Prénom/), "Jean");
     await user.type(screen.getByLabelText(/Nom/), "Dupont");
-    await user.type(
-      screen.getByLabelText(/Mot de passe/),
-      "SecureP@ss1",
-    );
+    await user.type(screen.getByLabelText(/Mot de passe/), "SecureP@ss1");
     await user.click(screen.getByLabelText(/Traitement essentiel/));
 
     // Mock successful registration
@@ -329,9 +295,7 @@ describe("RegistrationForm", () => {
       json: () => Promise.resolve({ success: true, count: 2 }),
     });
 
-    await user.click(
-      screen.getByRole("button", { name: /créer mon compte/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /créer mon compte/i }));
 
     await waitFor(() => {
       // 2 initial fetches (fields + consents) + registration + consent recording = 4 calls
@@ -352,10 +316,7 @@ describe("RegistrationForm", () => {
     await user.type(screen.getByLabelText(/Email/), "test@example.com");
     await user.type(screen.getByLabelText(/Prénom/), "Jean");
     await user.type(screen.getByLabelText(/Nom/), "Dupont");
-    await user.type(
-      screen.getByLabelText(/Mot de passe/),
-      "SecureP@ss1",
-    );
+    await user.type(screen.getByLabelText(/Mot de passe/), "SecureP@ss1");
     await user.click(screen.getByLabelText(/Traitement essentiel/));
 
     // Mock successful registration
@@ -372,14 +333,10 @@ describe("RegistrationForm", () => {
     // Mock failed consent recording
     mockFetch.mockResolvedValueOnce({ ok: false, status: 500 });
 
-    await user.click(
-      screen.getByRole("button", { name: /créer mon compte/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /créer mon compte/i }));
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/enregistrement des consentements/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/enregistrement des consentements/i)).toBeInTheDocument();
     });
   });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useRef, useId } from "react";
+import { useCallback, useState, useRef } from "react";
 import { Trash2, GripVertical, Star } from "lucide-react";
 import type { PhotoItem } from "@/stores/photo-store";
 
@@ -16,8 +16,6 @@ export function PhotoGallery({ photos, onReorder, onDelete, disabled = false }: 
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const galleryRef = useRef<HTMLDivElement>(null);
-  const galleryId = useId();
-
   // ─── Drag and Drop ──────────────────────────────────────────────────
 
   const handleDragStart = useCallback(
@@ -175,8 +173,9 @@ export function PhotoGallery({ photos, onReorder, onDelete, disabled = false }: 
                   : "border-border"
             } ${isError ? "border-destructive" : ""}`}
           >
-            {/* Photo image */}
+            {/* Photo image - using <img> because photos are user uploads with blob/dynamic URLs */}
             {imageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={imageUrl}
                 alt={`Photo ${index + 1}`}

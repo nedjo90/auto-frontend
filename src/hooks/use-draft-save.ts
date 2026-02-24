@@ -2,7 +2,6 @@
 
 import { useCallback, useRef, useEffect } from "react";
 import { useListingStore } from "@/stores/listing-store";
-import { usePhotoStore } from "@/stores/photo-store";
 import { saveDraft } from "@/lib/api/draft-api";
 import { toast } from "sonner";
 
@@ -13,8 +12,6 @@ const AUTO_SAVE_INTERVAL_MS = 60_000;
  */
 export function useDraftSave() {
   const {
-    listingId,
-    fields,
     isDirty,
     isSaving,
     setListingId,
@@ -25,8 +22,6 @@ export function useDraftSave() {
     setVisibilityLabel,
     setCompletionPercentage,
   } = useListingStore();
-
-  const photos = usePhotoStore((s) => s.photos);
   const autoSaveTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const isSavingRef = useRef(false);
   isSavingRef.current = isSaving;

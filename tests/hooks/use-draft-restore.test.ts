@@ -8,7 +8,7 @@ vi.mock("@/lib/api/draft-api", () => ({
   loadDraft: vi.fn(),
 }));
 
-import { loadDraft } from "@/lib/api/draft-api";
+import { loadDraft, type LoadDraftResult } from "@/lib/api/draft-api";
 
 const mockLoadDraft = vi.mocked(loadDraft);
 
@@ -202,7 +202,7 @@ describe("useDraftRestore", () => {
   });
 
   it("should report isRestoring during loading", async () => {
-    let resolveLoad: (value: unknown) => void;
+    let resolveLoad: (value: LoadDraftResult | PromiseLike<LoadDraftResult>) => void;
     mockLoadDraft.mockImplementation(
       () =>
         new Promise((resolve) => {

@@ -134,12 +134,8 @@ describe("RegistrationForm Accessibility (AC4)", () => {
     }
 
     expect(screen.getByLabelText(/Mot de passe/)).toBeInTheDocument();
-    expect(
-      screen.getByLabelText(/Traitement essentiel/),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByLabelText(/Communications marketing/),
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/Traitement essentiel/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Communications marketing/)).toBeInTheDocument();
   });
 
   it("should link error messages via aria-describedby", async () => {
@@ -168,15 +164,10 @@ describe("RegistrationForm Accessibility (AC4)", () => {
     render(<RegistrationForm />);
     await waitForFormLoaded();
 
-    await user.click(
-      screen.getByRole("button", { name: /créer mon compte/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /créer mon compte/i }));
 
     await waitFor(() => {
-      expect(screen.getByLabelText(/Email/)).toHaveAttribute(
-        "aria-invalid",
-        "true",
-      );
+      expect(screen.getByLabelText(/Email/)).toHaveAttribute("aria-invalid", "true");
     });
   });
 
@@ -194,12 +185,8 @@ describe("RegistrationForm Accessibility (AC4)", () => {
     }
 
     // Verify consent checkboxes are also focusable
-    expect(
-      screen.getByLabelText(/Traitement essentiel/),
-    ).not.toBeDisabled();
-    expect(
-      screen.getByLabelText(/Communications marketing/),
-    ).not.toBeDisabled();
+    expect(screen.getByLabelText(/Traitement essentiel/)).not.toBeDisabled();
+    expect(screen.getByLabelText(/Communications marketing/)).not.toBeDisabled();
   });
 
   it("should have aria-required on required fields", async () => {
@@ -207,24 +194,12 @@ describe("RegistrationForm Accessibility (AC4)", () => {
     render(<RegistrationForm />);
     await waitForFormLoaded();
 
-    expect(screen.getByLabelText(/Email/)).toHaveAttribute(
-      "aria-required",
-      "true",
-    );
-    expect(screen.getByLabelText(/Prénom/)).toHaveAttribute(
-      "aria-required",
-      "true",
-    );
-    expect(screen.getByLabelText(/Nom/)).toHaveAttribute(
-      "aria-required",
-      "true",
-    );
+    expect(screen.getByLabelText(/Email/)).toHaveAttribute("aria-required", "true");
+    expect(screen.getByLabelText(/Prénom/)).toHaveAttribute("aria-required", "true");
+    expect(screen.getByLabelText(/Nom/)).toHaveAttribute("aria-required", "true");
 
     // Optional field should not have aria-required=true
-    expect(screen.getByLabelText(/Téléphone/)).not.toHaveAttribute(
-      "aria-required",
-      "true",
-    );
+    expect(screen.getByLabelText(/Téléphone/)).not.toHaveAttribute("aria-required", "true");
   });
 
   it("should use role=alert for error messages", async () => {
@@ -233,9 +208,7 @@ describe("RegistrationForm Accessibility (AC4)", () => {
     render(<RegistrationForm />);
     await waitForFormLoaded();
 
-    await user.click(
-      screen.getByRole("button", { name: /créer mon compte/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /créer mon compte/i }));
 
     await waitFor(() => {
       const alerts = screen.getAllByRole("alert");
@@ -252,9 +225,7 @@ describe("RegistrationForm Accessibility (AC4)", () => {
     const { container } = render(<RegistrationForm />);
     await waitForFormLoaded();
 
-    await user.click(
-      screen.getByRole("button", { name: /créer mon compte/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /créer mon compte/i }));
 
     await waitFor(() => {
       expect(screen.getAllByRole("alert").length).toBeGreaterThan(0);
