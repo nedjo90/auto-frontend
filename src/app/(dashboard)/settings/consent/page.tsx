@@ -29,7 +29,7 @@ export default function ConsentSettingsPage() {
       const encodedUserId = encodeURIComponent(userId);
       const [typesRes, consentsRes] = await Promise.all([
         fetch(`${API_BASE}/api/consent/ActiveConsentTypes?$orderby=displayOrder asc`),
-        fetch(`${API_BASE}/api/consent/getUserConsents(userId=${encodedUserId})`, {
+        fetch(`${API_BASE}/api/consent/getUserConsents(userId='${encodedUserId}')`, {
           headers: { ...authHeaders },
         }),
       ]);

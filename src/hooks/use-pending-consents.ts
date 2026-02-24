@@ -15,7 +15,7 @@ export function usePendingConsents(userId: string | null) {
     const encodedUserId = encodeURIComponent(userId);
     getAuthHeaders()
       .then((authHeaders) =>
-        fetch(`${API_BASE}/api/consent/getPendingConsents(userId=${encodedUserId})`, {
+        fetch(`${API_BASE}/api/consent/getPendingConsents(userId='${encodedUserId}')`, {
           headers: { ...authHeaders },
         }),
       )
