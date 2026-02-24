@@ -19,6 +19,7 @@ export function ListingDetailClient({ listingId }: ListingDetailClientProps) {
     async function loadListing() {
       try {
         setIsLoading(true);
+        setError(null);
         const data = await getPublicListing(listingId);
         if (!data) {
           setError("Annonce introuvable");

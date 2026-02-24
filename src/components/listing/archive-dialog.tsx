@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Archive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +21,10 @@ interface ArchiveDialogProps {
 
 export function ArchiveDialog({ open, onOpenChange, listingTitle, onConfirm }: ArchiveDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!open) setIsLoading(false);
+  }, [open]);
 
   const handleConfirm = async () => {
     setIsLoading(true);

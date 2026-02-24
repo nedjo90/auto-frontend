@@ -144,20 +144,22 @@ describe("lifecycle-api", () => {
   });
 
   describe("getPublicListing", () => {
+    const VALID_UUID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
+
     it("should fetch listing by ID", async () => {
       mockFetch.mockResolvedValue({
         ok: true,
         json: () =>
           Promise.resolve({
-            ID: "id-1",
+            ID: VALID_UUID,
             make: "Renault",
             status: "published",
           }),
       });
 
-      const result = await getPublicListing("id-1");
+      const result = await getPublicListing(VALID_UUID);
       expect(result).not.toBeNull();
-      expect(result?.ID).toBe("id-1");
+      expect(result?.ID).toBe(VALID_UUID);
     });
 
     it("should return null on 404", async () => {
@@ -167,8 +169,14 @@ describe("lifecycle-api", () => {
         text: () => Promise.resolve("Not found"),
       });
 
-      const result = await getPublicListing("nonexistent");
+      const result = await getPublicListing("00000000-0000-0000-0000-000000000000");
       expect(result).toBeNull();
+    });
+
+    it("should return null for invalid UUID format", async () => {
+      const result = await getPublicListing("not-a-uuid");
+      expect(result).toBeNull();
+      expect(mockFetch).not.toHaveBeenCalled();
     });
 
     it("should throw on other errors", async () => {
@@ -178,7 +186,7 @@ describe("lifecycle-api", () => {
         text: () => Promise.resolve("Server error"),
       });
 
-      await expect(getPublicListing("id-1")).rejects.toThrow("Failed to fetch listing");
+      await expect(getPublicListing(VALID_UUID)).rejects.toThrow("Failed to fetch listing");
     });
   });
 });

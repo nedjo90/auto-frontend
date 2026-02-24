@@ -73,12 +73,20 @@ export async function getListingHistory(): Promise<ISellerListingHistoryItem[]> 
   return typeof data.listings === "string" ? JSON.parse(data.listings) : data.listings || [];
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /** Fetch a single listing by ID (public view). */
 export async function getPublicListing(listingId: string): Promise<Record<string, unknown> | null> {
-  const res = await apiClient(`${API_BASE}/api/buyer/Listings('${listingId}')`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
+  if (!UUID_RE.test(listingId)) {
+    return null;
+  }
+  const res = await apiClient(
+    `${API_BASE}/api/buyer/Listings('${encodeURIComponent(listingId)}')`,
+    {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    },
+  );
 
   if (!res.ok) {
     if (res.status === 404) return null;

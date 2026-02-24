@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +26,10 @@ export function MarkSoldDialog({
   onConfirm,
 }: MarkSoldDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!open) setIsLoading(false);
+  }, [open]);
 
   const handleConfirm = async () => {
     setIsLoading(true);
