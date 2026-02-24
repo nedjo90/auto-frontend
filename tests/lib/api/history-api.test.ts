@@ -81,6 +81,25 @@ describe("history-api", () => {
         "Failed to load history report",
       );
     });
+
+    it("should throw on malformed reportData JSON", async () => {
+      mockApiClient.mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            reportId: "report-1",
+            source: "mock",
+            fetchedAt: "2026-02-24T10:00:00.000Z",
+            reportVersion: "1.0.0",
+            reportData: "not-valid-json{{{",
+            isMockData: true,
+          }),
+      });
+
+      await expect(getBuyerHistoryReport("listing-1")).rejects.toThrow(
+        "Invalid history report data received from server",
+      );
+    });
   });
 
   describe("fetchSellerHistoryReport", () => {

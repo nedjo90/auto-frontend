@@ -20,6 +20,17 @@ export interface FetchHistoryReportResult {
   reportData: HistoryResponse;
 }
 
+function parseReportData(raw: unknown): HistoryResponse {
+  if (typeof raw === "string") {
+    try {
+      return JSON.parse(raw) as HistoryResponse;
+    } catch {
+      throw new Error("Invalid history report data received from server");
+    }
+  }
+  return raw as HistoryResponse;
+}
+
 export async function getBuyerHistoryReport(listingId: string): Promise<HistoryReportResult> {
   const res = await apiClient(`${API_BASE}/api/buyer/getHistoryReport`, {
     method: "POST",
@@ -39,7 +50,7 @@ export async function getBuyerHistoryReport(listingId: string): Promise<HistoryR
     source: data.source,
     fetchedAt: data.fetchedAt,
     reportVersion: data.reportVersion,
-    reportData: typeof data.reportData === "string" ? JSON.parse(data.reportData) : data.reportData,
+    reportData: parseReportData(data.reportData),
     isMockData: data.isMockData,
   };
 }
@@ -63,6 +74,6 @@ export async function fetchSellerHistoryReport(listingId: string): Promise<Fetch
     source: data.source,
     fetchedAt: data.fetchedAt,
     reportVersion: data.reportVersion,
-    reportData: typeof data.reportData === "string" ? JSON.parse(data.reportData) : data.reportData,
+    reportData: parseReportData(data.reportData),
   };
 }
