@@ -5,13 +5,13 @@ import { useConsentStore } from "@/stores/consent-store";
 import { ConsentStep, type ConsentDecisions } from "./consent-step";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/ui/responsive-dialog";
 import { Loader2 } from "lucide-react";
 import { getAuthHeaders } from "@/lib/auth/get-auth-headers";
 
@@ -64,15 +64,15 @@ export function ConsentReviewDialog() {
   };
 
   return (
-    <Dialog open={hasPendingConsents}>
-      <DialogContent showCloseButton={false} aria-describedby="consent-review-desc">
-        <DialogHeader>
-          <DialogTitle>Mise à jour des consentements</DialogTitle>
-          <DialogDescription id="consent-review-desc">
+    <ResponsiveDialog open={hasPendingConsents}>
+      <ResponsiveDialogContent showCloseButton={false} aria-describedby="consent-review-desc">
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>Mise à jour des consentements</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription id="consent-review-desc">
             Nos conditions de traitement des données ont été mises à jour. Veuillez revoir vos choix
             avant de continuer.
-          </DialogDescription>
-        </DialogHeader>
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
 
         <ConsentStep
           consentTypes={pendingConsents}
@@ -88,7 +88,7 @@ export function ConsentReviewDialog() {
           </p>
         )}
 
-        <DialogFooter>
+        <ResponsiveDialogFooter>
           <Button onClick={validateAndSubmit} disabled={submitting}>
             {submitting ? (
               <>
@@ -99,8 +99,8 @@ export function ConsentReviewDialog() {
               "Confirmer mes choix"
             )}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ResponsiveDialogFooter>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }

@@ -77,23 +77,23 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Mon profil</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">Mon profil</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Gérez vos informations personnelles et professionnelles
         </p>
       </div>
 
       {/* Completion indicator */}
       {completion && (
-        <Card className="p-6">
+        <Card className="p-4 sm:p-6">
           <ProfileCompletionIndicator completion={completion} />
         </Card>
       )}
 
       {/* Profile form */}
-      <Card className="p-6">
+      <Card className="p-4 sm:p-6">
         <ProfileForm
           initialData={{ ...profile, avatarUrl: profile.avatarUrl ?? undefined }}
           avatarUrl={profile.avatarUrl}

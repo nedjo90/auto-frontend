@@ -125,15 +125,15 @@ export default function AlertsConfigPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Alertes</h1>
+          <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">Alertes</h1>
           <p className="text-muted-foreground mt-1 text-sm">
             Configurez les alertes de seuils pour les metriques metier.
           </p>
         </div>
-        <Button onClick={handleCreate} data-testid="create-alert-btn">
+        <Button onClick={handleCreate} className="w-full sm:w-auto" data-testid="create-alert-btn">
           <Plus className="mr-2 size-4" />
           Nouvelle alerte
         </Button>
@@ -152,67 +152,69 @@ export default function AlertsConfigPage() {
       )}
 
       {alerts.length > 0 && (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nom</TableHead>
-              <TableHead>Metrique</TableHead>
-              <TableHead>Seuil</TableHead>
-              <TableHead>Severite</TableHead>
-              <TableHead>Notification</TableHead>
-              <TableHead>Statut</TableHead>
-              <TableHead>Dernier declenchement</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {alerts.map((alert) => (
-              <TableRow key={alert.ID} data-testid={`alert-row-${alert.ID}`}>
-                <TableCell className="text-sm font-medium">{alert.name}</TableCell>
-                <TableCell className="text-sm">
-                  {METRIC_LABEL[alert.metric] || alert.metric}
-                </TableCell>
-                <TableCell className="text-sm font-mono">
-                  {OPERATOR_LABEL[alert.comparisonOperator] || alert.comparisonOperator}{" "}
-                  {alert.thresholdValue}
-                </TableCell>
-                <TableCell>
-                  <Badge variant={SEVERITY_VARIANT[alert.severityLevel] || "outline"}>
-                    {SEVERITY_LABEL[alert.severityLevel] || alert.severityLevel}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-sm">{alert.notificationMethod}</TableCell>
-                <TableCell>
-                  <Button
-                    variant={alert.enabled ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleToggleEnabled(alert)}
-                    disabled={saving}
-                    data-testid={`alert-toggle-${alert.ID}`}
-                  >
-                    {alert.enabled ? "Actif" : "Inactif"}
-                  </Button>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {alert.lastTriggeredAt
-                    ? new Date(alert.lastTriggeredAt).toLocaleString("fr-FR")
-                    : "-"}
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(alert)}
-                    disabled={saving}
-                    data-testid={`alert-edit-${alert.ID}`}
-                  >
-                    Modifier
-                  </Button>
-                </TableCell>
+        <div className="overflow-x-auto rounded-md border [&_td]:whitespace-normal [&_td]:text-sm">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nom</TableHead>
+                <TableHead>Metrique</TableHead>
+                <TableHead>Seuil</TableHead>
+                <TableHead>Severite</TableHead>
+                <TableHead>Notification</TableHead>
+                <TableHead>Statut</TableHead>
+                <TableHead>Dernier declenchement</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {alerts.map((alert) => (
+                <TableRow key={alert.ID} data-testid={`alert-row-${alert.ID}`}>
+                  <TableCell className="text-sm font-medium">{alert.name}</TableCell>
+                  <TableCell className="text-sm">
+                    {METRIC_LABEL[alert.metric] || alert.metric}
+                  </TableCell>
+                  <TableCell className="text-sm font-mono">
+                    {OPERATOR_LABEL[alert.comparisonOperator] || alert.comparisonOperator}{" "}
+                    {alert.thresholdValue}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={SEVERITY_VARIANT[alert.severityLevel] || "outline"}>
+                      {SEVERITY_LABEL[alert.severityLevel] || alert.severityLevel}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-sm">{alert.notificationMethod}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant={alert.enabled ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleToggleEnabled(alert)}
+                      disabled={saving}
+                      data-testid={`alert-toggle-${alert.ID}`}
+                    >
+                      {alert.enabled ? "Actif" : "Inactif"}
+                    </Button>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {alert.lastTriggeredAt
+                      ? new Date(alert.lastTriggeredAt).toLocaleString("fr-FR")
+                      : "-"}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(alert)}
+                      disabled={saving}
+                      data-testid={`alert-edit-${alert.ID}`}
+                    >
+                      Modifier
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       <AlertFormDialog

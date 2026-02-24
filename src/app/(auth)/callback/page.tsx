@@ -61,7 +61,7 @@ export default function AuthCallbackPage() {
   }, [instance]);
 
   return (
-    <div className="flex flex-col items-center gap-4 py-8">
+    <div className="flex flex-col items-center gap-4 px-4 py-8 text-center">
       {error ? (
         <>
           <p className="text-sm text-destructive" role="alert">

@@ -125,20 +125,20 @@ export default function TextsConfigPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 sm:space-y-6">
       <p className="text-muted-foreground text-sm">Textes d&apos;interface multilingues.</p>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <div className="flex gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row">
         <Input
           placeholder="Rechercher par cle, texte ou categorie..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
+          className="w-full sm:max-w-sm"
         />
         <Select value={langFilter} onValueChange={setLangFilter}>
-          <SelectTrigger className="w-32">
+          <SelectTrigger className="w-full sm:w-32">
             <SelectValue placeholder="Langue" />
           </SelectTrigger>
           <SelectContent>
@@ -157,59 +157,61 @@ export default function TextsConfigPage() {
       )}
 
       {filtered.length > 0 && (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Cle</TableHead>
-              <TableHead>Langue</TableHead>
-              <TableHead>Categorie</TableHead>
-              <TableHead className="min-w-[300px]">Valeur</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filtered.map((text) => (
-              <TableRow key={text.ID}>
-                <TableCell className="font-mono text-sm">{text.key}</TableCell>
-                <TableCell>{text.language.toUpperCase()}</TableCell>
-                <TableCell className="text-muted-foreground">{text.category || "-"}</TableCell>
-                <TableCell>
-                  {editingId === text.ID ? (
-                    <textarea
-                      value={editValue}
-                      onChange={(e) => setEditValue(e.target.value)}
-                      className="w-full rounded-md border p-2 text-sm"
-                      rows={3}
-                    />
-                  ) : (
-                    <span className="text-sm">{text.value}</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  {editingId === text.ID ? (
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSaveEdit(text)}
-                        disabled={saving}
-                      >
-                        <Check className="size-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={handleCancelEdit}>
-                        <X className="size-4" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button variant="ghost" size="sm" onClick={() => handleEdit(text)}>
-                      <Pencil className="size-4" />
-                    </Button>
-                  )}
-                </TableCell>
+        <div className="overflow-x-auto rounded-md border [&_td]:whitespace-normal [&_td]:text-sm">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Cle</TableHead>
+                <TableHead>Langue</TableHead>
+                <TableHead>Categorie</TableHead>
+                <TableHead className="min-w-[300px]">Valeur</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {filtered.map((text) => (
+                <TableRow key={text.ID}>
+                  <TableCell className="font-mono text-sm">{text.key}</TableCell>
+                  <TableCell>{text.language.toUpperCase()}</TableCell>
+                  <TableCell className="text-muted-foreground">{text.category || "-"}</TableCell>
+                  <TableCell>
+                    {editingId === text.ID ? (
+                      <textarea
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        className="w-full rounded-md border p-2 text-sm"
+                        rows={3}
+                      />
+                    ) : (
+                      <span className="text-sm">{text.value}</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {editingId === text.ID ? (
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleSaveEdit(text)}
+                          disabled={saving}
+                        >
+                          <Check className="size-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={handleCancelEdit}>
+                          <X className="size-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button variant="ghost" size="sm" onClick={() => handleEdit(text)}>
+                        <Pencil className="size-4" />
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       {pendingChange && (

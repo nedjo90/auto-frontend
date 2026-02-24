@@ -133,8 +133,8 @@ export default function ApiCallLogPage() {
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
-    <div className="space-y-6" data-testid="api-call-log-page">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6" data-testid="api-call-log-page">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <Link href="/admin/audit-trail">
             <Button variant="ghost" size="sm">
@@ -142,7 +142,7 @@ export default function ApiCallLogPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold">Journal des appels API</h1>
+            <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">Journal des appels API</h1>
             <p className="text-sm text-muted-foreground">
               Suivi des appels aux fournisseurs API externes
             </p>
@@ -151,6 +151,7 @@ export default function ApiCallLogPage() {
         <Button
           variant="outline"
           size="sm"
+          className="w-full sm:w-auto"
           onClick={handleExport}
           disabled={exporting}
           data-testid="export-csv-btn"
@@ -166,7 +167,7 @@ export default function ApiCallLogPage() {
 
       {/* Filters */}
       <div
-        className="grid grid-cols-2 gap-4 rounded-md border p-4 sm:grid-cols-3 lg:grid-cols-4"
+        className="grid grid-cols-1 gap-3 rounded-md border p-4 sm:grid-cols-2 lg:grid-cols-4"
         data-testid="api-log-filters"
       >
         <div>
@@ -236,7 +237,7 @@ export default function ApiCallLogPage() {
       )}
 
       {/* Data Table */}
-      <div className="rounded-md border">
+      <div className="overflow-x-auto rounded-md border [&_td]:whitespace-normal [&_td]:text-sm">
         <Table>
           <TableHeader>
             <TableRow>
@@ -347,7 +348,10 @@ export default function ApiCallLogPage() {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between" data-testid="api-log-pagination">
+      <div
+        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        data-testid="api-log-pagination"
+      >
         <div className="text-sm text-muted-foreground">
           {totalCount} appel{totalCount !== 1 ? "s" : ""} au total
         </div>

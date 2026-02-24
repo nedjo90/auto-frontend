@@ -16,6 +16,10 @@ vi.mock("@/lib/auth/auth-utils", () => ({
   logoutRedirect: vi.fn(),
 }));
 
+vi.mock("next/navigation", () => ({
+  usePathname: vi.fn(() => "/dashboard"),
+}));
+
 describe("Layout components", () => {
   afterEach(() => {
     cleanup();

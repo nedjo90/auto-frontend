@@ -1,13 +1,13 @@
 "use client";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/ui/responsive-dialog";
 import { Button } from "@/components/ui/button";
 
 export interface OverrideConfirmDialogProps {
@@ -31,14 +31,14 @@ export function OverrideConfirmDialog({
   onCancel,
 }: OverrideConfirmDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
-      <DialogContent data-testid="override-confirm-dialog">
-        <DialogHeader>
-          <DialogTitle>Modifier la valeur certifiée</DialogTitle>
-          <DialogDescription>
+    <ResponsiveDialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
+      <ResponsiveDialogContent data-testid="override-confirm-dialog">
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>Modifier la valeur certifiée</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>
             La valeur certifiée sera remplacée par votre saisie.
-          </DialogDescription>
-        </DialogHeader>
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
 
         <div className="space-y-2 py-2">
           <p className="text-sm">
@@ -57,15 +57,15 @@ export function OverrideConfirmDialog({
           </p>
         </div>
 
-        <DialogFooter>
+        <ResponsiveDialogFooter>
           <Button variant="outline" onClick={onCancel} data-testid="override-cancel-btn">
             Annuler
           </Button>
           <Button onClick={onConfirm} data-testid="override-confirm-btn">
             Modifier
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ResponsiveDialogFooter>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }

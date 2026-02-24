@@ -89,9 +89,9 @@ export default function LegalTextsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Textes Legaux</h1>
+        <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">Textes Legaux</h1>
         <p className="text-muted-foreground mt-1 text-sm">
           Gerez les documents legaux avec versionnement et re-acceptation automatique.
         </p>
@@ -109,11 +109,11 @@ export default function LegalTextsPage() {
         </p>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         {documents.map((doc) => (
           <div
             key={doc.ID}
-            className="rounded-lg border bg-card p-6 shadow-sm"
+            className="rounded-lg border bg-card p-4 shadow-sm sm:p-6"
             data-testid={`legal-card-${doc.ID}`}
           >
             <div className="flex items-start justify-between">
@@ -133,7 +133,7 @@ export default function LegalTextsPage() {
               </Badge>
             </div>
 
-            <div className="mt-4 grid grid-cols-3 gap-4 text-sm">
+            <div className="mt-4 grid grid-cols-3 gap-2 text-sm sm:gap-4">
               <div>
                 <p className="text-muted-foreground">Version</p>
                 <p className="font-medium">{doc.currentVersion}</p>

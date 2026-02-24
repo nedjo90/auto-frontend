@@ -53,9 +53,12 @@ export default async function ListingDetailPage({ params }: Props) {
   const jsonLd = generateListingJsonLd(stubListing);
 
   return (
-    <div>
+    <div className="container mx-auto px-4 py-6 sm:py-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
-      <p>Annonce {id} - Page en construction (Epic 3)</p>
+      <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl mb-4">Annonce</h1>
+      <p className="text-sm sm:text-base text-muted-foreground">
+        Annonce {id} - Page en construction (Epic 3)
+      </p>
     </div>
   );
 }

@@ -29,8 +29,9 @@ export default async function CityPage({ params }: Props) {
   const city = decodeURIComponent((await params).city);
 
   return (
-    <div>
-      <p>Annonces à {city} - Page en construction (Epic 4)</p>
+    <div className="container mx-auto px-4 py-6 sm:py-8">
+      <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl mb-4">Annonces à {city}</h1>
+      <p className="text-sm sm:text-base text-muted-foreground">Page en construction (Epic 4)</p>
     </div>
   );
 }

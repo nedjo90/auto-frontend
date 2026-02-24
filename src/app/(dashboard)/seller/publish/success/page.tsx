@@ -76,10 +76,17 @@ export default function PublishSuccessPage() {
 
   if (!sessionId) {
     return (
-      <div className="flex flex-col items-center justify-center py-16" data-testid="no-session">
+      <div
+        className="flex flex-col items-center justify-center px-4 py-12 sm:py-16 text-center"
+        data-testid="no-session"
+      >
         <XCircle className="size-12 text-destructive mb-4" />
-        <p className="text-lg mb-4">Session de paiement invalide</p>
-        <Button onClick={() => router.push("/seller/publish")} data-testid="go-publish-btn">
+        <p className="text-base sm:text-lg mb-4">Session de paiement invalide</p>
+        <Button
+          className="w-full sm:w-auto min-h-11 sm:min-h-0"
+          onClick={() => router.push("/seller/publish")}
+          data-testid="go-publish-btn"
+        >
           Retour à la publication
         </Button>
       </div>
@@ -88,11 +95,18 @@ export default function PublishSuccessPage() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-16" data-testid="payment-error">
+      <div
+        className="flex flex-col items-center justify-center px-4 py-12 sm:py-16 text-center"
+        data-testid="payment-error"
+      >
         <XCircle className="size-12 text-destructive mb-4" />
-        <p className="text-lg mb-2">Erreur</p>
-        <p className="text-muted-foreground mb-4">{error}</p>
-        <Button onClick={() => router.push("/seller/publish")} data-testid="error-retry-btn">
+        <p className="text-base sm:text-lg mb-2">Erreur</p>
+        <p className="text-sm sm:text-base text-muted-foreground mb-4">{error}</p>
+        <Button
+          className="w-full sm:w-auto min-h-11 sm:min-h-0"
+          onClick={() => router.push("/seller/publish")}
+          data-testid="error-retry-btn"
+        >
           Réessayer
         </Button>
       </div>
@@ -102,11 +116,13 @@ export default function PublishSuccessPage() {
   if (!status || status.status === "Pending") {
     return (
       <div
-        className="flex flex-col items-center justify-center py-16"
+        className="flex flex-col items-center justify-center px-4 py-12 sm:py-16 text-center"
         data-testid="payment-pending"
       >
         <Loader2 className="size-12 animate-spin text-primary mb-4" />
-        <p className="text-lg font-medium mb-2">Confirmation du paiement en cours...</p>
+        <p className="text-base sm:text-lg font-medium mb-2">
+          Confirmation du paiement en cours...
+        </p>
         <p className="text-sm text-muted-foreground">
           Veuillez patienter, nous vérifions votre paiement.
         </p>
@@ -116,13 +132,20 @@ export default function PublishSuccessPage() {
 
   if (status.status === "Failed") {
     return (
-      <div className="flex flex-col items-center justify-center py-16" data-testid="payment-failed">
+      <div
+        className="flex flex-col items-center justify-center px-4 py-12 sm:py-16 text-center"
+        data-testid="payment-failed"
+      >
         <XCircle className="size-12 text-destructive mb-4" />
-        <p className="text-lg font-medium mb-2">Le paiement a échoué</p>
-        <p className="text-muted-foreground mb-4">
+        <p className="text-base sm:text-lg font-medium mb-2">Le paiement a échoué</p>
+        <p className="text-sm sm:text-base text-muted-foreground mb-4">
           Votre paiement n&apos;a pas pu être traité. Aucune annonce n&apos;a été publiée.
         </p>
-        <Button onClick={() => router.push("/seller/publish")} data-testid="failed-retry-btn">
+        <Button
+          className="w-full sm:w-auto min-h-11 sm:min-h-0"
+          onClick={() => router.push("/seller/publish")}
+          data-testid="failed-retry-btn"
+        >
           Réessayer
         </Button>
       </div>
@@ -132,10 +155,10 @@ export default function PublishSuccessPage() {
   // Succeeded
   return (
     <div data-testid="payment-success">
-      <div className="flex flex-col items-center justify-center py-8 mb-6">
-        <CheckCircle2 className="size-16 text-green-600 mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Paiement confirmé !</h1>
-        <p className="text-muted-foreground">
+      <div className="flex flex-col items-center justify-center px-4 py-6 sm:py-8 mb-4 sm:mb-6 text-center">
+        <CheckCircle2 className="size-12 sm:size-16 text-green-600 mb-4" />
+        <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl mb-2">Paiement confirmé !</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           {status.listingCount} annonce{status.listingCount > 1 ? "s" : ""}{" "}
           {status.listingCount > 1 ? "ont été publiées" : "a été publiée"} avec succès.
         </p>
@@ -148,10 +171,10 @@ export default function PublishSuccessPage() {
         >
           {status.listings.map((listing) => (
             <Card key={listing.ID} data-testid={`published-listing-${listing.ID}`}>
-              <CardHeader className="pb-2">
+              <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-2">
                 <CardTitle className="text-sm font-medium">{listing.ID}</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
                 <span className="text-sm text-green-600 font-medium" data-testid="listing-status">
                   {listing.status === "published" ? "Publiée" : listing.status}
                 </span>
@@ -161,16 +184,21 @@ export default function PublishSuccessPage() {
         </div>
       )}
 
-      <div className="flex justify-center gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-center px-4 sm:px-0">
         <Button
           variant="outline"
+          className="w-full sm:w-auto min-h-11 sm:min-h-0"
           onClick={() => router.push("/seller/drafts")}
           data-testid="go-drafts-btn"
         >
           <ArrowLeft className="mr-2 size-4" />
           Mes brouillons
         </Button>
-        <Button onClick={() => router.push("/seller/publish")} data-testid="publish-more-btn">
+        <Button
+          className="w-full sm:w-auto min-h-11 sm:min-h-0"
+          onClick={() => router.push("/seller/publish")}
+          data-testid="publish-more-btn"
+        >
           Publier d&apos;autres annonces
         </Button>
       </div>

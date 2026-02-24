@@ -132,7 +132,7 @@ export default function ProvidersConfigPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <p className="text-muted-foreground text-sm">
         Gerez les fournisseurs API externes. Activez ou basculez entre les fournisseurs sans
         deploiement.
@@ -149,59 +149,61 @@ export default function ProvidersConfigPage() {
         return (
           <div key={iface} className="space-y-2">
             <h3 className="text-sm font-semibold">{iface}</h3>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Fournisseur</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead>Cout/appel</TableHead>
-                  <TableHead>Disponibilite</TableHead>
-                  <TableHead>Dernier appel</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {ifaceProviders.map((provider) => {
-                  const provAnalytics = analytics[provider.key];
-                  return (
-                    <TableRow key={provider.ID}>
-                      <TableCell className="text-sm font-mono">{provider.key}</TableCell>
-                      <TableCell>
-                        <Badge variant={STATUS_BADGE_VARIANT[provider.status] || "outline"}>
-                          {STATUS_LABEL[provider.status] || provider.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {provider.costPerCall.toFixed(4)} &euro;
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {provAnalytics ? `${provAnalytics.successRate}%` : "-"}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {provAnalytics?.lastCallTimestamp
-                          ? new Date(provAnalytics.lastCallTimestamp).toLocaleString("fr-FR")
-                          : "-"}
-                      </TableCell>
-                      <TableCell>
-                        {provider.status !== "active" && provider.status !== "deprecated" && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleActivate(provider)}
-                            disabled={saving}
-                          >
-                            Activer
-                          </Button>
-                        )}
-                        {provider.status === "active" && (
-                          <span className="text-xs text-muted-foreground">Fournisseur actif</span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto rounded-md border [&_td]:whitespace-normal [&_td]:text-sm">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Fournisseur</TableHead>
+                    <TableHead>Statut</TableHead>
+                    <TableHead>Cout/appel</TableHead>
+                    <TableHead>Disponibilite</TableHead>
+                    <TableHead>Dernier appel</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {ifaceProviders.map((provider) => {
+                    const provAnalytics = analytics[provider.key];
+                    return (
+                      <TableRow key={provider.ID}>
+                        <TableCell className="text-sm font-mono">{provider.key}</TableCell>
+                        <TableCell>
+                          <Badge variant={STATUS_BADGE_VARIANT[provider.status] || "outline"}>
+                            {STATUS_LABEL[provider.status] || provider.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {provider.costPerCall.toFixed(4)} &euro;
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {provAnalytics ? `${provAnalytics.successRate}%` : "-"}
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {provAnalytics?.lastCallTimestamp
+                            ? new Date(provAnalytics.lastCallTimestamp).toLocaleString("fr-FR")
+                            : "-"}
+                        </TableCell>
+                        <TableCell>
+                          {provider.status !== "active" && provider.status !== "deprecated" && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleActivate(provider)}
+                              disabled={saving}
+                            >
+                              Activer
+                            </Button>
+                          )}
+                          {provider.status === "active" && (
+                            <span className="text-xs text-muted-foreground">Fournisseur actif</span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         );
       })}

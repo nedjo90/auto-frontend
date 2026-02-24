@@ -29,8 +29,9 @@ export default async function BrandPage({ params }: Props) {
   const brand = decodeURIComponent((await params).brand);
 
   return (
-    <div>
-      <p>{brand} occasion - Page en construction (Epic 4)</p>
+    <div className="container mx-auto px-4 py-6 sm:py-8">
+      <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl mb-4">{brand} occasion</h1>
+      <p className="text-sm sm:text-base text-muted-foreground">Page en construction (Epic 4)</p>
     </div>
   );
 }

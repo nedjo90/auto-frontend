@@ -99,9 +99,9 @@ export default function ConsentSettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-2xl space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Gestion des consentements</h1>
+        <h1 className="text-lg font-semibold sm:text-xl lg:text-2xl">Gestion des consentements</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Consultez et gérez vos choix de traitement des données personnelles.
         </p>
@@ -113,13 +113,13 @@ export default function ConsentSettingsPage() {
         </div>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {statuses.map(({ consentType: ct, latestDecision }) => {
           const isGranted = latestDecision?.decision === "granted";
           const isSaving = saving === ct.ID;
 
           return (
-            <div key={ct.ID} className="rounded-lg border p-4">
+            <div key={ct.ID} className="rounded-lg border p-3 sm:p-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3">
                   <Checkbox

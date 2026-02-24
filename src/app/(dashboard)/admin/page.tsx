@@ -59,10 +59,10 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Tableau de bord</h1>
+          <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">Tableau de bord</h1>
           <p className="text-muted-foreground mt-1 text-sm">
             Vue d&apos;ensemble des indicateurs cles de la plateforme.
           </p>
@@ -86,7 +86,7 @@ export default function AdminDashboardPage() {
 
       {loading && (
         <div data-testid="dashboard-skeleton">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {KPI_CONFIGS.map((cfg) => (
               <KpiCardSkeleton key={cfg.metric} />
             ))}
@@ -97,7 +97,7 @@ export default function AdminDashboardPage() {
 
       {!loading && kpis && (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {KPI_CONFIGS.map((cfg) => (
               <KpiCard
                 key={cfg.metric}

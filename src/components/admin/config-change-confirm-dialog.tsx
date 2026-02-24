@@ -1,13 +1,13 @@
 "use client";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/ui/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
@@ -37,14 +37,14 @@ export function ConfigChangeConfirmDialog({
   title = "Confirmer les modifications",
 }: ConfigChangeConfirmDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && !loading && onClose()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>
+    <ResponsiveDialog open={open} onOpenChange={(v) => !v && !loading && onClose()}>
+      <ResponsiveDialogContent>
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>
             Veuillez verifier les modifications avant de confirmer.
-          </DialogDescription>
-        </DialogHeader>
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
 
         <div className="space-y-3 py-2">
           {changes.map((change, i) => (
@@ -70,7 +70,7 @@ export function ConfigChangeConfirmDialog({
           )}
         </div>
 
-        <DialogFooter>
+        <ResponsiveDialogFooter>
           <Button variant="outline" onClick={onClose} disabled={loading}>
             Annuler
           </Button>
@@ -78,8 +78,8 @@ export function ConfigChangeConfirmDialog({
             {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
             Confirmer
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ResponsiveDialogFooter>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }

@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/ui/responsive-dialog";
 import { ANONYMIZATION_CONFIRMATION_WORD } from "@auto/shared";
 import { apiClient } from "@/lib/auth/api-client";
 import { useAuth } from "@/hooks/use-auth";
@@ -104,18 +104,18 @@ export function AnonymizationConfirmationDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="text-destructive">
+    <ResponsiveDialog open={open} onOpenChange={handleClose}>
+      <ResponsiveDialogContent>
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle className="text-destructive">
             {step === 1 ? "Confirmer l'anonymisation" : "Dernière confirmation"}
-          </DialogTitle>
-          <DialogDescription>
+          </ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>
             {step === 1
               ? "Êtes-vous sûr ? Cette action est irréversible. Toutes vos données personnelles seront définitivement anonymisées."
               : "Dernière confirmation. Toutes vos données personnelles seront anonymisées et votre compte sera désactivé."}
-          </DialogDescription>
-        </DialogHeader>
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
 
         {step === 1 && (
           <div className="space-y-3 py-2">
@@ -138,7 +138,7 @@ export function AnonymizationConfirmationDialog({
           </div>
         )}
 
-        <DialogFooter>
+        <ResponsiveDialogFooter>
           <Button variant="outline" onClick={handleClose} disabled={loading}>
             Annuler
           </Button>
@@ -150,8 +150,8 @@ export function AnonymizationConfirmationDialog({
             {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
             {step === 1 ? "Continuer" : "Anonymiser définitivement"}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ResponsiveDialogFooter>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }

@@ -52,18 +52,18 @@ export default function SecuritySettingsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Sécurité</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">Sécurité</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Gérez les paramètres de sécurité de votre compte
         </p>
       </div>
 
       {isSeller && (
-        <Card className="p-6">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start gap-4">
+        <Card className="p-4 sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex items-start gap-3 sm:gap-4">
               {mfaEnabled ? (
                 <ShieldCheck className="mt-1 size-6 text-green-500" />
               ) : (
@@ -85,6 +85,7 @@ export default function SecuritySettingsPage() {
             </div>
             <Button
               variant={mfaEnabled ? "outline" : "default"}
+              className="w-full sm:w-auto min-h-11 sm:min-h-0"
               onClick={handleToggle2FA}
               disabled={isLoading}
             >
@@ -101,7 +102,7 @@ export default function SecuritySettingsPage() {
       )}
 
       {!isSeller && (
-        <Card className="p-6">
+        <Card className="p-4 sm:p-6">
           <p className="text-sm text-muted-foreground">
             L&apos;authentification à deux facteurs est disponible pour les comptes vendeurs.
           </p>

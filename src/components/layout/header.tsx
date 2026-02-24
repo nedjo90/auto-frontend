@@ -3,17 +3,20 @@
 import Link from "next/link";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { UserMenu } from "@/components/layout/user-menu";
+import { MobileHeaderNav } from "@/components/layout/mobile-header-nav";
 
 export function Header() {
   const { isAuthenticated } = useCurrentUser();
 
   return (
     <header className="border-b bg-background">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="font-serif text-xl font-bold">
+      <div className="container mx-auto flex h-14 items-center justify-between px-4 sm:h-16">
+        <Link href="/" className="font-serif text-lg font-bold sm:text-xl">
           Auto
         </Link>
-        <nav className="flex items-center gap-4">
+
+        {/* Desktop nav */}
+        <nav className="hidden items-center gap-4 sm:flex">
           {isAuthenticated ? (
             <UserMenu />
           ) : (
@@ -30,6 +33,9 @@ export function Header() {
             </>
           )}
         </nav>
+
+        {/* Mobile nav */}
+        <MobileHeaderNav />
       </div>
     </header>
   );

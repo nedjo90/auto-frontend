@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/ui/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -84,7 +84,7 @@ export function AlertFormDialog({
   const formKey = initialData?.ID ?? (open ? "create" : "closed");
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && !loading && onClose()}>
+    <ResponsiveDialog open={open} onOpenChange={(v) => !v && !loading && onClose()}>
       <AlertFormFields
         key={formKey}
         initialData={initialData}
@@ -92,7 +92,7 @@ export function AlertFormDialog({
         onClose={onClose}
         onSubmit={onSubmit}
       />
-    </Dialog>
+    </ResponsiveDialog>
   );
 }
 
@@ -141,15 +141,17 @@ function AlertFormFields({
   const isValid = name.trim().length > 0 && !isNaN(parseFloat(thresholdValue));
 
   return (
-    <DialogContent className="max-w-md">
-      <DialogHeader>
-        <DialogTitle>{initialData ? "Modifier l'alerte" : "Nouvelle alerte"}</DialogTitle>
-        <DialogDescription>
+    <ResponsiveDialogContent className="max-w-md">
+      <ResponsiveDialogHeader>
+        <ResponsiveDialogTitle>
+          {initialData ? "Modifier l'alerte" : "Nouvelle alerte"}
+        </ResponsiveDialogTitle>
+        <ResponsiveDialogDescription>
           {initialData
             ? "Modifiez les parametres de l'alerte."
             : "Configurez une nouvelle alerte de seuil."}
-        </DialogDescription>
-      </DialogHeader>
+        </ResponsiveDialogDescription>
+      </ResponsiveDialogHeader>
 
       <div className="space-y-4 py-2">
         <div className="space-y-1">
@@ -265,7 +267,7 @@ function AlertFormFields({
         </div>
       </div>
 
-      <DialogFooter>
+      <ResponsiveDialogFooter>
         <Button variant="outline" onClick={onClose} disabled={loading}>
           Annuler
         </Button>
@@ -273,7 +275,7 @@ function AlertFormFields({
           {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
           {initialData ? "Enregistrer" : "Creer"}
         </Button>
-      </DialogFooter>
-    </DialogContent>
+      </ResponsiveDialogFooter>
+    </ResponsiveDialogContent>
   );
 }

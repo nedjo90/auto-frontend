@@ -182,10 +182,10 @@ export default function AuditTrailPage() {
   };
 
   return (
-    <div className="space-y-6" data-testid="audit-trail-page">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6" data-testid="audit-trail-page">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Piste d&apos;audit</h1>
+          <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">Piste d&apos;audit</h1>
           <p className="text-sm text-muted-foreground">
             Suivi de toutes les operations sensibles sur la plateforme
           </p>
@@ -215,7 +215,7 @@ export default function AuditTrailPage() {
 
       {/* Filters */}
       <div
-        className="grid grid-cols-2 gap-4 rounded-md border p-4 sm:grid-cols-3 lg:grid-cols-4"
+        className="grid grid-cols-1 gap-3 rounded-md border p-4 sm:grid-cols-2 lg:grid-cols-4"
         data-testid="audit-filters"
       >
         <div>
@@ -324,7 +324,7 @@ export default function AuditTrailPage() {
       )}
 
       {/* Data Table */}
-      <div className="rounded-md border">
+      <div className="overflow-x-auto rounded-md border [&_td]:whitespace-normal [&_td]:text-sm">
         <Table>
           <TableHeader>
             <TableRow>
@@ -431,7 +431,7 @@ export default function AuditTrailPage() {
                         className="bg-muted/30"
                         data-testid={`audit-detail-${entry.ID}`}
                       >
-                        <div className="grid grid-cols-2 gap-4 p-4 text-sm">
+                        <div className="grid grid-cols-1 gap-4 p-4 text-sm sm:grid-cols-2">
                           <div>
                             <strong>Acteur ID:</strong> {entry.actorId}
                           </div>
@@ -469,7 +469,10 @@ export default function AuditTrailPage() {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between" data-testid="audit-pagination">
+      <div
+        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        data-testid="audit-pagination"
+      >
         <div className="text-sm text-muted-foreground">
           {totalCount} entree{totalCount !== 1 ? "s" : ""} au total
         </div>

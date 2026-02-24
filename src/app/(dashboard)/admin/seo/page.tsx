@@ -99,9 +99,9 @@ export default function SeoConfigPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Templates SEO</h1>
+        <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">Templates SEO</h1>
         <p className="text-muted-foreground mt-1 text-sm">
           Gerez les meta tags et templates SEO par type de page.
         </p>
@@ -120,59 +120,61 @@ export default function SeoConfigPage() {
       )}
 
       {templates.length > 0 && (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Type de page</TableHead>
-              <TableHead>Titre meta</TableHead>
-              <TableHead>Description meta</TableHead>
-              <TableHead>Langue</TableHead>
-              <TableHead>Statut</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {templates.map((template) => (
-              <TableRow key={template.ID} data-testid={`seo-row-${template.ID}`}>
-                <TableCell className="text-sm font-medium">
-                  {SEO_PAGE_TYPE_LABELS[template.pageType] || template.pageType}
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground max-w-48">
-                  {truncate(template.metaTitleTemplate, 50)}
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground max-w-64">
-                  {truncate(template.metaDescriptionTemplate, 60)}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline">{template.language}</Badge>
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant={template.active ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleToggleActive(template)}
-                    disabled={saving}
-                    data-testid={`seo-toggle-${template.ID}`}
-                  >
-                    {template.active ? "Actif" : "Inactif"}
-                  </Button>
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(template)}
-                    disabled={saving}
-                    data-testid={`seo-edit-${template.ID}`}
-                  >
-                    <Pencil className="mr-1 size-3" />
-                    Modifier
-                  </Button>
-                </TableCell>
+        <div className="overflow-x-auto rounded-md border [&_td]:whitespace-normal [&_td]:text-sm">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Type de page</TableHead>
+                <TableHead>Titre meta</TableHead>
+                <TableHead>Description meta</TableHead>
+                <TableHead>Langue</TableHead>
+                <TableHead>Statut</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {templates.map((template) => (
+                <TableRow key={template.ID} data-testid={`seo-row-${template.ID}`}>
+                  <TableCell className="text-sm font-medium">
+                    {SEO_PAGE_TYPE_LABELS[template.pageType] || template.pageType}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground max-w-48">
+                    {truncate(template.metaTitleTemplate, 50)}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground max-w-64">
+                    {truncate(template.metaDescriptionTemplate, 60)}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{template.language}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant={template.active ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleToggleActive(template)}
+                      disabled={saving}
+                      data-testid={`seo-toggle-${template.ID}`}
+                    >
+                      {template.active ? "Actif" : "Inactif"}
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(template)}
+                      disabled={saving}
+                      data-testid={`seo-edit-${template.ID}`}
+                    >
+                      <Pencil className="mr-1 size-3" />
+                      Modifier
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       <SeoTemplateFormDialog

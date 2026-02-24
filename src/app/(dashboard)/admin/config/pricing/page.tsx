@@ -114,7 +114,7 @@ export default function PricingConfigPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 sm:space-y-6">
       <p className="text-muted-foreground text-sm">Parametres de tarification de la plateforme.</p>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
@@ -124,48 +124,50 @@ export default function PricingConfigPage() {
       )}
 
       {params.length > 0 && (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Parametre</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Valeur</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {params.map((param) => (
-              <TableRow key={param.ID}>
-                <TableCell className="font-mono text-sm">{param.key}</TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {param.description || "-"}
-                </TableCell>
-                <TableCell>
-                  <Input
-                    type="number"
-                    value={editValues[param.ID] ?? param.value}
-                    onChange={(e) =>
-                      setEditValues((prev) => ({ ...prev, [param.ID]: e.target.value }))
-                    }
-                    className="w-32"
-                    min={0}
-                    step="0.01"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSave(param)}
-                    disabled={editValues[param.ID] === param.value || saving}
-                  >
-                    Enregistrer
-                  </Button>
-                </TableCell>
+        <div className="overflow-x-auto rounded-md border [&_td]:whitespace-normal [&_td]:text-sm">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Parametre</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Valeur</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {params.map((param) => (
+                <TableRow key={param.ID}>
+                  <TableCell className="font-mono text-sm">{param.key}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {param.description || "-"}
+                  </TableCell>
+                  <TableCell>
+                    <Input
+                      type="number"
+                      value={editValues[param.ID] ?? param.value}
+                      onChange={(e) =>
+                        setEditValues((prev) => ({ ...prev, [param.ID]: e.target.value }))
+                      }
+                      className="w-32"
+                      min={0}
+                      step="0.01"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSave(param)}
+                      disabled={editValues[param.ID] === param.value || saving}
+                    >
+                      Enregistrer
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       {pendingChange && (

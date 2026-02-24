@@ -130,15 +130,15 @@ export default function LegalDocumentEditPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={() => router.push("/admin/legal")}>
             <ArrowLeft className="mr-1 size-4" />
             Retour
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">{document.title}</h1>
+            <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">{document.title}</h1>
             <p className="text-sm text-muted-foreground">
               {LEGAL_DOCUMENT_LABELS[document.key as LegalDocumentKey] || document.key}
               {" — "}Version actuelle: {document.currentVersion}
@@ -148,6 +148,7 @@ export default function LegalDocumentEditPage() {
         <Button
           variant="outline"
           size="sm"
+          className="w-full sm:w-auto"
           onClick={() => setShowHistory(!showHistory)}
           data-testid="toggle-history-btn"
         >
@@ -168,7 +169,7 @@ export default function LegalDocumentEditPage() {
         </p>
       )}
 
-      <div className="flex gap-6">
+      <div className="flex flex-col gap-6 lg:flex-row">
         {/* Main editor area */}
         <div className="flex-1 space-y-4">
           {selectedVersion ? (
@@ -227,6 +228,7 @@ export default function LegalDocumentEditPage() {
               <Button
                 onClick={handlePublish}
                 disabled={saving || !content.trim()}
+                className="w-full sm:w-auto"
                 data-testid="legal-publish-btn"
               >
                 {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
@@ -239,7 +241,7 @@ export default function LegalDocumentEditPage() {
 
         {/* Version history sidebar */}
         {showHistory && (
-          <div className="w-72 shrink-0 space-y-2" data-testid="version-history-sidebar">
+          <div className="w-full shrink-0 space-y-2 lg:w-72" data-testid="version-history-sidebar">
             <h3 className="text-sm font-semibold">Historique des versions</h3>
             {versions.length === 0 ? (
               <p className="text-xs text-muted-foreground">Aucune version.</p>

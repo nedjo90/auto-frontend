@@ -157,14 +157,14 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Gestion des utilisateurs</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">Gestion des utilisateurs</h1>
 
       <Input
         placeholder="Rechercher par nom, email ou role..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="max-w-sm"
+        className="w-full sm:max-w-sm"
       />
 
       {loading && (
@@ -177,57 +177,61 @@ export default function AdminUsersPage() {
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       {!loading && !error && (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>
-                <Button variant="ghost" size="sm" onClick={() => toggleSort("name")}>
-                  Nom <ArrowUpDown className="ml-1 size-3" />
-                </Button>
-              </TableHead>
-              <TableHead>
-                <Button variant="ghost" size="sm" onClick={() => toggleSort("email")}>
-                  Email <ArrowUpDown className="ml-1 size-3" />
-                </Button>
-              </TableHead>
-              <TableHead>
-                <Button variant="ghost" size="sm" onClick={() => toggleSort("role")}>
-                  Role <ArrowUpDown className="ml-1 size-3" />
-                </Button>
-              </TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sortedUsers.map((user) => (
-              <TableRow key={user.ID}>
-                <TableCell>
-                  {user.firstName} {user.lastName}
-                </TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>
-                  {user.roles.map((r) => r.role.name || r.role.code).join(", ")}
-                </TableCell>
-                <TableCell>
-                  <Button variant="outline" size="sm" onClick={() => handleEditRole(user)}>
-                    Modifier
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-            {sortedUsers.length === 0 && (
+        <div className="overflow-x-auto rounded-md border [&_td]:whitespace-normal [&_td]:text-sm">
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-muted-foreground">
-                  Aucun utilisateur trouve
-                </TableCell>
+                <TableHead>
+                  <Button variant="ghost" size="sm" onClick={() => toggleSort("name")}>
+                    Nom <ArrowUpDown className="ml-1 size-3" />
+                  </Button>
+                </TableHead>
+                <TableHead>
+                  <Button variant="ghost" size="sm" onClick={() => toggleSort("email")}>
+                    Email <ArrowUpDown className="ml-1 size-3" />
+                  </Button>
+                </TableHead>
+                <TableHead>
+                  <Button variant="ghost" size="sm" onClick={() => toggleSort("role")}>
+                    Role <ArrowUpDown className="ml-1 size-3" />
+                  </Button>
+                </TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {sortedUsers.map((user) => (
+                <TableRow key={user.ID}>
+                  <TableCell>
+                    {user.firstName} {user.lastName}
+                  </TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>
+                    {user.roles.map((r) => r.role.name || r.role.code).join(", ")}
+                  </TableCell>
+                  <TableCell>
+                    <Button variant="outline" size="sm" onClick={() => handleEditRole(user)}>
+                      Modifier
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {sortedUsers.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                    Aucun utilisateur trouve
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       <div className="space-y-2 pt-4">
-        <h2 className="text-lg font-semibold">Journal des modifications de roles</h2>
+        <h2 className="text-lg font-semibold sm:text-xl lg:text-2xl">
+          Journal des modifications de roles
+        </h2>
         <AuditLogTable refreshKey={refreshKey} />
       </div>
 

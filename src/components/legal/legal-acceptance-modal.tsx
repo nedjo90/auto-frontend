@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/ui/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -104,19 +104,19 @@ export function LegalAcceptanceModal({
   if (!currentDoc) return null;
 
   return (
-    <Dialog open={open}>
-      <DialogContent
+    <ResponsiveDialog open={open}>
+      <ResponsiveDialogContent
         className="max-w-2xl max-h-[90vh] overflow-y-auto"
         data-testid="legal-acceptance-modal"
       >
-        <DialogHeader>
-          <DialogTitle>{currentDoc.title}</DialogTitle>
-          <DialogDescription>
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>{currentDoc.title}</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>
             {currentDoc.summary ||
               "Ce document a ete mis a jour. Veuillez le lire et l'accepter pour continuer."}{" "}
             ({currentIndex + 1}/{pendingDocuments.length})
-          </DialogDescription>
-        </DialogHeader>
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
 
         <div className="py-4">
           {loadingContent ? (
@@ -154,7 +154,7 @@ export function LegalAcceptanceModal({
           </Label>
         </div>
 
-        <DialogFooter>
+        <ResponsiveDialogFooter>
           <Button
             onClick={handleAccept}
             disabled={saving || !accepted}
@@ -163,8 +163,8 @@ export function LegalAcceptanceModal({
             {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
             Accepter
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ResponsiveDialogFooter>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }

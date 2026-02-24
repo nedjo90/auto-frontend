@@ -61,8 +61,8 @@ export default function CostTrackingPage() {
   const margin = summary ? REVENUE_PER_LISTING - summary.avgCostPerCall : null;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-muted-foreground text-sm">Suivi des couts API et marge par annonce.</p>
         <div className="flex gap-1">
           {PERIODS.map((p) => (
@@ -90,47 +90,47 @@ export default function CostTrackingPage() {
 
       {!loading && summary && (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Card>
-              <CardHeader className="pb-2">
+              <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   Cout total
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
                 <p className="text-2xl font-bold">{summary.totalCost.toFixed(2)} &euro;</p>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader className="pb-2">
+              <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   Nombre d&apos;appels
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
                 <p className="text-2xl font-bold">{summary.callCount}</p>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader className="pb-2">
+              <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   Cout moyen / appel
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
                 <p className="text-2xl font-bold">{summary.avgCostPerCall.toFixed(4)} &euro;</p>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader className="pb-2">
+              <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   Marge / annonce
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
                 <p className="text-2xl font-bold">
                   {margin !== null ? `${margin.toFixed(2)} \u20AC` : "-"}
                 </p>
@@ -144,31 +144,33 @@ export default function CostTrackingPage() {
           {byProvider.length > 0 && (
             <div className="space-y-2">
               <h3 className="text-sm font-semibold">Repartition par fournisseur</h3>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Fournisseur</TableHead>
-                    <TableHead>Appels</TableHead>
-                    <TableHead>Cout total</TableHead>
-                    <TableHead>Cout moyen / appel</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {byProvider.map((entry) => (
-                    <TableRow key={entry.providerKey}>
-                      <TableCell className="font-mono text-sm">{entry.providerKey}</TableCell>
-                      <TableCell>{entry.callCount}</TableCell>
-                      <TableCell>{entry.totalCost.toFixed(4)} &euro;</TableCell>
-                      <TableCell>
-                        {entry.callCount > 0
-                          ? (entry.totalCost / entry.callCount).toFixed(4)
-                          : "0.0000"}{" "}
-                        &euro;
-                      </TableCell>
+              <div className="overflow-x-auto rounded-md border [&_td]:whitespace-normal [&_td]:text-sm">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Fournisseur</TableHead>
+                      <TableHead>Appels</TableHead>
+                      <TableHead>Cout total</TableHead>
+                      <TableHead>Cout moyen / appel</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {byProvider.map((entry) => (
+                      <TableRow key={entry.providerKey}>
+                        <TableCell className="font-mono text-sm">{entry.providerKey}</TableCell>
+                        <TableCell>{entry.callCount}</TableCell>
+                        <TableCell>{entry.totalCost.toFixed(4)} &euro;</TableCell>
+                        <TableCell>
+                          {entry.callCount > 0
+                            ? (entry.totalCost / entry.callCount).toFixed(4)
+                            : "0.0000"}{" "}
+                          &euro;
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           )}
 

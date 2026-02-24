@@ -33,10 +33,11 @@ export default async function ModelPage({ params }: Props) {
   const model = decodeURIComponent(rawModel);
 
   return (
-    <div>
-      <p>
-        {brand} {model} occasion - Page en construction (Epic 4)
-      </p>
+    <div className="container mx-auto px-4 py-6 sm:py-8">
+      <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl mb-4">
+        {brand} {model} occasion
+      </h1>
+      <p className="text-sm sm:text-base text-muted-foreground">Page en construction (Epic 4)</p>
     </div>
   );
 }

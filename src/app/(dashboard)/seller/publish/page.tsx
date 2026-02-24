@@ -97,10 +97,10 @@ export default function PublishPage() {
   if (isLoading) {
     return (
       <div data-testid="publish-skeleton">
-        <div className="flex items-center justify-between mb-6">
-          <Skeleton className="h-8 w-64" />
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <Skeleton className="h-8 w-48 sm:w-64" />
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="h-48 rounded-xl" />
           ))}
@@ -111,17 +111,18 @@ export default function PublishPage() {
 
   return (
     <div data-testid="publish-page">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Button
             variant="ghost"
             size="icon"
+            className="min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
             onClick={() => router.push("/seller/drafts")}
             data-testid="back-to-drafts-btn"
           >
             <ArrowLeft className="size-5" />
           </Button>
-          <h1 className="text-2xl font-bold">Publier mes annonces</h1>
+          <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">Publier mes annonces</h1>
         </div>
       </div>
 
@@ -134,7 +135,11 @@ export default function PublishPage() {
             Aucune annonce éligible à la publication. Complétez un brouillon avec la déclaration sur
             l&apos;honneur pour pouvoir publier.
           </p>
-          <Button onClick={() => router.push("/seller/drafts")} data-testid="empty-go-drafts-btn">
+          <Button
+            onClick={() => router.push("/seller/drafts")}
+            className="w-full sm:w-auto min-h-11 sm:min-h-0"
+            data-testid="empty-go-drafts-btn"
+          >
             Retour aux brouillons
           </Button>
         </div>
@@ -154,7 +159,10 @@ export default function PublishPage() {
           </div>
 
           {/* Listings grid */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-6" data-testid="publish-grid">
+          <div
+            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mb-4 sm:mb-6"
+            data-testid="publish-grid"
+          >
             {listings.map((listing) => {
               const title =
                 listing.make && listing.model ? `${listing.make} ${listing.model}` : "Véhicule";
@@ -179,7 +187,7 @@ export default function PublishPage() {
                       {title}
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2">
+                  <CardContent className="space-y-2 p-4 sm:p-6 pt-0 sm:pt-0">
                     {listing.year && (
                       <p className="text-sm text-muted-foreground">Année : {listing.year}</p>
                     )}
@@ -203,7 +211,7 @@ export default function PublishPage() {
 
           {/* Sticky bottom bar with total and checkout */}
           <div
-            className="sticky bottom-0 bg-background border-t p-4 -mx-4 flex items-center justify-between"
+            className="sticky bottom-0 bg-background border-t p-4 -mx-4 pb-[calc(1rem+env(safe-area-inset-bottom))] flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
             data-testid="checkout-bar"
           >
             <div data-testid="checkout-summary">
@@ -222,6 +230,7 @@ export default function PublishPage() {
             </div>
             <Button
               size="lg"
+              className="w-full sm:w-auto min-h-11"
               disabled={selectedIds.size === 0 || isCheckingOut}
               onClick={handleCheckout}
               data-testid="checkout-btn"

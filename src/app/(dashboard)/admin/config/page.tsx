@@ -43,7 +43,7 @@ const CONFIG_SECTIONS = [
 
 export default function ConfigOverviewPage() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {CONFIG_SECTIONS.map((section) => (
         <Link key={section.href} href={section.href} className="block">
           <Card className="transition-shadow hover:shadow-md">

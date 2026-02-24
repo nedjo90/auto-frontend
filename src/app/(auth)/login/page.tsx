@@ -30,9 +30,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="space-y-6 text-center">
+    <div className="space-y-4 sm:space-y-6 text-center">
       <div className="space-y-2">
-        <h1 className="font-serif text-2xl font-bold">Connexion</h1>
+        <h1 className="font-serif text-xl font-bold sm:text-2xl lg:text-3xl">Connexion</h1>
         <p className="text-sm text-muted-foreground">Connectez-vous pour accéder à votre compte</p>
         {!isAzureConfigured && (
           <p className="text-xs text-amber-600">Mode dev — connexion automatique (admin)</p>
@@ -45,7 +45,7 @@ export default function LoginPage() {
         </p>
       )}
 
-      <Button onClick={handleLogin} disabled={isLoading} className="w-full" size="lg">
+      <Button onClick={handleLogin} disabled={isLoading} className="w-full min-h-11" size="lg">
         {isLoading ? (
           <>
             <Loader2 className="size-4 animate-spin" />

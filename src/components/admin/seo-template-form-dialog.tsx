@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/ui/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,7 +43,7 @@ export function SeoTemplateFormDialog({
   const formKey = initialData?.ID ?? (open ? "create" : "closed");
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && !loading && onClose()}>
+    <ResponsiveDialog open={open} onOpenChange={(v) => !v && !loading && onClose()}>
       <SeoTemplateFormFields
         key={formKey}
         initialData={initialData}
@@ -51,7 +51,7 @@ export function SeoTemplateFormDialog({
         onClose={onClose}
         onSubmit={onSubmit}
       />
-    </Dialog>
+    </ResponsiveDialog>
   );
 }
 
@@ -94,16 +94,16 @@ function SeoTemplateFormFields({
   const isValid = metaTitleTemplate.trim().length > 0 && metaDescriptionTemplate.trim().length > 0;
 
   return (
-    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-      <DialogHeader>
-        <DialogTitle>
+    <ResponsiveDialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <ResponsiveDialogHeader>
+        <ResponsiveDialogTitle>
           Modifier le template SEO
           {pageType && ` — ${SEO_PAGE_TYPE_LABELS[pageType]}`}
-        </DialogTitle>
-        <DialogDescription>
+        </ResponsiveDialogTitle>
+        <ResponsiveDialogDescription>
           Modifiez les templates de meta tags pour ce type de page.
-        </DialogDescription>
-      </DialogHeader>
+        </ResponsiveDialogDescription>
+      </ResponsiveDialogHeader>
 
       <div className="space-y-4 py-2">
         {placeholders.length > 0 && (
@@ -185,7 +185,7 @@ function SeoTemplateFormFields({
         )}
       </div>
 
-      <DialogFooter>
+      <ResponsiveDialogFooter>
         <Button variant="outline" onClick={onClose} disabled={loading}>
           Annuler
         </Button>
@@ -193,7 +193,7 @@ function SeoTemplateFormFields({
           {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
           Enregistrer
         </Button>
-      </DialogFooter>
-    </DialogContent>
+      </ResponsiveDialogFooter>
+    </ResponsiveDialogContent>
   );
 }

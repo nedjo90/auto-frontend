@@ -90,11 +90,11 @@ export default function DraftsPage() {
   if (isLoading) {
     return (
       <div data-testid="drafts-skeleton">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
           <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-9 w-40" />
+          <Skeleton className="h-11 w-full sm:h-9 sm:w-40" />
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="h-64 rounded-xl" />
           ))}
@@ -105,9 +105,13 @@ export default function DraftsPage() {
 
   return (
     <div data-testid="drafts-page">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Mes brouillons</h1>
-        <Button onClick={() => router.push("/seller/create")} data-testid="create-listing-btn">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
+        <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">Mes brouillons</h1>
+        <Button
+          onClick={() => router.push("/seller/create")}
+          className="w-full sm:w-auto min-h-11 sm:min-h-0"
+          data-testid="create-listing-btn"
+        >
           <Plus className="mr-2 size-4" />
           Nouvelle annonce
         </Button>
@@ -121,13 +125,17 @@ export default function DraftsPage() {
           <p className="text-lg text-muted-foreground mb-4">
             Aucun brouillon. Créez votre première annonce !
           </p>
-          <Button onClick={() => router.push("/seller/create")} data-testid="empty-create-btn">
+          <Button
+            onClick={() => router.push("/seller/create")}
+            className="w-full sm:w-auto min-h-11 sm:min-h-0"
+            data-testid="empty-create-btn"
+          >
             <Plus className="mr-2 size-4" />
             Créer une annonce
           </Button>
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-testid="drafts-grid">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-testid="drafts-grid">
           {drafts.map((draft) => (
             <DraftCard
               key={draft.ID}

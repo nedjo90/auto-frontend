@@ -5,9 +5,9 @@ import { AnonymizationSection } from "@/components/settings/anonymization-sectio
 
 export default function DataPrivacyPage() {
   return (
-    <div className="mx-auto max-w-2xl space-y-8">
+    <div className="mx-auto max-w-2xl space-y-6 sm:space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold">Données & Vie privée</h1>
+        <h1 className="text-lg font-semibold sm:text-xl lg:text-2xl">Données & Vie privée</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Gérez vos données personnelles conformément au RGPD.
         </p>

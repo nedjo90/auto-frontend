@@ -148,7 +148,7 @@ export default function CardDisplayConfigPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 sm:space-y-6">
       <p className="text-muted-foreground text-sm">
         Configurez les champs affiches sur les cartes d&apos;annonces et leur ordre.
       </p>
@@ -160,64 +160,66 @@ export default function CardDisplayConfigPage() {
       )}
 
       {fields.length > 0 && (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Ordre</TableHead>
-              <TableHead>Champ</TableHead>
-              <TableHead>Visible au public</TableHead>
-              <TableHead>Completion</TableHead>
-              <TableHead>Poids</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {fields.map((field, index) => (
-              <TableRow key={field.ID}>
-                <TableCell>{field.displayOrder}</TableCell>
-                <TableCell className="font-mono text-sm">{field.fieldName}</TableCell>
-                <TableCell>
-                  <Checkbox
-                    checked={field.isVisibleToPublic}
-                    onCheckedChange={() => handleToggleVisibility(field)}
-                    disabled={saving}
-                    aria-label={`${field.fieldName} visible au public`}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Checkbox
-                    checked={field.contributesToCompletion}
-                    disabled
-                    aria-label="completion"
-                  />
-                </TableCell>
-                <TableCell>{field.weight}</TableCell>
-                <TableCell>
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleMoveUp(index)}
-                      disabled={index === 0 || saving}
-                      aria-label="Monter"
-                    >
-                      <ArrowUp className="size-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleMoveDown(index)}
-                      disabled={index === fields.length - 1 || saving}
-                      aria-label="Descendre"
-                    >
-                      <ArrowDown className="size-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+        <div className="overflow-x-auto rounded-md border [&_td]:whitespace-normal [&_td]:text-sm">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Ordre</TableHead>
+                <TableHead>Champ</TableHead>
+                <TableHead>Visible au public</TableHead>
+                <TableHead>Completion</TableHead>
+                <TableHead>Poids</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {fields.map((field, index) => (
+                <TableRow key={field.ID}>
+                  <TableCell>{field.displayOrder}</TableCell>
+                  <TableCell className="font-mono text-sm">{field.fieldName}</TableCell>
+                  <TableCell>
+                    <Checkbox
+                      checked={field.isVisibleToPublic}
+                      onCheckedChange={() => handleToggleVisibility(field)}
+                      disabled={saving}
+                      aria-label={`${field.fieldName} visible au public`}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Checkbox
+                      checked={field.contributesToCompletion}
+                      disabled
+                      aria-label="completion"
+                    />
+                  </TableCell>
+                  <TableCell>{field.weight}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleMoveUp(index)}
+                        disabled={index === 0 || saving}
+                        aria-label="Monter"
+                      >
+                        <ArrowUp className="size-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleMoveDown(index)}
+                        disabled={index === fields.length - 1 || saving}
+                        aria-label="Descendre"
+                      >
+                        <ArrowDown className="size-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       {pendingChange && (

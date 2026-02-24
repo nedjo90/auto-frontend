@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/ui/responsive-dialog";
 import {
   Select,
   SelectContent,
@@ -84,14 +84,14 @@ export function RoleAssignmentDialog({
   if (!open) return null;
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Modifier le role</DialogTitle>
-          <DialogDescription>
+    <ResponsiveDialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <ResponsiveDialogContent>
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>Modifier le role</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>
             {user.firstName} {user.lastName} ({user.email})
-          </DialogDescription>
-        </DialogHeader>
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
 
         <div className="space-y-3 py-2">
           <Select value={selectedRole} onValueChange={setSelectedRole}>
@@ -114,7 +114,7 @@ export function RoleAssignmentDialog({
           )}
         </div>
 
-        <DialogFooter>
+        <ResponsiveDialogFooter>
           <Button variant="outline" onClick={onClose} disabled={submitting}>
             Annuler
           </Button>
@@ -128,8 +128,8 @@ export function RoleAssignmentDialog({
               "Confirmer"
             )}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </ResponsiveDialogFooter>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }

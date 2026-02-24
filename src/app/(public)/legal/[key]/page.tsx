@@ -42,13 +42,16 @@ export default async function LegalPage({ params }: LegalPageProps) {
   const versionData = await fetchLegalContent(decodedKey);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="mb-6 text-3xl font-bold" data-testid="legal-page-title">
+    <div className="mx-auto max-w-3xl px-4 py-6 sm:py-8">
+      <h1
+        className="mb-4 sm:mb-6 text-xl font-bold sm:text-2xl lg:text-3xl"
+        data-testid="legal-page-title"
+      >
         {label}
       </h1>
 
       {versionData ? (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           <div
             className="prose prose-sm max-w-none whitespace-pre-wrap"
             data-testid="legal-page-content"

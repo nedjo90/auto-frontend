@@ -94,7 +94,7 @@ export default function RegistrationConfigPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 sm:space-y-6">
       <p className="text-muted-foreground text-sm">
         Champs du formulaire d&apos;inscription et leurs regles de validation.
       </p>
@@ -106,48 +106,50 @@ export default function RegistrationConfigPage() {
       )}
 
       {fields.length > 0 && (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Ordre</TableHead>
-              <TableHead>Champ</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Obligatoire</TableHead>
-              <TableHead>Visible</TableHead>
-              <TableHead>Validation</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {fields.map((field) => (
-              <TableRow key={field.ID}>
-                <TableCell>{field.displayOrder}</TableCell>
-                <TableCell className="font-mono text-sm">{field.fieldName}</TableCell>
-                <TableCell>
-                  <Badge variant="outline">{field.fieldType}</Badge>
-                </TableCell>
-                <TableCell>
-                  <Checkbox
-                    checked={field.isRequired}
-                    onCheckedChange={() => handleToggle(field, "isRequired")}
-                    disabled={saving}
-                    aria-label={`${field.fieldName} obligatoire`}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Checkbox
-                    checked={field.isVisible}
-                    onCheckedChange={() => handleToggle(field, "isVisible")}
-                    disabled={saving}
-                    aria-label={`${field.fieldName} visible`}
-                  />
-                </TableCell>
-                <TableCell className="text-muted-foreground text-xs font-mono">
-                  {field.validationPattern || "-"}
-                </TableCell>
+        <div className="overflow-x-auto rounded-md border [&_td]:whitespace-normal [&_td]:text-sm">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Ordre</TableHead>
+                <TableHead>Champ</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Obligatoire</TableHead>
+                <TableHead>Visible</TableHead>
+                <TableHead>Validation</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {fields.map((field) => (
+                <TableRow key={field.ID}>
+                  <TableCell>{field.displayOrder}</TableCell>
+                  <TableCell className="font-mono text-sm">{field.fieldName}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{field.fieldType}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Checkbox
+                      checked={field.isRequired}
+                      onCheckedChange={() => handleToggle(field, "isRequired")}
+                      disabled={saving}
+                      aria-label={`${field.fieldName} obligatoire`}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Checkbox
+                      checked={field.isVisible}
+                      onCheckedChange={() => handleToggle(field, "isVisible")}
+                      disabled={saving}
+                      aria-label={`${field.fieldName} visible`}
+                    />
+                  </TableCell>
+                  <TableCell className="text-muted-foreground text-xs font-mono">
+                    {field.validationPattern || "-"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
 
       {pendingChange && (

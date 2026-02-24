@@ -103,8 +103,8 @@ export default function KpiDrillDownPage() {
   const total = drillDownData.reduce((sum, d) => sum + d.value, 0);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -115,7 +115,7 @@ export default function KpiDrillDownPage() {
             <ArrowLeft className="size-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">{metricConfig.title}</h1>
+            <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">{metricConfig.title}</h1>
             <p className="text-muted-foreground text-sm">Detail par jour</p>
           </div>
         </div>
@@ -145,38 +145,38 @@ export default function KpiDrillDownPage() {
 
       {!loading && (
         <>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-3">
             <Card>
-              <CardHeader className="pb-2">
+              <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   Total ({metricConfig.unit})
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
                 <p className="text-2xl font-bold" data-testid="drilldown-total">
                   {total.toLocaleString("fr-FR")}
                 </p>
               </CardContent>
             </Card>
             <Card>
-              <CardHeader className="pb-2">
+              <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   Moyenne / jour
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
                 <p className="text-2xl font-bold" data-testid="drilldown-avg">
                   {drillDownData.length > 0 ? (total / drillDownData.length).toFixed(1) : "0"}
                 </p>
               </CardContent>
             </Card>
             <Card>
-              <CardHeader className="pb-2">
+              <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   Jours de donnees
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
                 <p className="text-2xl font-bold" data-testid="drilldown-days">
                   {drillDownData.length}
                 </p>
@@ -189,22 +189,24 @@ export default function KpiDrillDownPage() {
           {drillDownData.length > 0 && (
             <div className="space-y-2">
               <h3 className="text-sm font-semibold">Detail par jour</h3>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Valeur</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {drillDownData.map((entry) => (
-                    <TableRow key={entry.date}>
-                      <TableCell>{new Date(entry.date).toLocaleDateString("fr-FR")}</TableCell>
-                      <TableCell>{entry.value.toLocaleString("fr-FR")}</TableCell>
+              <div className="overflow-x-auto rounded-md border [&_td]:whitespace-normal [&_td]:text-sm">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Valeur</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {drillDownData.map((entry) => (
+                      <TableRow key={entry.date}>
+                        <TableCell>{new Date(entry.date).toLocaleDateString("fr-FR")}</TableCell>
+                        <TableCell>{entry.value.toLocaleString("fr-FR")}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           )}
 

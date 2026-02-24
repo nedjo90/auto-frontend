@@ -83,7 +83,7 @@ export default function FeaturesConfigPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 sm:space-y-6">
       <p className="text-muted-foreground text-sm">
         Activer ou desactiver les fonctionnalites de la plateforme.
       </p>
@@ -97,7 +97,7 @@ export default function FeaturesConfigPage() {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {features.map((feature) => (
           <Card key={feature.ID}>
-            <CardHeader className="flex flex-row items-start gap-3 space-y-0">
+            <CardHeader className="flex flex-row items-start gap-3 space-y-0 p-4 sm:p-6">
               <Checkbox
                 checked={feature.isActive}
                 onCheckedChange={() => handleToggle(feature)}

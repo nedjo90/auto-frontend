@@ -65,8 +65,8 @@ export default function SellerPublicPage() {
 
   if (seller.isAnonymized) {
     return (
-      <div className="mx-auto max-w-2xl space-y-6 py-8">
-        <Card className="p-6 text-center">
+      <div className="mx-auto max-w-2xl space-y-4 sm:space-y-6 px-4 py-6 sm:py-8">
+        <Card className="p-4 sm:p-6 text-center">
           <p className="text-muted-foreground">Utilisateur anonymisé</p>
           <p className="mt-1 text-sm text-muted-foreground">
             Les informations de ce vendeur ne sont plus disponibles.
@@ -79,15 +79,15 @@ export default function SellerPublicPage() {
   const initials = seller.displayName ? seller.displayName.substring(0, 2).toUpperCase() : "??";
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 py-8">
-      <Card className="p-6">
-        <div className="flex items-center gap-4">
-          <Avatar className="size-16">
+    <div className="mx-auto max-w-2xl space-y-4 sm:space-y-6 px-4 py-6 sm:py-8">
+      <Card className="p-4 sm:p-6">
+        <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-4">
+          <Avatar className="size-14 sm:size-16">
             <AvatarImage src={seller.avatarUrl || undefined} alt={seller.displayName} />
             <AvatarFallback className="text-lg">{initials}</AvatarFallback>
           </Avatar>
-          <div>
-            <h1 className="text-xl font-bold">{seller.displayName}</h1>
+          <div className="text-center sm:text-left">
+            <h1 className="text-lg font-bold sm:text-xl lg:text-2xl">{seller.displayName}</h1>
             <p className="text-sm text-muted-foreground">
               Membre depuis{" "}
               {new Date(seller.memberSince).toLocaleDateString("fr-FR", {
