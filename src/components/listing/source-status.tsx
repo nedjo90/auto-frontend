@@ -59,12 +59,12 @@ function SourceIndicator({ source }: { source: ApiSourceStatus }) {
       data-testid={`source-${source.adapterInterface}`}
     >
       {source.status === "pending" && (
-        <Loader2 className="size-3 animate-spin motion-reduce:animate-none" />
+        <Loader2 className="size-3 animate-spin motion-reduce:animate-none" aria-hidden="true" />
       )}
-      {source.status === "success" && <CheckCircle2 className="size-3" />}
-      {source.status === "failed" && <XCircle className="size-3" />}
-      {source.status === "cached" && !isStale && <Database className="size-3" />}
-      {isStale && <Clock className="size-3" />}
+      {source.status === "success" && <CheckCircle2 className="size-3" aria-hidden="true" />}
+      {source.status === "failed" && <XCircle className="size-3" aria-hidden="true" />}
+      {source.status === "cached" && !isStale && <Database className="size-3" aria-hidden="true" />}
+      {isStale && <Clock className="size-3" aria-hidden="true" />}
       <span>
         {label} {getStatusLabel(source)}
       </span>
