@@ -16,10 +16,32 @@ vi.mock("@/lib/seo/structured-data", () => ({
   generateProductSchema: vi.fn().mockReturnValue({}),
 }));
 
-// Mock lifecycle-api for ListingDetailClient
-vi.mock("@/lib/api/lifecycle-api", () => ({
-  getPublicListing: vi.fn().mockReturnValue(new Promise(() => {})),
+// Mock catalog-api for SearchPage
+vi.mock("@/lib/api/catalog-api", () => ({
+  getListings: vi.fn().mockResolvedValue({ items: [], total: 0, skip: 0, top: 20, hasMore: false }),
+  getCardConfig: vi.fn().mockResolvedValue([]),
+  getListingDetail: vi.fn().mockResolvedValue(null),
+  formatPrice: vi.fn((p: number | null) => (p != null ? `${p} €` : null)),
+  formatMileage: vi.fn((m: number | null) => (m != null ? `${m} km` : null)),
+  buildImageUrl: vi.fn((url: string | null) => url || "/placeholder-car.svg"),
 }));
+
+// Mock next/image
+vi.mock("next/image", () => ({
+  default: (props: Record<string, unknown>) => (
+    // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
+    <img {...props} />
+  ),
+}));
+
+// Mock IntersectionObserver
+class MockIntersectionObserver {
+  observe = vi.fn();
+  disconnect = vi.fn();
+  unobserve = vi.fn();
+  constructor() {}
+}
+vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
 
 describe("SEO Public Pages", () => {
   beforeEach(() => {
@@ -76,7 +98,7 @@ describe("SEO Public Pages", () => {
       });
       render(page);
 
-      expect(screen.getByText(/toutes les annonces/)).toBeDefined();
+      expect(screen.getByText(/Toutes les annonces/)).toBeDefined();
     });
   });
 
@@ -88,8 +110,8 @@ describe("SEO Public Pages", () => {
       });
       const { container } = render(page);
 
-      // ListingDetailClient renders a loading spinner; verify the page structure is intact
-      expect(container.querySelector(".animate-spin")).toBeDefined();
+      // ListingDetailClient renders a loading spinner
+      expect(container.querySelector("[data-testid='listing-detail-loading']")).toBeDefined();
     });
 
     it("includes JSON-LD script tag", async () => {

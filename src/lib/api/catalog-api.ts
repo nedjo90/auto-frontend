@@ -1,0 +1,104 @@
+import type {
+  IPublicListingCard,
+  IListingPage,
+  IPublicListingDetail,
+  IConfigListingCard,
+} from "@auto/shared";
+import { LISTING_PAGE_SIZE } from "@auto/shared";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+
+/** Fetch paginated published listings. */
+export async function getListings(options?: {
+  skip?: number;
+  top?: number;
+  search?: string;
+}): Promise<IListingPage> {
+  const res = await fetch(`${API_BASE}/api/catalog/getListings`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      skip: options?.skip || 0,
+      top: options?.top || LISTING_PAGE_SIZE,
+      search: options?.search || "",
+    }),
+    next: { revalidate: 60 },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch listings: ${res.status}`);
+  }
+
+  const data = await res.json();
+  return {
+    items: typeof data.items === "string" ? JSON.parse(data.items) : data.items || [],
+    total: data.total || 0,
+    skip: data.skip || 0,
+    top: data.top || LISTING_PAGE_SIZE,
+    hasMore: data.hasMore || false,
+  };
+}
+
+/** Fetch a single listing with full detail. */
+export async function getListingDetail(listingId: string): Promise<IPublicListingDetail | null> {
+  const res = await fetch(`${API_BASE}/api/catalog/getListingDetail`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ listingId }),
+    next: { revalidate: 60 },
+  });
+
+  if (!res.ok) {
+    if (res.status === 404) return null;
+    throw new Error(`Failed to fetch listing detail: ${res.status}`);
+  }
+
+  const data = await res.json();
+  return typeof data.listing === "string" ? JSON.parse(data.listing) : data.listing;
+}
+
+/** Fetch card configuration (which fields to display on cards). */
+export async function getCardConfig(): Promise<IConfigListingCard[]> {
+  const res = await fetch(
+    `${API_BASE}/api/catalog/ConfigListingCards?$orderby=displayOrder asc&$filter=isVisible eq true`,
+    {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      next: { revalidate: 300 },
+    },
+  );
+
+  if (!res.ok) {
+    return [];
+  }
+
+  const data = await res.json();
+  return data.value || [];
+}
+
+/** Format price for display (French locale). */
+export function formatPrice(price: number | null): string | null {
+  if (price == null) return null;
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(price);
+}
+
+/** Format mileage for display. */
+export function formatMileage(mileage: number | null): string | null {
+  if (mileage == null) return null;
+  return new Intl.NumberFormat("fr-FR").format(mileage) + " km";
+}
+
+/** Build image URL with CDN transformations. */
+export function buildImageUrl(
+  url: string | null,
+  options?: { width?: number; height?: number; format?: "webp" | "jpeg" },
+): string {
+  if (!url) return "/placeholder-car.svg";
+  // For Azure CDN URLs, we can add query params for transformation
+  // For now return as-is since CDN transformation is provider-dependent
+  return url;
+}
