@@ -27,6 +27,7 @@ export function DeclarationStatus({
 }: DeclarationStatusProps) {
   const [summary, setSummary] = useState<DeclarationSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -35,7 +36,10 @@ export function DeclarationStatus({
         if (!cancelled) setSummary(data);
       })
       .catch(() => {
-        if (!cancelled) setSummary(null);
+        if (!cancelled) {
+          setSummary(null);
+          setLoadError(true);
+        }
       })
       .finally(() => {
         if (!cancelled) setIsLoading(false);
@@ -102,6 +106,19 @@ export function DeclarationStatus({
       <div className="flex items-center gap-2" data-testid="declaration-status-declared">
         <ShieldCheck className="size-5 text-green-600" />
         <span className="text-sm">Déclaration signée le {formatted}</span>
+      </div>
+    );
+  }
+
+  // Error loading summary
+  if (loadError) {
+    return (
+      <div
+        className="flex items-center gap-2 text-sm text-destructive"
+        data-testid="declaration-status-error"
+      >
+        <ShieldAlert className="size-5" />
+        Impossible de charger le statut de la déclaration
       </div>
     );
   }

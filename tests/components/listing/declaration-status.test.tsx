@@ -150,14 +150,17 @@ describe("DeclarationStatus", () => {
   });
 
   describe("error handling", () => {
-    it("should show required state when API call fails", async () => {
+    it("should show error state when API call fails", async () => {
       mockGetDeclarationSummary.mockRejectedValueOnce(new Error("Network error"));
 
       render(<DeclarationStatus listingId="listing-1" viewMode="seller" />);
 
       await waitFor(() => {
-        expect(screen.getByTestId("declaration-status-required")).toBeInTheDocument();
+        expect(screen.getByTestId("declaration-status-error")).toBeInTheDocument();
       });
+      expect(
+        screen.getByText("Impossible de charger le statut de la déclaration"),
+      ).toBeInTheDocument();
     });
   });
 });
