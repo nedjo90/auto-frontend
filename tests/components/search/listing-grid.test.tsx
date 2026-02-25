@@ -54,6 +54,9 @@ const makeListing = (id: string, make: string): IPublicListingCard => ({
   certifiedFieldCount: 5,
   totalFieldCount: 10,
   sellerId: "seller-1",
+  certificationLevel: null,
+  ctValid: null,
+  marketComparison: null,
 });
 
 const defaultConfig: IConfigListingCard[] = [

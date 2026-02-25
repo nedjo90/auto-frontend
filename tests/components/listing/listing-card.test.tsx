@@ -41,6 +41,9 @@ const baseListing: IPublicListingCard = {
   certifiedFieldCount: 10,
   totalFieldCount: 15,
   sellerId: "seller-1",
+  certificationLevel: "bien_documente",
+  ctValid: true,
+  marketComparison: { position: "aligned", percentageDiff: 0, displayText: "Prix aligné" },
 };
 
 const defaultConfig: IConfigListingCard[] = [

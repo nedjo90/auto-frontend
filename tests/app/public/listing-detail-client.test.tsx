@@ -55,6 +55,9 @@ function makeDetail(overrides: Partial<IPublicListingDetail> = {}): IPublicListi
     certifiedFields: [],
     hasHistoryReport: false,
     analytics: { viewCount: 10, favoriteCount: 2 },
+    certificationLevel: null,
+    ctValid: null,
+    marketComparison: null,
     ...overrides,
   };
 }

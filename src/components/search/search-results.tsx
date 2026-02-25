@@ -50,7 +50,7 @@ export function SearchResults({
   const [hasMore, setHasMore] = useState(initialItems.length < initialTotal);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const skipRef = useRef(initialItems.length);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   // Sync filters from URL on navigation
   useEffect(() => {

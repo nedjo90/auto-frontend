@@ -50,6 +50,9 @@ const baseDetail: IPublicListingDetail = {
   publishedAt: "2026-01-01T00:00:00Z",
   soldAt: null,
   sellerId: "seller-1",
+  certificationLevel: "bien_documente",
+  ctValid: true,
+  marketComparison: { position: "aligned", percentageDiff: 0, displayText: "Prix aligné" },
   photos: [
     {
       ID: "photo-1",
