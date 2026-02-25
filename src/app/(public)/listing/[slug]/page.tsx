@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { redirect, notFound } from "next/navigation";
+import { permanentRedirect, notFound } from "next/navigation";
 import { extractIdFromSlug, generateListingSlug } from "@auto/shared";
 import { getListingDetail, getListingSeoData } from "@/lib/api/catalog-api";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: seoData.ogDescription || seoData.metaDescription,
       images: seoData.ogImage ? [{ url: seoData.ogImage }] : undefined,
       url: seoData.canonicalUrl,
-      type: "website",
+      type: "product",
     },
     twitter: {
       card: "summary_large_image",
@@ -66,11 +66,11 @@ export default async function ListingDetailPage({ params }: Props) {
     make: listing.make,
     model: listing.model,
     year: listing.year,
-    city: null, // city not in IPublicListingDetail, slug works without it
+    city: listing.city,
   });
 
   if (slug !== canonicalSlug && canonicalSlug !== listingId) {
-    redirect(`/listing/${canonicalSlug}`);
+    permanentRedirect(`/listing/${canonicalSlug}`);
   }
 
   // Fetch SEO data for structured data

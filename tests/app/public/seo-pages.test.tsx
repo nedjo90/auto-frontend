@@ -38,12 +38,17 @@ vi.mock("next/image", () => ({
 
 // Mock next/navigation
 const mockRedirect = vi.fn();
+const mockPermanentRedirect = vi.fn();
 const mockNotFound = vi.fn();
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
   useSearchParams: () => new URLSearchParams(),
   redirect: (...args: unknown[]) => {
     mockRedirect(...args);
+    throw new Error("NEXT_REDIRECT");
+  },
+  permanentRedirect: (...args: unknown[]) => {
+    mockPermanentRedirect(...args);
     throw new Error("NEXT_REDIRECT");
   },
   notFound: () => {
@@ -145,7 +150,7 @@ describe("SEO Public Pages", () => {
         LegacyPage({ params: Promise.resolve({ id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890" }) }),
       ).rejects.toThrow("NEXT_REDIRECT");
 
-      expect(mockRedirect).toHaveBeenCalledWith(
+      expect(mockPermanentRedirect).toHaveBeenCalledWith(
         expect.stringContaining("/listing/peugeot-3008-2022-"),
       );
     });
@@ -260,7 +265,9 @@ describe("SEO Public Pages", () => {
         }),
       ).rejects.toThrow("NEXT_REDIRECT");
 
-      expect(mockRedirect).toHaveBeenCalledWith(expect.stringContaining("peugeot-3008-2023"));
+      expect(mockPermanentRedirect).toHaveBeenCalledWith(
+        expect.stringContaining("peugeot-3008-2023"),
+      );
     });
   });
 });

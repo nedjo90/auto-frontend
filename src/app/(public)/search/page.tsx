@@ -1,36 +1,15 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { generateCanonicalUrl } from "@auto/shared";
+import type { ISearchFilters } from "@auto/shared";
 import { getSeoMeta } from "@/lib/seo/get-seo-meta";
 import { getListings, getCardConfig } from "@/lib/api/catalog-api";
 import { SearchResults } from "@/components/search/search-results";
 import { ListingCardSkeletonGrid } from "@/components/listing/listing-card-skeleton";
 import { parseSearchParams } from "@/lib/search-params";
-import type { ISearchFilters } from "@auto/shared";
 
 interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
-}
-
-/** Build canonical URL from search params by sorting keys. */
-function buildCanonicalUrl(raw: Record<string, string | string[] | undefined>): string {
-  const params = new URLSearchParams();
-  const sortedKeys = Object.keys(raw)
-    .filter((k) => raw[k] !== undefined && raw[k] !== "")
-    .sort();
-  for (const key of sortedKeys) {
-    const val = raw[key];
-    if (val === undefined || val === "") continue;
-    if (Array.isArray(val)) {
-      [...val]
-        .filter((v) => v !== "")
-        .sort()
-        .forEach((v) => params.append(key, v));
-    } else {
-      params.set(key, val as string);
-    }
-  }
-  const qs = params.toString();
-  return qs ? `/search?${qs}` : "/search";
 }
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
@@ -39,7 +18,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const brand = (typeof raw.make === "string" ? raw.make : "") || "";
 
   const seo = await getSeoMeta("search_results", { query, count: "0", city: "", brand });
-  const canonicalUrl = buildCanonicalUrl(raw);
+  const canonicalUrl = generateCanonicalUrl("/search", raw);
 
   if (!seo) {
     return {

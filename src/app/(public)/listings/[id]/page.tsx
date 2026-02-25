@@ -1,4 +1,4 @@
-import { redirect, notFound } from "next/navigation";
+import { permanentRedirect, notFound } from "next/navigation";
 import { generateListingSlug } from "@auto/shared";
 import { getListingDetail } from "@/lib/api/catalog-api";
 
@@ -23,8 +23,8 @@ export default async function LegacyListingPage({ params }: Props) {
     make: listing.make,
     model: listing.model,
     year: listing.year,
-    city: null,
+    city: listing.city,
   });
 
-  redirect(`/listing/${slug}`);
+  permanentRedirect(`/listing/${slug}`);
 }
