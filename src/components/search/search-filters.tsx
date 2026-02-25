@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import type { ISearchFilters } from "@auto/shared";
+import type { ISearchFilters, CertificationLevel, MarketPricePosition } from "@auto/shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { countActiveFilters } from "@/lib/search-params";
-import { SlidersHorizontal, X } from "lucide-react";
+import { SlidersHorizontal, X, ChevronDown, ChevronUp } from "lucide-react";
 
 /** Filter options for fuel types (French market). */
 const FUEL_OPTIONS = ["Essence", "Diesel", "Electrique", "Hybride", "GPL"] as const;
@@ -60,6 +60,33 @@ const COLOR_OPTIONS = [
   "Marron",
   "Beige",
 ] as const;
+
+/** Certification level filter options. */
+const CERTIFICATION_OPTIONS: { value: CertificationLevel; label: string; color: string }[] = [
+  {
+    value: "tres_documente",
+    label: "Très documenté",
+    color: "bg-green-100 text-green-800 border-green-300",
+  },
+  {
+    value: "bien_documente",
+    label: "Bien documenté",
+    color: "bg-yellow-100 text-yellow-800 border-yellow-300",
+  },
+  {
+    value: "partiellement_documente",
+    label: "Partiellement documenté",
+    color: "bg-orange-100 text-orange-800 border-orange-300",
+  },
+];
+
+/** Market price position filter options. */
+const MARKET_POSITION_OPTIONS: { value: MarketPricePosition | "all"; label: string }[] = [
+  { value: "all", label: "Tous" },
+  { value: "below", label: "En dessous du marché" },
+  { value: "aligned", label: "Prix aligné" },
+  { value: "above", label: "Au-dessus du marché" },
+];
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -108,6 +135,16 @@ function ChipGroup({
       })}
     </div>
   );
+}
+
+/** Toggle a certification level in the filter array. */
+function toggleCertLevel(
+  arr: CertificationLevel[] | undefined,
+  value: CertificationLevel,
+): CertificationLevel[] | undefined {
+  const current = arr || [];
+  const next = current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
+  return next.length > 0 ? next : undefined;
 }
 
 /** The actual filter form content (used in both mobile sheet and desktop sidebar). */
@@ -290,6 +327,117 @@ function FilterForm({ filters, onFiltersChange }: SearchFiltersProps) {
           />
         </div>
       </div>
+
+      {/* Advanced Filters (Story 4-3) */}
+      <AdvancedFilters filters={filters} onFiltersChange={onFiltersChange} />
+    </div>
+  );
+}
+
+/** Expandable advanced filters section (certification, CT, market price). */
+function AdvancedFilters({ filters, onFiltersChange }: SearchFiltersProps) {
+  const [expanded, setExpanded] = useState(
+    () => !!(filters.certificationLevel?.length || filters.ctValid || filters.marketPosition),
+  );
+
+  return (
+    <div data-testid="advanced-filters-section">
+      <button
+        type="button"
+        onClick={() => setExpanded(!expanded)}
+        className="flex w-full items-center justify-between py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+        data-testid="advanced-filters-toggle"
+      >
+        <span>Filtres avancés</span>
+        {expanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+      </button>
+
+      {expanded && (
+        <div className="space-y-4 pt-1" data-testid="advanced-filters-content">
+          {/* Certification level (multi-select chips) */}
+          <div>
+            <Label className="text-sm font-semibold">Niveau de certification</Label>
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              {CERTIFICATION_OPTIONS.map((opt) => {
+                const isActive = filters.certificationLevel?.includes(opt.value);
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    data-testid={`filter-cert-${opt.value}`}
+                    onClick={() =>
+                      onFiltersChange({
+                        ...filters,
+                        certificationLevel: toggleCertLevel(filters.certificationLevel, opt.value),
+                      })
+                    }
+                    className={`rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${
+                      isActive
+                        ? opt.color
+                        : "border-border bg-background text-foreground hover:bg-accent"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* CT valid toggle */}
+          <div className="flex items-center justify-between">
+            <Label className="text-sm font-semibold">CT valide uniquement</Label>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={filters.ctValid === true}
+              data-testid="filter-ct-valid"
+              onClick={() =>
+                onFiltersChange({
+                  ...filters,
+                  ctValid: filters.ctValid ? undefined : true,
+                })
+              }
+              className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
+                filters.ctValid ? "bg-primary" : "bg-muted"
+              }`}
+            >
+              <span
+                className={`pointer-events-none block size-4 rounded-full bg-background shadow-sm transition-transform ${
+                  filters.ctValid ? "translate-x-4" : "translate-x-0"
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Market price position */}
+          <div>
+            <Label className="text-sm font-semibold">Prix vs marché</Label>
+            <div className="mt-1.5">
+              <Select
+                value={filters.marketPosition || "all"}
+                onValueChange={(v) =>
+                  onFiltersChange({
+                    ...filters,
+                    marketPosition: v === "all" ? undefined : (v as MarketPricePosition),
+                  })
+                }
+              >
+                <SelectTrigger className="h-8 w-full text-sm" data-testid="filter-market-position">
+                  <SelectValue placeholder="Tous" />
+                </SelectTrigger>
+                <SelectContent>
+                  {MARKET_POSITION_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

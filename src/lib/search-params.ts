@@ -1,4 +1,9 @@
-import type { ISearchFilters, SearchSortOption } from "@auto/shared";
+import type {
+  ISearchFilters,
+  SearchSortOption,
+  CertificationLevel,
+  MarketPricePosition,
+} from "@auto/shared";
 
 /** URL parameter keys for search filters. */
 const PARAM_KEYS = {
@@ -14,8 +19,19 @@ const PARAM_KEYS = {
   gearbox: "gearbox",
   bodyType: "body",
   color: "color",
+  certificationLevel: "cert",
+  ctValid: "ctValid",
+  marketPosition: "market",
   sort: "sort",
 } as const;
+
+const VALID_CERT_LEVELS = new Set<string>([
+  "tres_documente",
+  "bien_documente",
+  "partiellement_documente",
+]);
+
+const VALID_MARKET_POSITIONS = new Set<string>(["below", "aligned", "above"]);
 
 const VALID_SORTS = new Set<string>([
   "price_asc",
@@ -80,6 +96,16 @@ export function parseSearchParams(params: URLSearchParams): ISearchFilters {
   const color = params.getAll(PARAM_KEYS.color);
   if (color.length > 0) filters.color = color;
 
+  const cert = params.getAll(PARAM_KEYS.certificationLevel).filter((v) => VALID_CERT_LEVELS.has(v));
+  if (cert.length > 0) filters.certificationLevel = cert as CertificationLevel[];
+
+  const ctValid = params.get(PARAM_KEYS.ctValid);
+  if (ctValid === "true") filters.ctValid = true;
+
+  const market = params.get(PARAM_KEYS.marketPosition);
+  if (market && VALID_MARKET_POSITIONS.has(market))
+    filters.marketPosition = market as MarketPricePosition;
+
   const sort = params.get(PARAM_KEYS.sort);
   if (sort && VALID_SORTS.has(sort)) filters.sort = sort as SearchSortOption;
 
@@ -102,6 +128,9 @@ export function serializeSearchParams(filters: ISearchFilters): string {
   filters.gearbox?.forEach((v) => params.append(PARAM_KEYS.gearbox, v));
   filters.bodyType?.forEach((v) => params.append(PARAM_KEYS.bodyType, v));
   filters.color?.forEach((v) => params.append(PARAM_KEYS.color, v));
+  filters.certificationLevel?.forEach((v) => params.append(PARAM_KEYS.certificationLevel, v));
+  if (filters.ctValid === true) params.set(PARAM_KEYS.ctValid, "true");
+  if (filters.marketPosition) params.set(PARAM_KEYS.marketPosition, filters.marketPosition);
   if (filters.sort && filters.sort !== "relevance") params.set(PARAM_KEYS.sort, filters.sort);
 
   return params.toString();
@@ -121,6 +150,9 @@ export function countActiveFilters(filters: ISearchFilters): number {
   if (filters.gearbox?.length) count += filters.gearbox.length;
   if (filters.bodyType?.length) count += filters.bodyType.length;
   if (filters.color?.length) count += filters.color.length;
+  if (filters.certificationLevel?.length) count += filters.certificationLevel.length;
+  if (filters.ctValid === true) count++;
+  if (filters.marketPosition) count++;
   return count;
 }
 

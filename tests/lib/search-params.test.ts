@@ -222,4 +222,89 @@ describe("search-params", () => {
       expect(f.make).toBe("Renault");
     });
   });
+
+  // ─── Advanced Filters (Story 4-3) ──────────────────────────────────
+
+  describe("parseSearchParams - advanced filters", () => {
+    it("should parse certificationLevel params", () => {
+      const p = new URLSearchParams("cert=tres_documente&cert=bien_documente");
+      expect(parseSearchParams(p).certificationLevel).toEqual(["tres_documente", "bien_documente"]);
+    });
+
+    it("should ignore invalid certification levels", () => {
+      const p = new URLSearchParams("cert=invalid&cert=tres_documente");
+      expect(parseSearchParams(p).certificationLevel).toEqual(["tres_documente"]);
+    });
+
+    it("should parse ctValid=true", () => {
+      const p = new URLSearchParams("ctValid=true");
+      expect(parseSearchParams(p).ctValid).toBe(true);
+    });
+
+    it("should not set ctValid for other values", () => {
+      const p = new URLSearchParams("ctValid=false");
+      expect(parseSearchParams(p).ctValid).toBeUndefined();
+    });
+
+    it("should parse marketPosition", () => {
+      const p = new URLSearchParams("market=below");
+      expect(parseSearchParams(p).marketPosition).toBe("below");
+    });
+
+    it("should ignore invalid marketPosition", () => {
+      const p = new URLSearchParams("market=invalid");
+      expect(parseSearchParams(p).marketPosition).toBeUndefined();
+    });
+  });
+
+  describe("serializeSearchParams - advanced filters", () => {
+    it("should serialize certificationLevel", () => {
+      const s = serializeSearchParams({
+        certificationLevel: ["tres_documente", "bien_documente"],
+      });
+      expect(s).toContain("cert=tres_documente");
+      expect(s).toContain("cert=bien_documente");
+    });
+
+    it("should serialize ctValid=true", () => {
+      const s = serializeSearchParams({ ctValid: true });
+      expect(s).toContain("ctValid=true");
+    });
+
+    it("should not serialize ctValid when undefined", () => {
+      const s = serializeSearchParams({});
+      expect(s).not.toContain("ctValid");
+    });
+
+    it("should serialize marketPosition", () => {
+      const s = serializeSearchParams({ marketPosition: "below" });
+      expect(s).toContain("market=below");
+    });
+  });
+
+  describe("countActiveFilters - advanced filters", () => {
+    it("should count certificationLevel items", () => {
+      expect(countActiveFilters({ certificationLevel: ["tres_documente", "bien_documente"] })).toBe(
+        2,
+      );
+    });
+
+    it("should count ctValid", () => {
+      expect(countActiveFilters({ ctValid: true })).toBe(1);
+    });
+
+    it("should count marketPosition", () => {
+      expect(countActiveFilters({ marketPosition: "below" })).toBe(1);
+    });
+
+    it("should count all advanced filters together", () => {
+      expect(
+        countActiveFilters({
+          certificationLevel: ["tres_documente"],
+          ctValid: true,
+          marketPosition: "below",
+        }),
+      ).toBe(3);
+    });
+  });
 });

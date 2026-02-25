@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SoldBadge } from "@/components/listing/sold-badge";
 import { PublicPhotoGallery } from "@/components/listing/public-photo-gallery";
+import { MarketPriceIndicator } from "@/components/listing/market-price-indicator";
 import type { IPublicListingDetail } from "@auto/shared";
 import { formatPrice, formatMileage } from "@/lib/api/catalog-api";
 
@@ -155,12 +156,15 @@ export function ListingDetailClient({ listingId }: ListingDetailClientProps) {
                 {title}
               </h1>
               {priceFormatted && (
-                <p
-                  className="mt-1 text-2xl font-bold text-primary sm:text-3xl"
-                  data-testid="listing-detail-price"
-                >
-                  {priceFormatted}
-                </p>
+                <div className="mt-1">
+                  <p
+                    className="text-2xl font-bold text-primary sm:text-3xl"
+                    data-testid="listing-detail-price"
+                  >
+                    {priceFormatted}
+                  </p>
+                  <MarketPriceIndicator comparison={listing.marketComparison} />
+                </div>
               )}
             </div>
             {isSold && (

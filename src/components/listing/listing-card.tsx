@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { IPublicListingCard, IConfigListingCard } from "@auto/shared";
 import { formatPrice, formatMileage, buildImageUrl } from "@/lib/api/catalog-api";
+import { MarketPriceIndicator } from "@/components/listing/market-price-indicator";
 
 export interface ListingCardProps {
   listing: IPublicListingCard;
@@ -101,14 +102,17 @@ export function ListingCard({ listing, cardConfig, priority = false }: ListingCa
         </div>
 
         <CardContent className="p-3 sm:p-4">
-          {/* Price */}
+          {/* Price + Market indicator */}
           {priceDisplay && (
-            <p
-              className="text-lg font-bold text-primary sm:text-xl"
-              data-testid="listing-card-price"
-            >
-              {priceDisplay}
-            </p>
+            <div className="flex items-baseline gap-2">
+              <p
+                className="text-lg font-bold text-primary sm:text-xl"
+                data-testid="listing-card-price"
+              >
+                {priceDisplay}
+              </p>
+              <MarketPriceIndicator comparison={listing.marketComparison} compact />
+            </div>
           )}
 
           {/* Title */}

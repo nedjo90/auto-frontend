@@ -64,6 +64,32 @@ function buildChips(filters: ISearchFilters): ChipData[] {
     chips.push({ key: "color", label: v, value: v });
   });
 
+  // Certification level chips (Story 4-3)
+  const certLabels: Record<string, string> = {
+    tres_documente: "Très documenté",
+    bien_documente: "Bien documenté",
+    partiellement_documente: "Partiellement documenté",
+  };
+  filters.certificationLevel?.forEach((v) => {
+    chips.push({ key: "certificationLevel", label: certLabels[v] || v, value: v });
+  });
+
+  if (filters.ctValid === true) {
+    chips.push({ key: "ctValid", label: "CT valide" });
+  }
+
+  const marketLabels: Record<string, string> = {
+    below: "En dessous du marché",
+    aligned: "Prix aligné",
+    above: "Au-dessus du marché",
+  };
+  if (filters.marketPosition) {
+    chips.push({
+      key: "marketPosition",
+      label: marketLabels[filters.marketPosition] || filters.marketPosition,
+    });
+  }
+
   return chips;
 }
 

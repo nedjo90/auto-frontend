@@ -162,4 +162,66 @@ describe("SearchFilters", () => {
       }),
     );
   });
+
+  // ─── Advanced Filters (Story 4-3) ──────────────────────────────────
+
+  it("should render advanced filters toggle", () => {
+    render(<SearchFilters filters={{}} onFiltersChange={onChange} />);
+    expect(screen.getByTestId("advanced-filters-toggle")).toBeInTheDocument();
+  });
+
+  it("should expand advanced filters on toggle click", () => {
+    render(<SearchFilters filters={{}} onFiltersChange={onChange} />);
+    expect(screen.queryByTestId("advanced-filters-content")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("advanced-filters-toggle"));
+    expect(screen.getByTestId("advanced-filters-content")).toBeInTheDocument();
+  });
+
+  it("should auto-expand when advanced filters are active", () => {
+    const filters: ISearchFilters = { certificationLevel: ["tres_documente"] };
+    render(<SearchFilters filters={filters} onFiltersChange={onChange} />);
+    expect(screen.getByTestId("advanced-filters-content")).toBeInTheDocument();
+  });
+
+  it("should render certification level chips when expanded", () => {
+    render(<SearchFilters filters={{}} onFiltersChange={onChange} />);
+    fireEvent.click(screen.getByTestId("advanced-filters-toggle"));
+    expect(screen.getByTestId("filter-cert-tres_documente")).toBeInTheDocument();
+    expect(screen.getByTestId("filter-cert-bien_documente")).toBeInTheDocument();
+    expect(screen.getByTestId("filter-cert-partiellement_documente")).toBeInTheDocument();
+  });
+
+  it("should toggle certification level on click", () => {
+    render(<SearchFilters filters={{}} onFiltersChange={onChange} />);
+    fireEvent.click(screen.getByTestId("advanced-filters-toggle"));
+    fireEvent.click(screen.getByTestId("filter-cert-tres_documente"));
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        certificationLevel: ["tres_documente"],
+      }),
+    );
+  });
+
+  it("should render CT valid toggle when expanded", () => {
+    render(<SearchFilters filters={{}} onFiltersChange={onChange} />);
+    fireEvent.click(screen.getByTestId("advanced-filters-toggle"));
+    expect(screen.getByTestId("filter-ct-valid")).toBeInTheDocument();
+  });
+
+  it("should toggle CT valid on click", () => {
+    render(<SearchFilters filters={{}} onFiltersChange={onChange} />);
+    fireEvent.click(screen.getByTestId("advanced-filters-toggle"));
+    fireEvent.click(screen.getByTestId("filter-ct-valid"));
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ctValid: true,
+      }),
+    );
+  });
+
+  it("should render market position select when expanded", () => {
+    render(<SearchFilters filters={{}} onFiltersChange={onChange} />);
+    fireEvent.click(screen.getByTestId("advanced-filters-toggle"));
+    expect(screen.getByTestId("filter-market-position")).toBeInTheDocument();
+  });
 });

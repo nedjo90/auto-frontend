@@ -142,4 +142,54 @@ describe("FilterChips", () => {
     const chip = screen.getByTestId("filter-chip-make");
     expect(chip).toHaveAttribute("aria-label", "Supprimer filtre Marque: Peugeot");
   });
+
+  // ─── Advanced Filter Chips (Story 4-3) ────────────────────────────
+
+  it("should render certification level chips", () => {
+    render(
+      <FilterChips
+        filters={{ certificationLevel: ["tres_documente", "bien_documente"] }}
+        onFiltersChange={onChange}
+      />,
+    );
+    expect(screen.getByText("Très documenté")).toBeInTheDocument();
+    expect(screen.getByText("Bien documenté")).toBeInTheDocument();
+  });
+
+  it("should render CT valid chip", () => {
+    render(<FilterChips filters={{ ctValid: true }} onFiltersChange={onChange} />);
+    expect(screen.getByText("CT valide")).toBeInTheDocument();
+  });
+
+  it("should render market position chip", () => {
+    render(<FilterChips filters={{ marketPosition: "below" }} onFiltersChange={onChange} />);
+    expect(screen.getByText("En dessous du marché")).toBeInTheDocument();
+  });
+
+  it("should remove certification level chip on click", () => {
+    render(
+      <FilterChips
+        filters={{ certificationLevel: ["tres_documente", "bien_documente"] }}
+        onFiltersChange={onChange}
+      />,
+    );
+    const chips = screen.getAllByTestId("filter-chip-certificationLevel");
+    fireEvent.click(chips[0]); // remove first
+    const called = onChange.mock.calls[0][0] as ISearchFilters;
+    expect(called.certificationLevel).toEqual(["bien_documente"]);
+  });
+
+  it("should remove CT valid chip on click", () => {
+    render(<FilterChips filters={{ ctValid: true }} onFiltersChange={onChange} />);
+    fireEvent.click(screen.getByTestId("filter-chip-ctValid"));
+    const called = onChange.mock.calls[0][0] as ISearchFilters;
+    expect(called.ctValid).toBeUndefined();
+  });
+
+  it("should remove market position chip on click", () => {
+    render(<FilterChips filters={{ marketPosition: "below" }} onFiltersChange={onChange} />);
+    fireEvent.click(screen.getByTestId("filter-chip-marketPosition"));
+    const called = onChange.mock.calls[0][0] as ISearchFilters;
+    expect(called.marketPosition).toBeUndefined();
+  });
 });

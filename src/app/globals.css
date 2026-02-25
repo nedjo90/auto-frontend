@@ -91,9 +91,9 @@
   --certified: hsl(142 71% 45%);
   --declared: hsl(38 92% 50%);
   --success: hsl(142 71% 45%);
-  --market-below: hsl(142 71% 45%);
-  --market-aligned: hsl(38 92% 50%);
-  --market-above: hsl(0 84% 60%);
+  --market-below: hsl(142 71% 45%);      /* #16a34a green */
+  --market-aligned: hsl(220 9% 46%);     /* #6b7280 neutral gray */
+  --market-above: hsl(21 90% 48%);       /* #ea580c orange */
 }
 
 .dark {
@@ -133,8 +133,8 @@
   --declared: hsl(38 92% 60%);
   --success: hsl(142 71% 55%);
   --market-below: hsl(142 71% 55%);
-  --market-aligned: hsl(38 92% 60%);
-  --market-above: hsl(0 84% 70%);
+  --market-aligned: hsl(220 9% 56%);
+  --market-above: hsl(21 90% 58%);
 }
 
 @layer base {

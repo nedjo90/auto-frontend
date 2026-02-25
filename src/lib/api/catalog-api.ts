@@ -32,6 +32,9 @@ function buildListingsBody(options?: {
   if (f?.gearbox?.length) body.gearbox = JSON.stringify(f.gearbox);
   if (f?.bodyType?.length) body.bodyType = JSON.stringify(f.bodyType);
   if (f?.color?.length) body.color = JSON.stringify(f.color);
+  if (f?.certificationLevel?.length) body.certificationLevel = JSON.stringify(f.certificationLevel);
+  if (f?.ctValid === true) body.ctValid = true;
+  if (f?.marketPosition) body.marketPosition = f.marketPosition;
   if (f?.sort && f.sort !== "relevance") body.sort = f.sort;
   return body;
 }
