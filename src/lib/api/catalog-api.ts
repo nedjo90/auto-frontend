@@ -10,7 +10,7 @@ import { LISTING_PAGE_SIZE } from "@auto/shared";
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 /** Build the request body from pagination + filter params. */
-function buildListingsBody(options?: {
+export function buildListingsBody(options?: {
   skip?: number;
   top?: number;
   filters?: ISearchFilters;

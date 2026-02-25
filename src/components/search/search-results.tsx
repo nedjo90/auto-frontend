@@ -14,6 +14,7 @@ import { ListingCardSkeletonGrid } from "@/components/listing/listing-card-skele
 import { SearchFilters } from "@/components/search/search-filters";
 import { FilterChips } from "@/components/search/filter-chips";
 import { parseSearchParams, serializeSearchParams } from "@/lib/search-params";
+import { buildListingsBody } from "@/lib/api/catalog-api";
 import {
   Select,
   SelectContent,
@@ -98,23 +99,11 @@ export function SearchResults({
     setIsLoading(true);
     try {
       const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
-      const body: Record<string, unknown> = {
+      const body = buildListingsBody({
         skip: skipRef.current,
         top: LISTING_PAGE_SIZE,
-      };
-      if (filters.search) body.search = filters.search;
-      if (filters.minPrice != null) body.minPrice = filters.minPrice;
-      if (filters.maxPrice != null) body.maxPrice = filters.maxPrice;
-      if (filters.make) body.make = filters.make;
-      if (filters.model) body.model = filters.model;
-      if (filters.minYear != null) body.minYear = filters.minYear;
-      if (filters.maxYear != null) body.maxYear = filters.maxYear;
-      if (filters.maxMileage != null) body.maxMileage = filters.maxMileage;
-      if (filters.fuelType?.length) body.fuelType = JSON.stringify(filters.fuelType);
-      if (filters.gearbox?.length) body.gearbox = JSON.stringify(filters.gearbox);
-      if (filters.bodyType?.length) body.bodyType = JSON.stringify(filters.bodyType);
-      if (filters.color?.length) body.color = JSON.stringify(filters.color);
-      if (filters.sort && filters.sort !== "relevance") body.sort = filters.sort;
+        filters,
+      });
 
       const res = await fetch(`${API_BASE}/api/catalog/getListings`, {
         method: "POST",
