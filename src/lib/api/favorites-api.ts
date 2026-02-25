@@ -77,7 +77,7 @@ export async function markAllAsSeen(): Promise<{ success: boolean; updated: numb
   return res.json();
 }
 
-/** Get user's notifications. */
+/** @deprecated Use getNotificationsV2 from notifications-api.ts instead. */
 export async function getNotifications(options?: { skip?: number; top?: number }): Promise<{
   items: INotification[];
   total: number;
@@ -103,7 +103,7 @@ export async function getNotifications(options?: { skip?: number; top?: number }
   };
 }
 
-/** Mark notifications as read. */
+/** @deprecated Use markNotificationsReadV2 from notifications-api.ts instead. */
 export async function markNotificationsRead(
   notificationIds: string[] | "all",
 ): Promise<{ success: boolean; updated: number }> {
@@ -122,7 +122,7 @@ export async function markNotificationsRead(
   return res.json();
 }
 
-/** Get unread notification count (for bell badge). */
+/** @deprecated Use getUnreadCountV2 from notifications-api.ts instead. */
 export async function getUnreadCount(): Promise<number> {
   const res = await apiClient(`${API_BASE}/api/favorites/getUnreadCount`, {
     method: "GET",

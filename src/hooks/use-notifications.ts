@@ -46,7 +46,8 @@ export function useNotifications() {
         };
 
         store.prependNotification(newNotification);
-        store.setUnreadCount(store.unreadCount + 1);
+        // Don't manually increment unreadCount here — the server sends
+        // a separate unreadCountUpdate event with the authoritative count.
       },
       [NOTIFICATION_EVENTS.unreadCountUpdate]: (data: unknown) => {
         const event = data as IUnreadCountEvent;
@@ -91,6 +92,22 @@ export function useNotifications() {
     load();
   }, [isAuthenticated]);
 
+  // Fallback polling when SignalR is unavailable
+  useEffect(() => {
+    if (!isAuthenticated || status === "connected") return;
+
+    const interval = setInterval(async () => {
+      try {
+        const count = await getUnreadCountV2();
+        useNotificationStore.getState().setUnreadCount(count);
+      } catch {
+        // Silently fail
+      }
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [isAuthenticated, status]);
+
   // Reset on logout
   useEffect(() => {
     if (!isAuthenticated) {
@@ -101,20 +118,30 @@ export function useNotifications() {
 
   const markAsRead = useCallback(async (ids: string[]) => {
     if (ids.length === 0) return;
-    useNotificationStore.getState().markAsRead(ids);
+    const store = useNotificationStore.getState();
+    const prevNotifications = store.notifications;
+    const prevUnreadCount = store.unreadCount;
+    store.markAsRead(ids);
     try {
       await markNotificationsReadV2(ids);
     } catch {
-      // Optimistic update already applied
+      // Rollback on failure
+      store.setNotifications(prevNotifications);
+      store.setUnreadCount(prevUnreadCount);
     }
   }, []);
 
   const markAllAsRead = useCallback(async () => {
-    useNotificationStore.getState().markAllAsRead();
+    const store = useNotificationStore.getState();
+    const prevNotifications = store.notifications;
+    const prevUnreadCount = store.unreadCount;
+    store.markAllAsRead();
     try {
       await markNotificationsReadV2("all");
     } catch {
-      // Optimistic update already applied
+      // Rollback on failure
+      store.setNotifications(prevNotifications);
+      store.setUnreadCount(prevUnreadCount);
     }
   }, []);
 
