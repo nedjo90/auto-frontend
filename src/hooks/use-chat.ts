@@ -23,15 +23,24 @@ export interface UseChatOptions {
  * Hook for managing chat functionality: messages, SignalR events, and state.
  */
 export function useChat({ conversationId, userId, enabled = true }: UseChatOptions) {
-  const store = useChatStore();
+  // Use individual selectors to avoid full-store re-renders
+  const messages = useChatStore((s) => s.messages);
+  const connectionStatus = useChatStore((s) => s.connectionStatus);
+  const isLoadingMessages = useChatStore((s) => s.isLoadingMessages);
+  const hasMoreMessages = useChatStore((s) => s.hasMoreMessages);
+  const totalUnreadCount = useChatStore((s) => s.totalUnreadCount);
+  const messageCursor = useChatStore((s) => s.messageCursor);
+
   const prevConvRef = useRef<string | null>(null);
+  const markedAsReadRef = useRef<Set<string>>(new Set());
 
   // Handle incoming SignalR events
   const handleMessageSent = useCallback(
     (data: unknown) => {
       const event = data as IChatMessageEvent;
+      const state = useChatStore.getState();
       // Add message to store if it's for the active conversation
-      if (event.conversationId === useChatStore.getState().activeConversationId) {
+      if (event.conversationId === state.activeConversationId) {
         const message: IChatMessage = {
           ID: event.messageId,
           conversationId: event.conversationId,
@@ -40,7 +49,7 @@ export function useChat({ conversationId, userId, enabled = true }: UseChatOptio
           timestamp: event.timestamp,
           deliveryStatus: "delivered",
         };
-        store.addMessage(message);
+        state.addMessage(message);
 
         // Auto-mark as delivered
         if (userId && event.senderId !== userId) {
@@ -49,31 +58,25 @@ export function useChat({ conversationId, userId, enabled = true }: UseChatOptio
       }
 
       // Update conversation list
-      store.updateConversationLastMessage(event.conversationId, event.content, event.timestamp);
+      state.updateConversationLastMessage(event.conversationId, event.content, event.timestamp);
 
       // Increment unread if not active conversation
-      if (event.conversationId !== useChatStore.getState().activeConversationId) {
-        store.setTotalUnreadCount(useChatStore.getState().totalUnreadCount + 1);
+      if (event.conversationId !== state.activeConversationId) {
+        state.setTotalUnreadCount(state.totalUnreadCount + 1);
       }
     },
-    [userId, store],
+    [userId],
   );
 
-  const handleMessageDelivered = useCallback(
-    (data: unknown) => {
-      const event = data as IChatStatusEvent;
-      store.updateMessageStatus(event.messageId, "delivered");
-    },
-    [store],
-  );
+  const handleMessageDelivered = useCallback((data: unknown) => {
+    const event = data as IChatStatusEvent;
+    useChatStore.getState().updateMessageStatus(event.messageId, "delivered");
+  }, []);
 
-  const handleMessageRead = useCallback(
-    (data: unknown) => {
-      const event = data as IChatStatusEvent;
-      store.updateMessageStatus(event.messageId, "read");
-    },
-    [store],
-  );
+  const handleMessageRead = useCallback((data: unknown) => {
+    const event = data as IChatStatusEvent;
+    useChatStore.getState().updateMessageStatus(event.messageId, "read");
+  }, []);
 
   // Connect to SignalR chat hub
   const { status } = useSignalR({
@@ -87,37 +90,40 @@ export function useChat({ conversationId, userId, enabled = true }: UseChatOptio
   });
 
   useEffect(() => {
-    store.setConnectionStatus(status);
-  }, [status, store]);
+    useChatStore.getState().setConnectionStatus(status);
+  }, [status]);
 
   // Load messages when conversation changes
   useEffect(() => {
     if (!conversationId || conversationId === prevConvRef.current) return;
     prevConvRef.current = conversationId;
+    markedAsReadRef.current = new Set();
 
-    store.setActiveConversation(conversationId);
-    store.setIsLoadingMessages(true);
+    const state = useChatStore.getState();
+    state.setActiveConversation(conversationId);
+    state.setIsLoadingMessages(true);
 
     getMessages(conversationId)
       .then((result) => {
+        const s = useChatStore.getState();
         // Messages come in desc order from API, reverse for display
-        store.setMessages(result.messages.reverse());
-        store.setHasMoreMessages(result.hasMore);
-        store.setMessageCursor(result.cursor);
+        s.setMessages(result.messages.reverse());
+        s.setHasMoreMessages(result.hasMore);
+        s.setMessageCursor(result.cursor);
       })
       .catch(() => {})
       .finally(() => {
-        store.setIsLoadingMessages(false);
+        useChatStore.getState().setIsLoadingMessages(false);
       });
-  }, [conversationId, store]);
+  }, [conversationId]);
 
   // Load unread count on mount
   useEffect(() => {
     if (!userId || !enabled) return;
     getChatUnreadCount()
-      .then((count) => store.setTotalUnreadCount(count))
+      .then((count) => useChatStore.getState().setTotalUnreadCount(count))
       .catch(() => {});
-  }, [userId, enabled, store]);
+  }, [userId, enabled]);
 
   // Send a message
   const sendMessage = useCallback(
@@ -134,74 +140,95 @@ export function useChat({ conversationId, userId, enabled = true }: UseChatOptio
         timestamp: new Date().toISOString(),
         deliveryStatus: "sent",
       };
-      store.addMessage(optimisticMsg);
+      useChatStore.getState().addMessage(optimisticMsg);
 
       try {
         const result = await apiSendMessage(conversationId, content);
         // Replace temp message with real one
-        store.updateMessageStatus(tempId, result.deliveryStatus);
-        // Update the ID from temp to real
         const state = useChatStore.getState();
-        store.setMessages(
+        state.setMessages(
           state.messages.map((m) =>
-            m.ID === tempId ? { ...m, ID: result.messageId, timestamp: result.timestamp } : m,
+            m.ID === tempId
+              ? {
+                  ...m,
+                  ID: result.messageId,
+                  timestamp: result.timestamp,
+                  deliveryStatus: result.deliveryStatus,
+                }
+              : m,
           ),
         );
-        store.updateConversationLastMessage(conversationId, content, result.timestamp);
+        state.updateConversationLastMessage(conversationId, content, result.timestamp);
       } catch {
         // Remove optimistic message on failure
         const state = useChatStore.getState();
-        store.setMessages(state.messages.filter((m) => m.ID !== tempId));
+        state.setMessages(state.messages.filter((m) => m.ID !== tempId));
         throw new Error("Échec de l'envoi du message");
       }
     },
-    [conversationId, userId, store],
+    [conversationId, userId],
   );
 
   // Load older messages
   const loadMore = useCallback(async () => {
-    if (!conversationId || !store.hasMoreMessages || store.isLoadingMessages) return;
+    const state = useChatStore.getState();
+    if (!conversationId || !state.hasMoreMessages || state.isLoadingMessages) return;
 
-    store.setIsLoadingMessages(true);
+    state.setIsLoadingMessages(true);
     try {
       const result = await getMessages(conversationId, {
-        cursor: store.messageCursor ?? undefined,
+        cursor: state.messageCursor ?? undefined,
       });
-      store.prependMessages(result.messages.reverse());
-      store.setHasMoreMessages(result.hasMore);
-      store.setMessageCursor(result.cursor);
+      const s = useChatStore.getState();
+      s.prependMessages(result.messages.reverse());
+      s.setHasMoreMessages(result.hasMore);
+      s.setMessageCursor(result.cursor);
     } catch {
       // silently fail
     } finally {
-      store.setIsLoadingMessages(false);
+      useChatStore.getState().setIsLoadingMessages(false);
     }
-  }, [conversationId, store]);
+  }, [conversationId]);
 
-  // Mark messages as read
+  // Mark messages as read (with dedup to prevent repeated API calls)
   const markAsRead = useCallback(
     async (messageIds: string[]) => {
       if (!conversationId || messageIds.length === 0) return;
+
+      // Filter out already-marked IDs
+      const newIds = messageIds.filter((id) => !markedAsReadRef.current.has(id));
+      if (newIds.length === 0) return;
+
+      // Track immediately to prevent duplicate calls
+      for (const id of newIds) {
+        markedAsReadRef.current.add(id);
+      }
+
       try {
-        const result = await apiMarkAsRead(conversationId, messageIds);
+        const result = await apiMarkAsRead(conversationId, newIds);
         if (result.updated > 0) {
-          store.decrementUnreadCount(conversationId, result.updated);
-          for (const id of messageIds) {
-            store.updateMessageStatus(id, "read");
+          const state = useChatStore.getState();
+          state.decrementUnreadCount(conversationId, result.updated);
+          for (const id of newIds) {
+            state.updateMessageStatus(id, "read");
           }
         }
       } catch {
-        // silently fail
+        // Remove from tracking on failure so they can be retried
+        for (const id of newIds) {
+          markedAsReadRef.current.delete(id);
+        }
       }
     },
-    [conversationId, store],
+    [conversationId],
   );
 
   return {
-    messages: store.messages,
-    connectionStatus: store.connectionStatus,
-    isLoadingMessages: store.isLoadingMessages,
-    hasMoreMessages: store.hasMoreMessages,
-    totalUnreadCount: store.totalUnreadCount,
+    messages,
+    connectionStatus,
+    isLoadingMessages,
+    hasMoreMessages,
+    totalUnreadCount,
     sendMessage,
     loadMore,
     markAsRead,
