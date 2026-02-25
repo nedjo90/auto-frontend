@@ -9,10 +9,19 @@ import { SoldBadge } from "@/components/listing/sold-badge";
 import { PublicPhotoGallery } from "@/components/listing/public-photo-gallery";
 import { MarketPriceIndicator } from "@/components/listing/market-price-indicator";
 import { FavoriteButton } from "@/components/listing/favorite-button";
+import {
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/ui/responsive-dialog";
+import { ChatWindow } from "@/components/chat/chat-window";
 import type { IPublicListingDetail } from "@auto/shared";
 import { formatPrice, formatMileage } from "@/lib/api/catalog-api";
 import { checkFavorites } from "@/lib/api/favorites-api";
+import { startOrResumeConversation } from "@/lib/api/chat-api";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { toast } from "sonner";
 
 interface ListingDetailClientProps {
   listingId: string;
@@ -69,7 +78,10 @@ export function ListingDetailClient({ listingId }: ListingDetailClientProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
-  const { isAuthenticated } = useCurrentUser();
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatConversationId, setChatConversationId] = useState<string | null>(null);
+  const [chatLoading, setChatLoading] = useState(false);
+  const { isAuthenticated, userId } = useCurrentUser();
 
   useEffect(() => {
     async function loadListing() {
@@ -290,12 +302,56 @@ export function ListingDetailClient({ listingId }: ListingDetailClientProps) {
             </p>
           </div>
         ) : (
-          <Button className="w-full min-h-11 sm:w-auto" data-testid="contact-button">
-            <MessageCircle className="mr-2 h-4 w-4" aria-hidden="true" />
+          <Button
+            className="w-full min-h-11 sm:w-auto"
+            data-testid="contact-button"
+            disabled={chatLoading || (isAuthenticated && listing.sellerId === userId)}
+            onClick={async () => {
+              if (!isAuthenticated) {
+                toast.error("Connectez-vous pour contacter le vendeur");
+                return;
+              }
+              if (!userId) return;
+              setChatLoading(true);
+              try {
+                const result = await startOrResumeConversation(listingId, userId);
+                setChatConversationId(result.conversationId);
+                setChatOpen(true);
+              } catch {
+                toast.error("Impossible d'ouvrir la conversation");
+              } finally {
+                setChatLoading(false);
+              }
+            }}
+          >
+            {chatLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <MessageCircle className="mr-2 h-4 w-4" aria-hidden="true" />
+            )}
             Contacter le vendeur
           </Button>
         )}
       </div>
+
+      {/* Chat dialog */}
+      <ResponsiveDialog open={chatOpen} onOpenChange={setChatOpen}>
+        <ResponsiveDialogContent className="h-[80vh] max-w-lg p-0 flex flex-col">
+          <ResponsiveDialogHeader className="sr-only">
+            <ResponsiveDialogTitle>Chat - {title}</ResponsiveDialogTitle>
+          </ResponsiveDialogHeader>
+          {chatConversationId && userId && (
+            <ChatWindow
+              conversationId={chatConversationId}
+              userId={userId}
+              listingTitle={title}
+              listingPhoto={listing.photos?.[0]?.cdnUrl ?? null}
+              listingPrice={listing.price}
+              onBack={() => setChatOpen(false)}
+            />
+          )}
+        </ResponsiveDialogContent>
+      </ResponsiveDialog>
     </div>
   );
 }
