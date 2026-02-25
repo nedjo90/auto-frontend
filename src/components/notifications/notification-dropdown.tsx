@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
-import { Loader2, Check, ExternalLink } from "lucide-react";
+import { useEffect, useRef, useCallback } from "react";
+import { Check, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import type { INotification } from "@auto/shared";
-import { getNotifications, markNotificationsRead } from "@/lib/api/favorites-api";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface NotificationDropdownProps {
+  notifications: INotification[];
+  unreadCount: number;
   onClose: () => void;
-  onRead: () => void;
+  onMarkAllRead: () => void;
+  onRefresh: () => void;
 }
 
 function formatTimeAgo(dateStr: string): string {
@@ -28,31 +30,29 @@ function formatTimeAgo(dateStr: string): string {
   return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 }
 
+function getNotificationHref(notif: INotification): string {
+  if (notif.actionUrl) return notif.actionUrl;
+  if (notif.listingId) return `/listing/${notif.listingId}`;
+  return "#";
+}
+
 /**
  * Dropdown showing recent notifications with mark-as-read functionality.
+ * Now receives data from the useNotifications hook via props.
  */
-export function NotificationDropdown({ onClose, onRead }: NotificationDropdownProps) {
-  const [notifications, setNotifications] = useState<INotification[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [unreadCount, setUnreadCount] = useState(0);
+export function NotificationDropdown({
+  notifications,
+  unreadCount,
+  onClose,
+  onMarkAllRead,
+  onRefresh,
+}: NotificationDropdownProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const loadNotifications = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const data = await getNotifications({ top: 10 });
-      setNotifications(data.items);
-      setUnreadCount(data.unreadCount);
-    } catch {
-      // Silently fail
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
+  // Refresh on mount
   useEffect(() => {
-    loadNotifications();
-  }, [loadNotifications]);
+    onRefresh();
+  }, [onRefresh]);
 
   // Close on outside click
   useEffect(() => {
@@ -65,16 +65,9 @@ export function NotificationDropdown({ onClose, onRead }: NotificationDropdownPr
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
-  const handleMarkAllRead = useCallback(async () => {
-    try {
-      await markNotificationsRead("all");
-      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-      setUnreadCount(0);
-      onRead();
-    } catch {
-      // Silently fail
-    }
-  }, [onRead]);
+  const handleMarkAllRead = useCallback(() => {
+    onMarkAllRead();
+  }, [onMarkAllRead]);
 
   return (
     <div
@@ -93,11 +86,7 @@ export function NotificationDropdown({ onClose, onRead }: NotificationDropdownPr
       </div>
 
       <div className="max-h-80 overflow-y-auto" data-testid="notification-list">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-          </div>
-        ) : notifications.length === 0 ? (
+        {notifications.length === 0 ? (
           <div
             className="py-8 text-center text-sm text-muted-foreground"
             data-testid="notification-empty"
@@ -108,7 +97,7 @@ export function NotificationDropdown({ onClose, onRead }: NotificationDropdownPr
           notifications.map((notif) => (
             <Link
               key={notif.ID}
-              href={`/listing/${notif.listingId}`}
+              href={getNotificationHref(notif)}
               onClick={onClose}
               className={cn(
                 "flex items-start gap-3 border-b px-4 py-3 transition-colors hover:bg-muted/50 last:border-0",
@@ -117,7 +106,14 @@ export function NotificationDropdown({ onClose, onRead }: NotificationDropdownPr
               data-testid={`notification-item-${notif.ID}`}
             >
               <div className="flex-1 min-w-0">
-                <p className={cn("text-sm", !notif.isRead && "font-medium")}>{notif.message}</p>
+                {notif.title && (
+                  <p className={cn("text-sm font-medium", notif.isRead && "font-normal")}>
+                    {notif.title}
+                  </p>
+                )}
+                <p className={cn("text-sm", !notif.isRead && !notif.title && "font-medium")}>
+                  {notif.body || notif.message}
+                </p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {formatTimeAgo(notif.createdAt)}
                 </p>
@@ -127,6 +123,18 @@ export function NotificationDropdown({ onClose, onRead }: NotificationDropdownPr
           ))
         )}
       </div>
+
+      {notifications.length > 0 && (
+        <div className="border-t px-4 py-2 text-center">
+          <Link
+            href="/settings/notifications"
+            className="text-xs text-muted-foreground hover:text-foreground"
+            onClick={onClose}
+          >
+            Gérer les notifications
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

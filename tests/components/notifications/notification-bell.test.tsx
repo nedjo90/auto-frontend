@@ -13,16 +13,12 @@ vi.mock("@/hooks/use-current-user", () => ({
   })),
 }));
 
-const mockGetUnreadCount = vi.fn();
-vi.mock("@/lib/api/favorites-api", () => ({
-  getUnreadCount: (...args: unknown[]) => mockGetUnreadCount(...args),
-  getNotifications: vi.fn().mockResolvedValue({
-    items: [],
-    total: 0,
-    unreadCount: 0,
-    hasMore: false,
-  }),
-  markNotificationsRead: vi.fn().mockResolvedValue({ success: true, updated: 0 }),
+const mockMarkAllAsRead = vi.fn();
+const mockRefresh = vi.fn();
+const mockUseNotifications = vi.fn();
+
+vi.mock("@/hooks/use-notifications", () => ({
+  useNotifications: (...args: unknown[]) => mockUseNotifications(...args),
 }));
 
 // Mock next/link
@@ -39,21 +35,27 @@ const mockUseCurrentUser = useCurrentUser as ReturnType<typeof vi.fn>;
 describe("NotificationBell", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetUnreadCount.mockResolvedValue(0);
-    // Restore authenticated state (may be overridden by individual tests)
     mockUseCurrentUser.mockReturnValue({
       isAuthenticated: true,
       userId: "user-1",
       displayName: "Test User",
       email: "test@test.com",
     });
+    mockUseNotifications.mockReturnValue({
+      unreadCount: 0,
+      notifications: [],
+      markAllAsRead: mockMarkAllAsRead,
+      refresh: mockRefresh,
+      connectionStatus: "connected",
+      hasMore: false,
+      total: 0,
+      markAsRead: vi.fn(),
+    });
   });
 
-  it("should render the bell icon", async () => {
+  it("should render the bell icon", () => {
     render(<NotificationBell />);
-    await waitFor(() => {
-      expect(screen.getByTestId("notification-bell")).toBeInTheDocument();
-    });
+    expect(screen.getByTestId("notification-bell")).toBeInTheDocument();
   });
 
   it("should not render when not authenticated", () => {
@@ -68,31 +70,41 @@ describe("NotificationBell", () => {
     expect(container.innerHTML).toBe("");
   });
 
-  it("should show unread count badge", async () => {
-    mockGetUnreadCount.mockResolvedValue(5);
+  it("should show unread count badge", () => {
+    mockUseNotifications.mockReturnValue({
+      unreadCount: 5,
+      notifications: [],
+      markAllAsRead: mockMarkAllAsRead,
+      refresh: mockRefresh,
+      connectionStatus: "connected",
+      hasMore: false,
+      total: 0,
+      markAsRead: vi.fn(),
+    });
 
     render(<NotificationBell />);
-    await waitFor(() => {
-      expect(screen.getByTestId("notification-badge")).toHaveTextContent("5");
-    });
+    expect(screen.getByTestId("notification-badge")).toHaveTextContent("5");
   });
 
-  it("should show 9+ for large counts", async () => {
-    mockGetUnreadCount.mockResolvedValue(15);
+  it("should show 9+ for large counts", () => {
+    mockUseNotifications.mockReturnValue({
+      unreadCount: 15,
+      notifications: [],
+      markAllAsRead: mockMarkAllAsRead,
+      refresh: mockRefresh,
+      connectionStatus: "connected",
+      hasMore: false,
+      total: 0,
+      markAsRead: vi.fn(),
+    });
 
     render(<NotificationBell />);
-    await waitFor(() => {
-      expect(screen.getByTestId("notification-badge")).toHaveTextContent("9+");
-    });
+    expect(screen.getByTestId("notification-badge")).toHaveTextContent("9+");
   });
 
-  it("should not show badge when no unread", async () => {
-    mockGetUnreadCount.mockResolvedValue(0);
-
+  it("should not show badge when no unread", () => {
     render(<NotificationBell />);
-    await waitFor(() => {
-      expect(screen.queryByTestId("notification-badge")).not.toBeInTheDocument();
-    });
+    expect(screen.queryByTestId("notification-badge")).not.toBeInTheDocument();
   });
 
   it("should open dropdown on click", async () => {

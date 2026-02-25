@@ -1,53 +1,20 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useState } from "react";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { getUnreadCount } from "@/lib/api/favorites-api";
+import { useNotifications } from "@/hooks/use-notifications";
 import { NotificationDropdown } from "./notification-dropdown";
 
 /**
  * Bell icon in the header with unread notification count badge.
- * Opens a dropdown with recent notifications.
+ * Uses SignalR for real-time updates instead of polling.
  */
 export function NotificationBell() {
   const { isAuthenticated } = useCurrentUser();
-  const [unreadCount, setUnreadCount] = useState(0);
+  const { unreadCount, notifications, markAllAsRead, refresh } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
-  const setCountRef = useRef(setUnreadCount);
-
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    let ignore = false;
-
-    async function fetchCount() {
-      try {
-        const count = await getUnreadCount();
-        if (!ignore) setCountRef.current(count);
-      } catch {
-        // Silently fail
-      }
-    }
-
-    fetchCount();
-    const interval = setInterval(fetchCount, 60000);
-    return () => {
-      ignore = true;
-      clearInterval(interval);
-    };
-  }, [isAuthenticated]);
-
-  const refreshCount = useCallback(async () => {
-    if (!isAuthenticated) return;
-    try {
-      const count = await getUnreadCount();
-      setUnreadCount(count);
-    } catch {
-      // Silently fail
-    }
-  }, [isAuthenticated]);
 
   if (!isAuthenticated) return null;
 
@@ -74,10 +41,11 @@ export function NotificationBell() {
 
       {isOpen && (
         <NotificationDropdown
+          notifications={notifications}
+          unreadCount={unreadCount}
           onClose={() => setIsOpen(false)}
-          onRead={() => {
-            refreshCount();
-          }}
+          onMarkAllRead={markAllAsRead}
+          onRefresh={refresh}
         />
       )}
     </div>
