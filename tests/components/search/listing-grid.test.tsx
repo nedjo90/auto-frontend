@@ -35,6 +35,7 @@ vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
 
 const makeListing = (id: string, make: string): IPublicListingCard => ({
   ID: id,
+  slug: `${make.toLowerCase()}-model-2020-${id}`,
   make,
   model: "Model",
   variant: null,

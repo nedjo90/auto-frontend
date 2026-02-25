@@ -108,7 +108,7 @@ export function NotificationDropdown({ onClose, onRead }: NotificationDropdownPr
           notifications.map((notif) => (
             <Link
               key={notif.ID}
-              href={`/listings/${notif.listingId}`}
+              href={`/listing/${notif.listingId}`}
               onClick={onClose}
               className={cn(
                 "flex items-start gap-3 border-b px-4 py-3 transition-colors hover:bg-muted/50 last:border-0",

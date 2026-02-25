@@ -11,14 +11,41 @@ interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
+/** Build canonical URL from search params by sorting keys. */
+function buildCanonicalUrl(raw: Record<string, string | string[] | undefined>): string {
+  const params = new URLSearchParams();
+  const sortedKeys = Object.keys(raw)
+    .filter((k) => raw[k] !== undefined && raw[k] !== "")
+    .sort();
+  for (const key of sortedKeys) {
+    const val = raw[key];
+    if (val === undefined || val === "") continue;
+    if (Array.isArray(val)) {
+      [...val]
+        .filter((v) => v !== "")
+        .sort()
+        .forEach((v) => params.append(key, v));
+    } else {
+      params.set(key, val as string);
+    }
+  }
+  const qs = params.toString();
+  return qs ? `/search?${qs}` : "/search";
+}
+
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const raw = await searchParams;
   const query = (typeof raw.q === "string" ? raw.q : "") || "";
+  const brand = (typeof raw.make === "string" ? raw.make : "") || "";
 
-  const seo = await getSeoMeta("search_results", { query, count: "0", city: "", brand: "" });
+  const seo = await getSeoMeta("search_results", { query, count: "0", city: "", brand });
+  const canonicalUrl = buildCanonicalUrl(raw);
 
   if (!seo) {
-    return { title: `${query || "Recherche"} | Auto` };
+    return {
+      title: `${query || "Recherche"} | Auto`,
+      alternates: { canonical: canonicalUrl },
+    };
   }
 
   return {
@@ -28,6 +55,12 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
       title: seo.ogTitle || seo.metaTitle,
       description: seo.ogDescription || seo.metaDescription,
     },
+    twitter: {
+      card: "summary",
+      title: seo.ogTitle || seo.metaTitle,
+      description: seo.ogDescription || seo.metaDescription,
+    },
+    alternates: { canonical: canonicalUrl },
   };
 }
 

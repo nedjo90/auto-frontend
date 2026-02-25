@@ -111,6 +111,64 @@ export async function getCardConfig(): Promise<IConfigListingCard[]> {
   return data.value || [];
 }
 
+/** SEO data for a listing page. */
+export interface ListingSeoData {
+  slug: string;
+  metaTitle: string;
+  metaDescription: string;
+  ogTitle: string;
+  ogDescription: string;
+  ogImage: string;
+  canonicalUrl: string;
+  structuredData: string;
+}
+
+/** Fetch SEO data for a listing (slug, meta tags, structured data). */
+export async function getListingSeoData(listingId: string): Promise<ListingSeoData | null> {
+  try {
+    const res = await fetch(`${API_BASE}/api/catalog/getListingSeoData`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ listingId }),
+      next: { revalidate: 3600 },
+    });
+
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+/** Fetch listing slugs for sitemap generation. */
+export async function getListingSlugs(
+  skip = 0,
+  top = 1000,
+): Promise<{
+  slugs: { slug: string; lastModified: string }[];
+  total: number;
+  hasMore: boolean;
+}> {
+  try {
+    const res = await fetch(`${API_BASE}/api/catalog/getListingSlugs`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ skip, top }),
+      next: { revalidate: 3600 },
+    });
+
+    if (!res.ok) return { slugs: [], total: 0, hasMore: false };
+    const data = await res.json();
+    return {
+      slugs: typeof data.slugs === "string" ? JSON.parse(data.slugs) : data.slugs || [],
+      total: data.total || 0,
+      hasMore: data.hasMore || false,
+    };
+  } catch {
+    return { slugs: [], total: 0, hasMore: false };
+  }
+}
+
 /** Format price for display (French locale). */
 export function formatPrice(price: number | null): string | null {
   if (price == null) return null;

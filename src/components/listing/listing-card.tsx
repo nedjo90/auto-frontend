@@ -80,7 +80,7 @@ export function ListingCard({
 
   return (
     <Link
-      href={`/listings/${listing.ID}`}
+      href={`/listing/${listing.slug || listing.ID}`}
       className="block"
       data-testid={`listing-card-${listing.ID}`}
     >

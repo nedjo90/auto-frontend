@@ -21,6 +21,8 @@ vi.mock("@/lib/api/catalog-api", () => ({
   getListings: vi.fn().mockResolvedValue({ items: [], total: 0, skip: 0, top: 20, hasMore: false }),
   getCardConfig: vi.fn().mockResolvedValue([]),
   getListingDetail: vi.fn().mockResolvedValue(null),
+  getListingSeoData: vi.fn().mockResolvedValue(null),
+  getListingSlugs: vi.fn().mockResolvedValue({ slugs: [], total: 0, hasMore: false }),
   formatPrice: vi.fn((p: number | null) => (p != null ? `${p} €` : null)),
   formatMileage: vi.fn((m: number | null) => (m != null ? `${m} km` : null)),
   buildImageUrl: vi.fn((url: string | null) => url || "/placeholder-car.svg"),
@@ -35,9 +37,19 @@ vi.mock("next/image", () => ({
 }));
 
 // Mock next/navigation
+const mockRedirect = vi.fn();
+const mockNotFound = vi.fn();
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
   useSearchParams: () => new URLSearchParams(),
+  redirect: (...args: unknown[]) => {
+    mockRedirect(...args);
+    throw new Error("NEXT_REDIRECT");
+  },
+  notFound: () => {
+    mockNotFound();
+    throw new Error("NEXT_NOT_FOUND");
+  },
 }));
 
 // Mock next/link
@@ -117,27 +129,138 @@ describe("SEO Public Pages", () => {
     });
   });
 
-  describe("ListingDetailPage", () => {
-    it("renders listing page with id", async () => {
-      const { default: ListingDetailPage } = await import("@/app/(public)/listings/[id]/page");
-      const page = await ListingDetailPage({
-        params: Promise.resolve({ id: "abc-123" }),
+  describe("ListingDetailPage (legacy /listings/[id])", () => {
+    it("redirects to new slug URL when listing is found", async () => {
+      const { getListingDetail } = await import("@/lib/api/catalog-api");
+      (getListingDetail as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+        ID: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        make: "Peugeot",
+        model: "3008",
+        year: 2022,
+      });
+
+      const { default: LegacyPage } = await import("@/app/(public)/listings/[id]/page");
+
+      await expect(
+        LegacyPage({ params: Promise.resolve({ id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890" }) }),
+      ).rejects.toThrow("NEXT_REDIRECT");
+
+      expect(mockRedirect).toHaveBeenCalledWith(
+        expect.stringContaining("/listing/peugeot-3008-2022-"),
+      );
+    });
+
+    it("returns 404 when listing not found", async () => {
+      const { getListingDetail } = await import("@/lib/api/catalog-api");
+      (getListingDetail as ReturnType<typeof vi.fn>).mockResolvedValueOnce(null);
+
+      const { default: LegacyPage } = await import("@/app/(public)/listings/[id]/page");
+
+      await expect(LegacyPage({ params: Promise.resolve({ id: "nonexistent" }) })).rejects.toThrow(
+        "NEXT_NOT_FOUND",
+      );
+    });
+  });
+
+  describe("ListingDetailPage (new /listing/[slug])", () => {
+    it("renders listing page when listing found with matching slug", async () => {
+      const { getListingDetail, getListingSeoData } = await import("@/lib/api/catalog-api");
+      (getListingDetail as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+        ID: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        make: "Peugeot",
+        model: "3008",
+        year: 2022,
+        status: "published",
+      });
+      (getListingSeoData as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+        slug: "peugeot-3008-2022-a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        metaTitle: "Peugeot 3008 2022 | Auto",
+        structuredData: JSON.stringify({ "@context": "https://schema.org" }),
+      });
+
+      const { default: SlugPage } = await import("@/app/(public)/listing/[slug]/page");
+      const page = await SlugPage({
+        params: Promise.resolve({
+          slug: "peugeot-3008-2022-a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        }),
       });
       const { container } = render(page);
 
-      // ListingDetailClient renders a loading spinner
+      // Should render the listing detail client (shows loading spinner)
       expect(container.querySelector("[data-testid='listing-detail-loading']")).toBeDefined();
     });
 
-    it("includes JSON-LD script tag", async () => {
-      const { default: ListingDetailPage } = await import("@/app/(public)/listings/[id]/page");
-      const page = await ListingDetailPage({
-        params: Promise.resolve({ id: "abc-123" }),
+    it("includes JSON-LD script tag when SEO data available", async () => {
+      const { getListingDetail, getListingSeoData } = await import("@/lib/api/catalog-api");
+      (getListingDetail as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+        ID: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        make: "Peugeot",
+        model: "3008",
+        year: 2022,
+      });
+      (getListingSeoData as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+        structuredData: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [],
+        }),
+      });
+
+      const { default: SlugPage } = await import("@/app/(public)/listing/[slug]/page");
+      const page = await SlugPage({
+        params: Promise.resolve({
+          slug: "peugeot-3008-2022-a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        }),
       });
       const { container } = render(page);
 
       const script = container.querySelector('script[type="application/ld+json"]');
       expect(script).not.toBeNull();
+    });
+
+    it("returns 404 for invalid slug (no ID extractable)", async () => {
+      const { default: SlugPage } = await import("@/app/(public)/listing/[slug]/page");
+
+      await expect(SlugPage({ params: Promise.resolve({ slug: "" }) })).rejects.toThrow(
+        "NEXT_NOT_FOUND",
+      );
+    });
+
+    it("returns 404 when listing not found", async () => {
+      const { getListingDetail } = await import("@/lib/api/catalog-api");
+      (getListingDetail as ReturnType<typeof vi.fn>).mockResolvedValueOnce(null);
+
+      const { default: SlugPage } = await import("@/app/(public)/listing/[slug]/page");
+
+      await expect(
+        SlugPage({
+          params: Promise.resolve({
+            slug: "fake-a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+          }),
+        }),
+      ).rejects.toThrow("NEXT_NOT_FOUND");
+    });
+
+    it("redirects to canonical slug when URL slug is stale", async () => {
+      const { getListingDetail, getListingSeoData } = await import("@/lib/api/catalog-api");
+      (getListingDetail as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+        ID: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        make: "Peugeot",
+        model: "3008",
+        year: 2023, // year changed from 2022 to 2023
+      });
+      (getListingSeoData as ReturnType<typeof vi.fn>).mockResolvedValueOnce(null);
+
+      const { default: SlugPage } = await import("@/app/(public)/listing/[slug]/page");
+
+      await expect(
+        SlugPage({
+          params: Promise.resolve({
+            slug: "peugeot-3008-2022-a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+          }),
+        }),
+      ).rejects.toThrow("NEXT_REDIRECT");
+
+      expect(mockRedirect).toHaveBeenCalledWith(expect.stringContaining("peugeot-3008-2023"));
     });
   });
 });

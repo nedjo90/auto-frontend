@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, cleanup } from "@testing-library/react";
-import { ListingDetailClient } from "@/app/(public)/listings/[id]/listing-detail-client";
+import { ListingDetailClient } from "@/app/(public)/listing/[slug]/listing-detail-client";
 import type { IPublicListingDetail } from "@auto/shared";
 
 // Mock next/image

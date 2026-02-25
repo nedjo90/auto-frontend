@@ -22,6 +22,7 @@ vi.mock("next/link", () => ({
 
 const baseListing: IPublicListingCard = {
   ID: "test-listing-1",
+  slug: "renault-clio-2020-paris-test-listing-1",
   make: "Renault",
   model: "Clio",
   variant: "RS",
@@ -184,7 +185,7 @@ describe("ListingCard", () => {
     render(<ListingCard listing={baseListing} cardConfig={defaultConfig} />);
 
     const link = screen.getByTestId("listing-card-test-listing-1");
-    expect(link).toHaveAttribute("href", "/listings/test-listing-1");
+    expect(link).toHaveAttribute("href", "/listing/renault-clio-2020-paris-test-listing-1");
   });
 
   it("should apply green badge for high visibility score", () => {
