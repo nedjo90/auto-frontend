@@ -3,25 +3,57 @@ import type {
   IListingPage,
   IPublicListingDetail,
   IConfigListingCard,
+  ISearchFilters,
 } from "@auto/shared";
 import { LISTING_PAGE_SIZE } from "@auto/shared";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
-/** Fetch paginated published listings. */
+/** Build the request body from pagination + filter params. */
+function buildListingsBody(options?: {
+  skip?: number;
+  top?: number;
+  filters?: ISearchFilters;
+}): Record<string, unknown> {
+  const f = options?.filters;
+  const body: Record<string, unknown> = {
+    skip: options?.skip || 0,
+    top: options?.top || LISTING_PAGE_SIZE,
+  };
+  if (f?.search) body.search = f.search;
+  if (f?.minPrice != null) body.minPrice = f.minPrice;
+  if (f?.maxPrice != null) body.maxPrice = f.maxPrice;
+  if (f?.make) body.make = f.make;
+  if (f?.model) body.model = f.model;
+  if (f?.minYear != null) body.minYear = f.minYear;
+  if (f?.maxYear != null) body.maxYear = f.maxYear;
+  if (f?.maxMileage != null) body.maxMileage = f.maxMileage;
+  if (f?.fuelType?.length) body.fuelType = JSON.stringify(f.fuelType);
+  if (f?.gearbox?.length) body.gearbox = JSON.stringify(f.gearbox);
+  if (f?.bodyType?.length) body.bodyType = JSON.stringify(f.bodyType);
+  if (f?.color?.length) body.color = JSON.stringify(f.color);
+  if (f?.sort && f.sort !== "relevance") body.sort = f.sort;
+  return body;
+}
+
+/** Fetch paginated published listings with optional filters. */
 export async function getListings(options?: {
   skip?: number;
   top?: number;
   search?: string;
+  filters?: ISearchFilters;
 }): Promise<IListingPage> {
+  // Support legacy `search` param alongside new filters
+  const filters: ISearchFilters = {
+    ...options?.filters,
+    search: options?.filters?.search || options?.search || undefined,
+  };
+  const body = buildListingsBody({ skip: options?.skip, top: options?.top, filters });
+
   const res = await fetch(`${API_BASE}/api/catalog/getListings`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      skip: options?.skip || 0,
-      top: options?.top || LISTING_PAGE_SIZE,
-      search: options?.search || "",
-    }),
+    body: JSON.stringify(body),
     next: { revalidate: 60 },
   });
 
