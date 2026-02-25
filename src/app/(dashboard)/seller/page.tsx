@@ -1,6 +1,15 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { FileText, ShoppingBag, Upload, History } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { SellerKpiGrid } from "@/components/seller/seller-kpi-grid";
+import { SellerListingsTable } from "@/components/seller/seller-listings-table";
+import { MetricDrilldown } from "@/components/seller/metric-drilldown";
+import { getAggregateKPIs, getListingPerformance } from "@/lib/api/seller-kpi-api";
+import type { ISellerKpiSummary, ISellerListingPerformance, SellerKpiMetric } from "@auto/shared";
+import type { SellerListingSortColumn } from "@auto/shared";
 
 const SELLER_SECTIONS = [
   {
@@ -30,6 +39,36 @@ const SELLER_SECTIONS = [
 ];
 
 export default function SellerCockpitPage() {
+  const [kpis, setKpis] = useState<ISellerKpiSummary | null>(null);
+  const [kpiLoading, setKpiLoading] = useState(true);
+  const [listings, setListings] = useState<ISellerListingPerformance[]>([]);
+  const [listingsLoading, setListingsLoading] = useState(true);
+  const [drilldownMetric, setDrilldownMetric] = useState<SellerKpiMetric | null>(null);
+
+  useEffect(() => {
+    getAggregateKPIs()
+      .then(setKpis)
+      .catch(() => setKpis(null))
+      .finally(() => setKpiLoading(false));
+
+    getListingPerformance()
+      .then((data) => setListings(data.listings))
+      .catch(() => setListings([]))
+      .finally(() => setListingsLoading(false));
+  }, []);
+
+  const handleSort = useCallback((column: SellerListingSortColumn, dir: "asc" | "desc") => {
+    setListingsLoading(true);
+    getListingPerformance({ sortBy: column, sortDir: dir })
+      .then((data) => setListings(data.listings))
+      .catch(() => {})
+      .finally(() => setListingsLoading(false));
+  }, []);
+
+  const handleKpiClick = useCallback((metric: SellerKpiMetric) => {
+    setDrilldownMetric(metric);
+  }, []);
+
   return (
     <div className="space-y-4 sm:space-y-6">
       <div>
@@ -39,6 +78,18 @@ export default function SellerCockpitPage() {
         </p>
       </div>
 
+      {/* KPI Grid */}
+      <SellerKpiGrid kpis={kpis} loading={kpiLoading} onKpiClick={handleKpiClick} />
+
+      {/* Drilldown */}
+      {drilldownMetric && (
+        <MetricDrilldown metric={drilldownMetric} onClose={() => setDrilldownMetric(null)} />
+      )}
+
+      {/* Listings Performance Table */}
+      <SellerListingsTable listings={listings} loading={listingsLoading} onSort={handleSort} />
+
+      {/* Quick Access */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {SELLER_SECTIONS.map((section) => (
           <Link key={section.href} href={section.href}>
