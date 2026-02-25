@@ -5,11 +5,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { IPublicListingCard, IConfigListingCard } from "@auto/shared";
 import { formatPrice, formatMileage, buildImageUrl } from "@/lib/api/catalog-api";
 import { MarketPriceIndicator } from "@/components/listing/market-price-indicator";
+import { FavoriteButton } from "@/components/listing/favorite-button";
 
 export interface ListingCardProps {
   listing: IPublicListingCard;
   cardConfig: IConfigListingCard[];
   priority?: boolean;
+  isFavorited?: boolean;
+  onFavoriteToggle?: (favorited: boolean) => void;
 }
 
 /** Map field names to their display values. */
@@ -55,7 +58,13 @@ function getCertificationColor(score: number): string {
  * Public listing card for marketplace browsing.
  * Supports 4-7 configurable fields via ConfigListingCard.
  */
-export function ListingCard({ listing, cardConfig, priority = false }: ListingCardProps) {
+export function ListingCard({
+  listing,
+  cardConfig,
+  priority = false,
+  isFavorited,
+  onFavoriteToggle,
+}: ListingCardProps) {
   const title =
     [listing.make, listing.model, listing.year ? `(${listing.year})` : ""]
       .filter(Boolean)
@@ -91,6 +100,17 @@ export function ListingCard({ listing, cardConfig, priority = false }: ListingCa
           ) : (
             <div className="flex h-full items-center justify-center text-muted-foreground">
               <span className="text-sm">Pas de photo</span>
+            </div>
+          )}
+          {/* Favorite button overlay */}
+          {isFavorited !== undefined && (
+            <div className="absolute top-2 right-2 z-10">
+              <FavoriteButton
+                listingId={listing.ID}
+                isFavorited={isFavorited}
+                size="sm"
+                onToggle={onFavoriteToggle}
+              />
             </div>
           )}
           {/* Photo count overlay */}

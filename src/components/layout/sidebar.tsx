@@ -15,6 +15,7 @@ import {
   BarChart3,
   Search,
   ScrollText,
+  Heart,
 } from "lucide-react";
 
 interface NavItem {
@@ -26,6 +27,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Vue d'ensemble", icon: LayoutDashboard },
+  { href: "/favorites", label: "Mes favoris", icon: Heart },
   {
     href: "/seller/drafts",
     label: "Mes brouillons",

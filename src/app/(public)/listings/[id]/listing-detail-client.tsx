@@ -8,8 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SoldBadge } from "@/components/listing/sold-badge";
 import { PublicPhotoGallery } from "@/components/listing/public-photo-gallery";
 import { MarketPriceIndicator } from "@/components/listing/market-price-indicator";
+import { FavoriteButton } from "@/components/listing/favorite-button";
 import type { IPublicListingDetail } from "@auto/shared";
 import { formatPrice, formatMileage } from "@/lib/api/catalog-api";
+import { checkFavorites } from "@/lib/api/favorites-api";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 interface ListingDetailClientProps {
   listingId: string;
@@ -65,6 +68,8 @@ export function ListingDetailClient({ listingId }: ListingDetailClientProps) {
   const [listing, setListing] = useState<IPublicListingDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const { isAuthenticated } = useCurrentUser();
 
   useEffect(() => {
     async function loadListing() {
@@ -97,6 +102,17 @@ export function ListingDetailClient({ listingId }: ListingDetailClientProps) {
     }
     loadListing();
   }, [listingId]);
+
+  // Check favorite status for authenticated users
+  useEffect(() => {
+    if (!isAuthenticated || !listing) return;
+    checkFavorites([listingId])
+      .then((results) => {
+        const result = results.find((r) => r.listingId === listingId);
+        if (result) setIsFavorited(result.isFavorited);
+      })
+      .catch(() => {});
+  }, [isAuthenticated, listing, listingId]);
 
   if (isLoading) {
     return (
@@ -149,12 +165,21 @@ export function ListingDetailClient({ listingId }: ListingDetailClientProps) {
           {/* Header */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h1
-                className="text-xl font-bold sm:text-2xl lg:text-3xl"
-                data-testid="listing-detail-title"
-              >
-                {title}
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1
+                  className="text-xl font-bold sm:text-2xl lg:text-3xl"
+                  data-testid="listing-detail-title"
+                >
+                  {title}
+                </h1>
+                {!isSold && (
+                  <FavoriteButton
+                    listingId={listingId}
+                    isFavorited={isFavorited}
+                    onToggle={setIsFavorited}
+                  />
+                )}
+              </div>
               {priceFormatted && (
                 <div className="mt-1">
                   <p

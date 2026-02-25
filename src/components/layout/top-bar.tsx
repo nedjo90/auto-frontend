@@ -2,6 +2,7 @@
 
 import { UserMenu } from "@/components/layout/user-menu";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 
 export function TopBar() {
   return (
@@ -11,6 +12,7 @@ export function TopBar() {
         <h2 className="text-base font-semibold sm:text-lg">Tableau de bord</h2>
       </div>
       <div className="flex items-center gap-2 sm:gap-4">
+        <NotificationBell />
         <UserMenu />
       </div>
     </header>
