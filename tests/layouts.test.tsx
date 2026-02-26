@@ -40,8 +40,8 @@ describe("Layout components", () => {
   describe("Footer", () => {
     it("should render legal and privacy links", () => {
       render(<Footer />);
-      expect(screen.getByText("Legal")).toBeInTheDocument();
-      expect(screen.getByText("Privacy")).toBeInTheDocument();
+      expect(screen.getByText("Mentions légales")).toBeInTheDocument();
+      expect(screen.getByText("Politique de confidentialité")).toBeInTheDocument();
     });
   });
 
