@@ -179,7 +179,7 @@ export function SellerListingsTable({
                     </span>
                   </td>
                   <td className="py-3 pr-4">
-                    {listing.marketPosition ? (
+                    {listing.marketPosition && listing.marketPosition !== "unavailable" ? (
                       <button
                         className={cn(
                           "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
@@ -195,9 +195,10 @@ export function SellerListingsTable({
                           e.stopPropagation();
                           onMarketClick?.(listing.ID);
                         }}
+                        aria-label="Voir positionnement marché"
                         data-testid={`market-badge-${listing.ID}`}
                       >
-                        {MARKET_POSITION_LABELS[listing.marketPosition] || listing.marketPosition}
+                        {MARKET_POSITION_LABELS[listing.marketPosition]}
                       </button>
                     ) : (
                       <span className="text-xs text-muted-foreground">-</span>
@@ -246,18 +247,27 @@ export function SellerListingsTable({
                   </p>
                   <p className="text-sm font-semibold">{formatPrice(listing.price)}</p>
                 </div>
-                {listing.marketPosition && (
-                  <span
-                    className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium flex-shrink-0"
+                {listing.marketPosition && listing.marketPosition !== "unavailable" && (
+                  <button
+                    className={cn(
+                      "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium flex-shrink-0",
+                      onMarketClick && "cursor-pointer hover:opacity-80",
+                    )}
                     style={{
                       color: MARKET_POSITION_TOKENS[listing.marketPosition] || undefined,
                       backgroundColor: MARKET_POSITION_TOKENS[listing.marketPosition]
                         ? `color-mix(in srgb, ${MARKET_POSITION_TOKENS[listing.marketPosition]} 10%, transparent)`
                         : undefined,
                     }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onMarketClick?.(listing.ID);
+                    }}
+                    aria-label="Voir positionnement marché"
+                    data-testid={`market-badge-mobile-${listing.ID}`}
                   >
                     {MARKET_POSITION_LABELS[listing.marketPosition] || listing.marketPosition}
-                  </span>
+                  </button>
                 )}
               </div>
               <div className="grid grid-cols-4 gap-2 text-xs text-muted-foreground">

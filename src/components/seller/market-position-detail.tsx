@@ -45,7 +45,13 @@ export function MarketPositionDetail({ listing, onClose }: MarketPositionDetailP
       <Card data-testid="market-position-detail">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium">Position marché</CardTitle>
-          <Button variant="ghost" size="icon" onClick={onClose} data-testid="market-detail-close">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            aria-label="Fermer"
+            data-testid="market-detail-close"
+          >
             <X className="size-4" />
           </Button>
         </CardHeader>

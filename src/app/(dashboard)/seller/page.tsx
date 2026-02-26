@@ -95,12 +95,16 @@ export default function SellerCockpitPage() {
       )}
 
       {/* Market Position Detail */}
-      {marketDetailListingId && (
-        <MarketPositionDetail
-          listing={listings.find((l) => l.ID === marketDetailListingId)!}
-          onClose={() => setMarketDetailListingId(null)}
-        />
-      )}
+      {marketDetailListingId &&
+        (() => {
+          const selected = listings.find((l) => l.ID === marketDetailListingId);
+          return selected ? (
+            <MarketPositionDetail
+              listing={selected}
+              onClose={() => setMarketDetailListingId(null)}
+            />
+          ) : null;
+        })()}
 
       {/* Listings Performance Table */}
       <SellerListingsTable

@@ -145,4 +145,35 @@ describe("SellerCockpitPage", () => {
     const link = screen.getByText("Mes brouillons").closest("a");
     expect(link).toHaveAttribute("href", "/seller/drafts");
   });
+
+  it("shows market position detail when market badge is clicked", async () => {
+    const user = userEvent.setup();
+    render(<SellerCockpitPage />);
+    await waitFor(() => {
+      expect(screen.getByTestId("seller-listings-table")).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByTestId("market-badge-listing-1"));
+    await waitFor(() => {
+      expect(screen.getByTestId("market-position-detail")).toBeInTheDocument();
+    });
+  });
+
+  it("closes market position detail when close button is clicked", async () => {
+    const user = userEvent.setup();
+    render(<SellerCockpitPage />);
+    await waitFor(() => {
+      expect(screen.getByTestId("seller-listings-table")).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByTestId("market-badge-listing-1"));
+    await waitFor(() => {
+      expect(screen.getByTestId("market-position-detail")).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByTestId("market-detail-close"));
+    await waitFor(() => {
+      expect(screen.queryByTestId("market-position-detail")).not.toBeInTheDocument();
+    });
+  });
 });
