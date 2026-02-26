@@ -132,6 +132,21 @@ describe("ReportDetail", () => {
     });
   });
 
+  it("handles malformed targetData gracefully", async () => {
+    mockFetchReportDetail.mockResolvedValue({
+      ...LISTING_DETAIL,
+      targetData: "not-valid-json{{{",
+      status: "in_progress",
+    });
+
+    render(<ReportDetail reportId="r1" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("target-data")).toBeInTheDocument();
+    });
+    expect(screen.getByText("Donnees de la cible non disponibles")).toBeInTheDocument();
+  });
+
   it("does not auto-assign non-pending report", async () => {
     mockFetchReportDetail.mockResolvedValue({
       ...LISTING_DETAIL,

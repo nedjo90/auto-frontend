@@ -108,7 +108,14 @@ export function ReportDetail({ reportId }: ReportDetailProps) {
   if (!detail) return null;
 
   const TargetIcon = TARGET_TYPE_ICONS[detail.targetType] || FileText;
-  const targetData = detail.targetData ? JSON.parse(detail.targetData) : null;
+  let targetData: Record<string, unknown> | null = null;
+  if (detail.targetData) {
+    try {
+      targetData = JSON.parse(detail.targetData);
+    } catch {
+      targetData = null;
+    }
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6" data-testid="report-detail">
