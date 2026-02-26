@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Eye, Trash2, Clock, StickyNote } from "lucide-react";
+import { Eye, Trash2, Clock, StickyNote, Gauge } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PriceChangeBadge } from "@/components/dashboard/price-change-badge";
-import { formatPrice, buildImageUrl } from "@/lib/api/catalog-api";
+import { formatPrice, formatMileage, buildImageUrl } from "@/lib/api/catalog-api";
 import type { IMarketWatchEnriched } from "@auto/shared";
 
 interface MarketWatchCardProps {
@@ -107,6 +107,12 @@ export function MarketWatchCard({ watch, onRemove }: MarketWatchCardProps) {
             <Badge variant="outline" className="text-xs">
               <Clock className="mr-1 h-3 w-3" />
               {days}j en ligne
+            </Badge>
+          )}
+          {listing.mileage != null && (
+            <Badge variant="outline" className="text-xs">
+              <Gauge className="mr-1 h-3 w-3" />
+              {formatMileage(listing.mileage)}
             </Badge>
           )}
           {listing.certificationLevel && (

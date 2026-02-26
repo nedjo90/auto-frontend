@@ -108,6 +108,11 @@ describe("FollowButton", () => {
     expect(mockAddToMarketWatch).not.toHaveBeenCalled();
   });
 
+  it("should not be disabled initially", () => {
+    render(<FollowButton listingId="listing-1" />);
+    expect(screen.getByTestId("follow-button")).not.toBeDisabled();
+  });
+
   it("should prevent event propagation", () => {
     const handleParentClick = vi.fn();
 

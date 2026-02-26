@@ -8,6 +8,7 @@ import type { IMarketWatchEnriched } from "@auto/shared";
 import { getMarketWatchList, removeFromMarketWatch } from "@/lib/api/market-watch-api";
 import { MarketWatchCard } from "@/components/dashboard/market-watch-card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export default function MarketWatchPage() {
   const [watches, setWatches] = useState<IMarketWatchEnriched[]>([]);
@@ -84,7 +85,11 @@ export default function MarketWatchPage() {
           </p>
         </div>
         {hasChanges && (
-          <Badge data-testid="changes-indicator">
+          <Badge
+            variant="secondary"
+            className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+            data-testid="changes-indicator"
+          >
             <Eye className="mr-1 h-3.5 w-3.5" />
             Des annonces ont changé depuis votre dernière visite
           </Badge>
@@ -96,20 +101,6 @@ export default function MarketWatchPage() {
           <MarketWatchCard key={watch.ID} watch={watch} onRemove={handleRemove} />
         ))}
       </div>
-    </div>
-  );
-}
-
-function Badge({
-  children,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement> & { children: React.ReactNode }) {
-  return (
-    <div
-      className="inline-flex items-center rounded-md bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-      {...props}
-    >
-      {children}
     </div>
   );
 }

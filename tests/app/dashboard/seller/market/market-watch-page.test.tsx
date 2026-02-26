@@ -18,6 +18,7 @@ vi.mock("next/link", () => ({
 
 vi.mock("@/lib/api/catalog-api", () => ({
   formatPrice: (price: number | null) => (price != null ? `${price} €` : null),
+  formatMileage: (mileage: number | null) => (mileage != null ? `${mileage} km` : null),
   buildImageUrl: (url: string | null) => url || "",
 }));
 

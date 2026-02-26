@@ -18,6 +18,7 @@ vi.mock("next/link", () => ({
 
 vi.mock("@/lib/api/catalog-api", () => ({
   formatPrice: (price: number | null) => (price != null ? `${price} €` : null),
+  formatMileage: (mileage: number | null) => (mileage != null ? `${mileage} km` : null),
   buildImageUrl: (url: string | null) => url || "",
 }));
 
@@ -141,6 +142,11 @@ describe("MarketWatchCard", () => {
     render(<MarketWatchCard watch={baseWatch} onRemove={vi.fn()} />);
     // publishedAt is 2026-01-01, so days should be > 0
     expect(screen.getByText(/j en ligne/)).toBeInTheDocument();
+  });
+
+  it("should show mileage badge", () => {
+    render(<MarketWatchCard watch={baseWatch} onRemove={vi.fn()} />);
+    expect(screen.getByText("30000 km")).toBeInTheDocument();
   });
 
   it("should show certification badge", () => {
