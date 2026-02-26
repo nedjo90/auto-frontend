@@ -6,7 +6,14 @@ vi.mock("@/lib/auth/api-client", () => ({
   apiClient: (...args: unknown[]) => mockFetch(...args),
 }));
 
-import { fetchReportReasons, submitReport } from "@/lib/api/moderation-api";
+import {
+  fetchReportReasons,
+  submitReport,
+  fetchReportQueue,
+  fetchReportMetrics,
+  fetchReportDetail,
+  assignReport,
+} from "@/lib/api/moderation-api";
 
 describe("moderation-api", () => {
   beforeEach(() => {
@@ -83,6 +90,126 @@ describe("moderation-api", () => {
         text: () => Promise.resolve("Server error"),
       });
       await expect(submitReport(input)).rejects.toThrow("Server error");
+    });
+  });
+
+  describe("fetchReportQueue", () => {
+    it("returns paginated report queue", async () => {
+      const mockItems = [{ ID: "r1", severity: "high", status: "pending", targetType: "listing" }];
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ items: JSON.stringify(mockItems), total: 1, hasMore: false }),
+      });
+
+      const result = await fetchReportQueue({ status: "pending", skip: 0, top: 20 });
+      expect(result.items).toEqual(mockItems);
+      expect(result.total).toBe(1);
+      expect(result.hasMore).toBe(false);
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/moderation/getReportQueue"),
+        expect.objectContaining({ method: "POST" }),
+      );
+    });
+
+    it("handles pre-parsed items array", async () => {
+      const mockItems = [{ ID: "r1" }];
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ items: mockItems, total: 1, hasMore: false }),
+      });
+
+      const result = await fetchReportQueue();
+      expect(result.items).toEqual(mockItems);
+    });
+
+    it("throws on API error", async () => {
+      mockFetch.mockResolvedValue({ ok: false, status: 500 });
+      await expect(fetchReportQueue()).rejects.toThrow("Erreur");
+    });
+  });
+
+  describe("fetchReportMetrics", () => {
+    it("returns metrics summary", async () => {
+      const mockMetrics = {
+        pendingCount: 5,
+        inProgressCount: 3,
+        treatedThisWeek: 10,
+        dismissedThisWeek: 2,
+        weeklyTrend: 20,
+      };
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockMetrics),
+      });
+
+      const result = await fetchReportMetrics();
+      expect(result).toEqual(mockMetrics);
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/moderation/getReportMetrics"),
+        expect.objectContaining({ method: "POST" }),
+      );
+    });
+
+    it("throws on API error", async () => {
+      mockFetch.mockResolvedValue({ ok: false, status: 500 });
+      await expect(fetchReportMetrics()).rejects.toThrow("Erreur");
+    });
+  });
+
+  describe("fetchReportDetail", () => {
+    it("returns parsed report detail", async () => {
+      const detail = {
+        ID: "r1",
+        reporterName: "Jean",
+        severity: "high",
+        targetType: "listing",
+      };
+      mockFetch.mockResolvedValue({
+        ok: true,
+        text: () => Promise.resolve(JSON.stringify(detail)),
+      });
+
+      const result = await fetchReportDetail("r1");
+      expect(result).toEqual(detail);
+    });
+
+    it("handles double-stringified response", async () => {
+      const detail = { ID: "r1" };
+      mockFetch.mockResolvedValue({
+        ok: true,
+        text: () => Promise.resolve(JSON.stringify(JSON.stringify(detail))),
+      });
+
+      const result = await fetchReportDetail("r1");
+      expect(result).toEqual(detail);
+    });
+
+    it("throws on 404", async () => {
+      mockFetch.mockResolvedValue({ ok: false, status: 404 });
+      await expect(fetchReportDetail("r1")).rejects.toThrow("introuvable");
+    });
+  });
+
+  describe("assignReport", () => {
+    it("assigns report successfully", async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ success: true, status: "in_progress" }),
+      });
+
+      const result = await assignReport("r1");
+      expect(result.success).toBe(true);
+      expect(result.status).toBe("in_progress");
+    });
+
+    it("throws on 409 conflict", async () => {
+      mockFetch.mockResolvedValue({ ok: false, status: 409 });
+      await expect(assignReport("r1")).rejects.toThrow("autre modérateur");
+    });
+
+    it("throws on generic error", async () => {
+      mockFetch.mockResolvedValue({ ok: false, status: 500 });
+      await expect(assignReport("r1")).rejects.toThrow("Erreur");
     });
   });
 });

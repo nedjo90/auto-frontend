@@ -1,7 +1,33 @@
-import type { IConfigReportReason, IReportSubmissionResult } from "@auto/shared";
+import type {
+  IConfigReportReason,
+  IReportSubmissionResult,
+  IReport,
+  IReportMetrics,
+  IReportDetail,
+  ReportStatus,
+  ReportTargetType,
+  ReportSortOption,
+} from "@auto/shared";
 import { apiClient } from "@/lib/auth/api-client";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+
+/** Filters for the moderation report queue. */
+export interface ReportQueueFilters {
+  status?: ReportStatus;
+  targetType?: ReportTargetType;
+  severity?: string;
+  sortBy?: ReportSortOption;
+  skip?: number;
+  top?: number;
+}
+
+/** Paginated report queue result. */
+export interface ReportQueueResult {
+  items: IReport[];
+  total: number;
+  hasMore: boolean;
+}
 
 /** Fetch active report reasons from the moderation service. */
 export async function fetchReportReasons(): Promise<IConfigReportReason[]> {
@@ -40,6 +66,87 @@ export async function submitReport(input: {
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(text || `Erreur: ${res.status}`);
+  }
+
+  return res.json();
+}
+
+// ─── Moderator queue endpoints ──────────────────────────────────────────────
+
+/** Fetch paginated report queue with filters. */
+export async function fetchReportQueue(
+  filters: ReportQueueFilters = {},
+): Promise<ReportQueueResult> {
+  const res = await apiClient(`${API_BASE}/api/moderation/getReportQueue`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(filters),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Erreur lors du chargement des signalements: ${res.status}`);
+  }
+
+  const data = await res.json();
+  return {
+    items: typeof data.items === "string" ? JSON.parse(data.items) : data.items || [],
+    total: data.total || 0,
+    hasMore: data.hasMore || false,
+  };
+}
+
+/** Fetch report queue metrics summary. */
+export async function fetchReportMetrics(): Promise<IReportMetrics> {
+  const res = await apiClient(`${API_BASE}/api/moderation/getReportMetrics`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Erreur lors du chargement des métriques: ${res.status}`);
+  }
+
+  return res.json();
+}
+
+/** Fetch full report detail with context. */
+export async function fetchReportDetail(reportId: string): Promise<IReportDetail> {
+  const res = await apiClient(`${API_BASE}/api/moderation/getReportDetail`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ reportId }),
+  });
+
+  if (!res.ok) {
+    if (res.status === 404) throw new Error("Rapport introuvable");
+    throw new Error(`Erreur lors du chargement du rapport: ${res.status}`);
+  }
+
+  const text = await res.text();
+  // Backend returns JSON-stringified detail
+  try {
+    const parsed = JSON.parse(text);
+    return typeof parsed === "string" ? JSON.parse(parsed) : parsed;
+  } catch {
+    throw new Error("Format de réponse invalide");
+  }
+}
+
+/** Assign a report to the current moderator. */
+export async function assignReport(
+  reportId: string,
+): Promise<{ success: boolean; status: string }> {
+  const res = await apiClient(`${API_BASE}/api/moderation/assignReport`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ reportId }),
+  });
+
+  if (res.status === 409) {
+    throw new Error("Ce rapport est déjà en cours de traitement par un autre modérateur");
+  }
+  if (!res.ok) {
+    throw new Error(`Erreur lors de l'attribution du rapport: ${res.status}`);
   }
 
   return res.json();

@@ -17,6 +17,7 @@ import {
   ScrollText,
   Heart,
   Eye,
+  Shield,
 } from "lucide-react";
 
 interface NavItem {
@@ -46,6 +47,12 @@ const NAV_ITEMS: NavItem[] = [
     label: "Suivi marché",
     icon: Eye,
     roles: ["seller", "administrator"],
+  },
+  {
+    href: "/moderator",
+    label: "Moderation",
+    icon: Shield,
+    roles: ["moderator", "administrator"],
   },
   { href: "/admin", label: "Tableau de bord admin", icon: BarChart3, roles: ["administrator"] },
   { href: "/admin/config", label: "Configuration", icon: Settings, roles: ["administrator"] },

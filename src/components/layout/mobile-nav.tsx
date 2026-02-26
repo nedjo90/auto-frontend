@@ -48,6 +48,12 @@ const NAV_ITEMS: NavItem[] = [
     icon: Eye,
     roles: ["seller", "administrator"],
   },
+  {
+    href: "/moderator",
+    label: "Moderation",
+    icon: Shield,
+    roles: ["moderator", "administrator"],
+  },
   { href: "/admin", label: "Administration", icon: Shield, roles: ["administrator"] },
   { href: "/admin/config", label: "Configuration", icon: Settings, roles: ["administrator"] },
   { href: "/admin/alerts", label: "Alertes", icon: Bell, roles: ["administrator"] },
