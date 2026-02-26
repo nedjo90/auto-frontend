@@ -55,6 +55,20 @@ export function MobileHeaderNav() {
             >
               Recherche
             </Link>
+            <Link
+              href="/how-it-works"
+              onClick={() => setOpen(false)}
+              className="rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+            >
+              {"Comment ça marche"}
+            </Link>
+            <Link
+              href="/trust"
+              onClick={() => setOpen(false)}
+              className="rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+            >
+              Confiance
+            </Link>
 
             <div className="my-2 border-t" />
 

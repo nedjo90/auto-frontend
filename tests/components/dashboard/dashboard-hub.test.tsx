@@ -12,6 +12,14 @@ vi.mock("@/hooks/use-current-user", () => ({
   useCurrentUser: () => mockUseCurrentUser(),
 }));
 
+vi.mock("@/lib/api/chat-api", () => ({
+  getChatUnreadCount: vi.fn(() => Promise.resolve(3)),
+}));
+
+vi.mock("@/lib/api/favorites-api", () => ({
+  getMyFavorites: vi.fn(() => Promise.resolve({ total: 5, items: [] })),
+}));
+
 describe("DashboardHub", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -116,5 +124,13 @@ describe("DashboardHub", () => {
 
     const publishLink = screen.getByText("Publier").closest("a");
     expect(publishLink).toHaveAttribute("href", "/seller/publish");
+  });
+
+  it("should render stats section with favorites and messages", async () => {
+    render(<DashboardHub />);
+
+    expect(screen.getByTestId("hub-stats")).toBeInTheDocument();
+    expect(screen.getByTestId("stat-favorites")).toBeInTheDocument();
+    expect(screen.getByTestId("stat-messages")).toBeInTheDocument();
   });
 });

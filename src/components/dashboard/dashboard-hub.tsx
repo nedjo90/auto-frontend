@@ -1,10 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { getChatUnreadCount } from "@/lib/api/chat-api";
+import { getMyFavorites } from "@/lib/api/favorites-api";
 import {
   Search,
   Heart,
@@ -128,6 +130,25 @@ function QuickLinksGrid({
   );
 }
 
+function StatCard({
+  label,
+  value,
+  testId,
+}: {
+  label: string;
+  value: number | null;
+  testId: string;
+}) {
+  return (
+    <Card data-testid={testId}>
+      <CardContent className="p-4 text-center">
+        <p className="text-2xl font-bold text-primary">{value ?? "—"}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{label}</p>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function DashboardHub() {
   const { hasRole } = useAuth();
   const { displayName } = useCurrentUser();
@@ -135,6 +156,18 @@ export function DashboardHub() {
   const isAdmin = hasRole("administrator");
   const isModerator = hasRole("moderator");
   const isSeller = hasRole("seller");
+
+  const [favoritesCount, setFavoritesCount] = useState<number | null>(null);
+  const [unreadMessages, setUnreadMessages] = useState<number | null>(null);
+
+  useEffect(() => {
+    getMyFavorites({ skip: 0, top: 1 })
+      .then((res) => setFavoritesCount(res.total))
+      .catch(() => setFavoritesCount(0));
+    getChatUnreadCount()
+      .then(setUnreadMessages)
+      .catch(() => setUnreadMessages(0));
+  }, []);
 
   return (
     <div className="space-y-6 sm:space-y-8" data-testid="dashboard-hub">
@@ -147,6 +180,12 @@ export function DashboardHub() {
         <p className="mt-1 text-sm text-muted-foreground sm:text-base">
           {"Votre espace personnel sur Auto"}
         </p>
+      </div>
+
+      {/* Quick stats */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" data-testid="hub-stats">
+        <StatCard label="Favoris" value={favoritesCount} testId="stat-favorites" />
+        <StatCard label="Messages non lus" value={unreadMessages} testId="stat-messages" />
       </div>
 
       {/* Admin section */}
