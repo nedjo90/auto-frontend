@@ -20,6 +20,7 @@ import type { IPublicListingDetail } from "@auto/shared";
 import { formatPrice, formatMileage } from "@/lib/api/catalog-api";
 import { checkFavorites } from "@/lib/api/favorites-api";
 import { startOrResumeConversation } from "@/lib/api/chat-api";
+import { ReportButton } from "@/components/moderation/report-button";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { toast } from "sonner";
 
@@ -333,6 +334,13 @@ export function ListingDetailClient({ listingId }: ListingDetailClientProps) {
           </Button>
         )}
       </div>
+
+      {/* Report button */}
+      {userId && !isSold && (
+        <div className="flex justify-end">
+          <ReportButton targetType="listing" targetId={listingId} />
+        </div>
+      )}
 
       {/* Chat dialog */}
       <ResponsiveDialog open={chatOpen} onOpenChange={setChatOpen}>
