@@ -46,12 +46,17 @@ export function ReportDialog({ open, onOpenChange, targetType, targetId }: Repor
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [reasonsError, setReasonsError] = useState(false);
 
   useEffect(() => {
     if (open) {
+      setReasonsError(false);
       fetchReportReasons()
         .then(setReasons)
-        .catch(() => setReasons([]));
+        .catch(() => {
+          setReasons([]);
+          setReasonsError(true);
+        });
       // Reset form state
       setReasonId("");
       setDescription("");
@@ -105,18 +110,24 @@ export function ReportDialog({ open, onOpenChange, targetType, targetId }: Repor
             {/* Reason select */}
             <div className="space-y-2">
               <Label htmlFor="report-reason">Raison du signalement</Label>
-              <Select value={reasonId} onValueChange={setReasonId}>
-                <SelectTrigger id="report-reason" data-testid="report-reason-select">
-                  <SelectValue placeholder="Sélectionnez une raison" />
-                </SelectTrigger>
-                <SelectContent>
-                  {reasons.map((r) => (
-                    <SelectItem key={r.ID} value={r.ID}>
-                      {r.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {reasonsError ? (
+                <p className="text-sm text-destructive" data-testid="reasons-error">
+                  Impossible de charger les raisons. Veuillez réessayer.
+                </p>
+              ) : (
+                <Select value={reasonId} onValueChange={setReasonId}>
+                  <SelectTrigger id="report-reason" data-testid="report-reason-select">
+                    <SelectValue placeholder="Sélectionnez une raison" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {reasons.map((r) => (
+                      <SelectItem key={r.ID} value={r.ID}>
+                        {r.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             {/* Severity indicator */}
