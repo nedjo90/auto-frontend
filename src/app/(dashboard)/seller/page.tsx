@@ -84,9 +84,13 @@ export default function SellerCockpitPage() {
     setMarketDetailListingId(listingId);
   }, []);
 
-  // Show empty state when seller has no listings at all
+  // Show empty state when seller has no listings at all.
+  // Also trigger when KPIs fail (kpis===null) but listings are confirmed empty.
   const isEmptyState =
-    !kpiLoading && !listingsLoading && kpis?.activeListings?.current === 0 && listings.length === 0;
+    !kpiLoading &&
+    !listingsLoading &&
+    listings.length === 0 &&
+    (kpis === null || kpis.activeListings.current === 0);
 
   if (isEmptyState) {
     return (

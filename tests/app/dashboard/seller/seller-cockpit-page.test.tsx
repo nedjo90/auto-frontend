@@ -131,6 +131,18 @@ describe("SellerCockpitPage", () => {
     });
   });
 
+  it("shows empty state when both APIs fail", async () => {
+    mockGetAggregateKPIs.mockRejectedValue(new Error("Failed"));
+    mockGetListingPerformance.mockRejectedValue(new Error("Failed"));
+
+    render(<SellerCockpitPage />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("seller-cockpit-empty")).toBeInTheDocument();
+    });
+    expect(screen.getByTestId("empty-state-cockpit")).toBeInTheDocument();
+  });
+
   it("shows empty state when seller has no listings", async () => {
     const emptyKpis: ISellerKpiSummary = {
       activeListings: { current: 0, previous: 0, trend: 0 },
