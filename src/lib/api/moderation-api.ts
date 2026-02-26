@@ -254,6 +254,30 @@ export async function reactivateAccount(input: {
   return res.json();
 }
 
+/** Fetch seller moderation history. */
+export async function fetchSellerHistory(
+  sellerId: string,
+): Promise<import("@auto/shared").ISellerHistory> {
+  const res = await apiClient(`${API_BASE}/api/moderation/getSellerHistory`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sellerId }),
+  });
+
+  if (!res.ok) {
+    if (res.status === 404) throw new Error("Vendeur introuvable");
+    throw new Error(`Erreur lors du chargement de l'historique: ${res.status}`);
+  }
+
+  const text = await res.text();
+  try {
+    const parsed = JSON.parse(text);
+    return typeof parsed === "string" ? JSON.parse(parsed) : parsed;
+  } catch {
+    throw new Error("Format de reponse invalide");
+  }
+}
+
 /** Dismiss a report. */
 export async function dismissReport(input: {
   reportId: string;

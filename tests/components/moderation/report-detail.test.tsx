@@ -197,4 +197,53 @@ describe("ReportDetail", () => {
       expect(screen.getByText("Moderation")).toBeInTheDocument();
     });
   });
+
+  it("shows seller history link for user reports", async () => {
+    mockFetchReportDetail.mockResolvedValue({
+      ...USER_DETAIL,
+      status: "in_progress",
+    });
+
+    render(<ReportDetail reportId="r1" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("seller-history-link")).toBeInTheDocument();
+    });
+
+    const link = screen.getByTestId("seller-history-link") as HTMLAnchorElement;
+    expect(link.getAttribute("href")).toContain("/moderator/sellers/");
+  });
+
+  it("shows seller history link for listing reports with sellerId", async () => {
+    mockFetchReportDetail.mockResolvedValue({
+      ...LISTING_DETAIL,
+      status: "in_progress",
+      targetData: JSON.stringify({ make: "Peugeot", sellerId: "seller-abc" }),
+    });
+
+    render(<ReportDetail reportId="r1" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("seller-history-link")).toBeInTheDocument();
+    });
+
+    const link = screen.getByTestId("seller-history-link") as HTMLAnchorElement;
+    expect(link.getAttribute("href")).toContain("/moderator/sellers/seller-abc");
+  });
+
+  it("does not show seller history link when no sellerId in listing targetData", async () => {
+    mockFetchReportDetail.mockResolvedValue({
+      ...LISTING_DETAIL,
+      status: "in_progress",
+      targetData: JSON.stringify({ make: "Peugeot" }),
+    });
+
+    render(<ReportDetail reportId="r1" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("report-detail")).toBeInTheDocument();
+    });
+
+    expect(screen.queryByTestId("seller-history-link")).toBeNull();
+  });
 });

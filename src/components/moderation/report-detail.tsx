@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   Calendar,
   Shield,
+  History,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -307,6 +308,19 @@ export function ReportDetail({ reportId }: ReportDetailProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Seller history link */}
+      {(detail.targetType === "user" ||
+        (detail.targetType === "listing" && targetData?.sellerId)) && (
+        <Button variant="outline" asChild data-testid="seller-history-link">
+          <Link
+            href={`/moderator/sellers/${detail.targetType === "user" ? detail.targetId : targetData?.sellerId}?from=${detail.ID}`}
+          >
+            <History className="size-4 mr-1" />
+            Voir l&apos;historique vendeur
+          </Link>
+        </Button>
+      )}
 
       {/* Moderation actions */}
       <Card>
