@@ -4,6 +4,7 @@ import type {
   IReport,
   IReportMetrics,
   IReportDetail,
+  IModerationActionResult,
   ReportStatus,
   ReportTargetType,
   ReportSortOption,
@@ -147,6 +148,126 @@ export async function assignReport(
   }
   if (!res.ok) {
     throw new Error(`Erreur lors de l'attribution du rapport: ${res.status}`);
+  }
+
+  return res.json();
+}
+
+// ─── Moderator action endpoints ─────────────────────────────────────────────
+
+/** Deactivate (suspend) a listing. */
+export async function deactivateListing(input: {
+  reportId: string;
+  listingId: string;
+  reason?: string;
+}): Promise<IModerationActionResult> {
+  const res = await apiClient(`${API_BASE}/api/moderation/deactivateListing`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(text || `Erreur: ${res.status}`);
+  }
+
+  return res.json();
+}
+
+/** Send a warning to a user. */
+export async function sendWarning(input: {
+  reportId: string;
+  userId: string;
+  warningMessage?: string;
+}): Promise<IModerationActionResult> {
+  const res = await apiClient(`${API_BASE}/api/moderation/sendWarning`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(text || `Erreur: ${res.status}`);
+  }
+
+  return res.json();
+}
+
+/** Deactivate (suspend) a user account. */
+export async function deactivateAccount(input: {
+  reportId: string;
+  userId: string;
+  reason?: string;
+  confirmed: boolean;
+}): Promise<IModerationActionResult> {
+  const res = await apiClient(`${API_BASE}/api/moderation/deactivateAccount`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(text || `Erreur: ${res.status}`);
+  }
+
+  return res.json();
+}
+
+/** Reactivate a suspended listing. */
+export async function reactivateListing(input: {
+  listingId: string;
+  reason?: string;
+}): Promise<IModerationActionResult> {
+  const res = await apiClient(`${API_BASE}/api/moderation/reactivateListing`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(text || `Erreur: ${res.status}`);
+  }
+
+  return res.json();
+}
+
+/** Reactivate a suspended user account. */
+export async function reactivateAccount(input: {
+  userId: string;
+  reason?: string;
+}): Promise<IModerationActionResult> {
+  const res = await apiClient(`${API_BASE}/api/moderation/reactivateAccount`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(text || `Erreur: ${res.status}`);
+  }
+
+  return res.json();
+}
+
+/** Dismiss a report. */
+export async function dismissReport(input: {
+  reportId: string;
+  reason?: string;
+}): Promise<IModerationActionResult> {
+  const res = await apiClient(`${API_BASE}/api/moderation/dismissReport`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(text || `Erreur: ${res.status}`);
   }
 
   return res.json();

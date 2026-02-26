@@ -13,6 +13,12 @@ import {
   fetchReportMetrics,
   fetchReportDetail,
   assignReport,
+  deactivateListing,
+  sendWarning,
+  deactivateAccount,
+  reactivateListing,
+  reactivateAccount,
+  dismissReport,
 } from "@/lib/api/moderation-api";
 
 describe("moderation-api", () => {
@@ -210,6 +216,154 @@ describe("moderation-api", () => {
     it("throws on generic error", async () => {
       mockFetch.mockResolvedValue({ ok: false, status: 500 });
       await expect(assignReport("r1")).rejects.toThrow("Erreur");
+    });
+  });
+
+  // ─── Moderation actions ─────────────────────────────────────────────
+
+  describe("deactivateListing", () => {
+    it("deactivates listing successfully", async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ success: true, actionId: "a1", message: "ok" }),
+      });
+
+      const result = await deactivateListing({
+        reportId: "r1",
+        listingId: "l1",
+        reason: "Fraud",
+      });
+      expect(result.success).toBe(true);
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/moderation/deactivateListing"),
+        expect.objectContaining({ method: "POST" }),
+      );
+    });
+
+    it("throws on error", async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 400,
+        text: () => Promise.resolve("Bad request"),
+      });
+      await expect(deactivateListing({ reportId: "r1", listingId: "l1" })).rejects.toThrow(
+        "Bad request",
+      );
+    });
+  });
+
+  describe("sendWarning", () => {
+    it("sends warning successfully", async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ success: true, actionId: "a2", message: "ok" }),
+      });
+
+      const result = await sendWarning({
+        reportId: "r1",
+        userId: "u1",
+        warningMessage: "Be nice",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("throws on error", async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 500,
+        text: () => Promise.resolve(""),
+      });
+      await expect(sendWarning({ reportId: "r1", userId: "u1" })).rejects.toThrow("Erreur: 500");
+    });
+  });
+
+  describe("deactivateAccount", () => {
+    it("deactivates account successfully", async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ success: true, actionId: "a3", message: "ok" }),
+      });
+
+      const result = await deactivateAccount({
+        reportId: "r1",
+        userId: "u1",
+        confirmed: true,
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("throws on error", async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 400,
+        text: () => Promise.resolve("Confirmation required"),
+      });
+      await expect(
+        deactivateAccount({ reportId: "r1", userId: "u1", confirmed: false }),
+      ).rejects.toThrow("Confirmation required");
+    });
+  });
+
+  describe("reactivateListing", () => {
+    it("reactivates listing successfully", async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ success: true, actionId: "a4", message: "ok" }),
+      });
+
+      const result = await reactivateListing({ listingId: "l1", reason: "Verified" });
+      expect(result.success).toBe(true);
+    });
+
+    it("throws on error", async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 400,
+        text: () => Promise.resolve("Not suspended"),
+      });
+      await expect(reactivateListing({ listingId: "l1" })).rejects.toThrow("Not suspended");
+    });
+  });
+
+  describe("reactivateAccount", () => {
+    it("reactivates account successfully", async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ success: true, actionId: "a5", message: "ok" }),
+      });
+
+      const result = await reactivateAccount({ userId: "u1" });
+      expect(result.success).toBe(true);
+    });
+
+    it("throws on error", async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 400,
+        text: () => Promise.resolve(""),
+      });
+      await expect(reactivateAccount({ userId: "u1" })).rejects.toThrow("Erreur: 400");
+    });
+  });
+
+  describe("dismissReport", () => {
+    it("dismisses report successfully", async () => {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ success: true, actionId: "a6", message: "ok" }),
+      });
+
+      const result = await dismissReport({ reportId: "r1", reason: "No issue" });
+      expect(result.success).toBe(true);
+    });
+
+    it("throws on error", async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 500,
+        text: () => Promise.resolve("Internal error"),
+      });
+      await expect(dismissReport({ reportId: "r1" })).rejects.toThrow("Internal error");
     });
   });
 });

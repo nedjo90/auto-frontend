@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { fetchReportDetail, assignReport } from "@/lib/api/moderation-api";
+import { ModerationActions } from "./moderation-actions";
 import type { IReportDetail } from "@auto/shared";
 
 interface ReportDetailProps {
@@ -53,6 +54,24 @@ export function ReportDetail({ reportId }: ReportDetailProps) {
   const [detail, setDetail] = useState<IReportDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  async function loadDetail(isInitial = false) {
+    setLoading(isInitial);
+    setError(null);
+    try {
+      const data = await fetchReportDetail(reportId);
+      setDetail(data);
+
+      // Auto-assign if pending
+      if (data.status === "pending") {
+        assignReport(reportId).catch(() => {});
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur de chargement");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -289,7 +308,7 @@ export function ReportDetail({ reportId }: ReportDetailProps) {
         </Card>
       </div>
 
-      {/* Action buttons placeholder (Story 7-3) */}
+      {/* Moderation actions */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
@@ -298,20 +317,7 @@ export function ReportDetail({ reportId }: ReportDetailProps) {
           </CardTitle>
         </CardHeader>
         <CardContent data-testid="action-buttons">
-          <p className="text-sm text-muted-foreground mb-3">
-            Les actions de moderation seront disponibles prochainement.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="destructive" size="sm" disabled>
-              Desactiver l&apos;annonce
-            </Button>
-            <Button variant="outline" size="sm" disabled>
-              Envoyer un avertissement
-            </Button>
-            <Button variant="outline" size="sm" disabled>
-              Rejeter
-            </Button>
-          </div>
+          <ModerationActions detail={detail} onActionComplete={() => loadDetail()} />
         </CardContent>
       </Card>
     </div>

@@ -27,6 +27,12 @@ vi.mock("@/lib/api/moderation-api", () => ({
   assignReport: (...args: unknown[]) => mockAssignReport(...args),
 }));
 
+vi.mock("@/components/moderation/moderation-actions", () => ({
+  ModerationActions: ({ detail }: { detail: { status: string } }) => (
+    <div data-testid="moderation-actions">Status: {detail.status}</div>
+  ),
+}));
+
 const LISTING_DETAIL: IReportDetail = {
   ID: "a0000000-0000-0000-0000-000000000001",
   reporterId: "b1",
@@ -172,13 +178,13 @@ describe("ReportDetail", () => {
     expect(screen.getByText("Rapport introuvable")).toBeInTheDocument();
   });
 
-  it("renders action buttons placeholder", async () => {
+  it("renders moderation actions component", async () => {
     mockFetchReportDetail.mockResolvedValue(LISTING_DETAIL);
 
     render(<ReportDetail reportId="r1" />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("action-buttons")).toBeInTheDocument();
+      expect(screen.getByTestId("moderation-actions")).toBeInTheDocument();
     });
   });
 
