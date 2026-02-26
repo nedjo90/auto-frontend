@@ -49,7 +49,6 @@ export function PatternAlert({ patterns, sellerId, onActionComplete }: PatternAl
     setError(null);
     try {
       await deactivateAccount({
-        reportId: "00000000-0000-0000-0000-000000000000",
         userId: sellerId,
         reason: reason || undefined,
         confirmed: true,

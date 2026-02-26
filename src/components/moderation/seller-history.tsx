@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -13,6 +13,7 @@ import {
   XCircle,
   Calendar,
   BarChart3,
+  Star,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -57,43 +58,30 @@ export function SellerHistory({ sellerId, fromReportId }: SellerHistoryProps) {
   const [data, setData] = useState<ISellerHistory | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const mountedRef = useRef(true);
 
-  async function loadHistory() {
+  const loadHistory = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const history = await fetchSellerHistory(sellerId);
+      if (!mountedRef.current) return;
       setData(history);
     } catch (err) {
+      if (!mountedRef.current) return;
       setError(err instanceof Error ? err.message : "Erreur de chargement");
     } finally {
-      setLoading(false);
+      if (mountedRef.current) setLoading(false);
     }
-  }
+  }, [sellerId]);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        const history = await fetchSellerHistory(sellerId);
-        if (cancelled) return;
-        setData(history);
-      } catch (err) {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : "Erreur de chargement");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    load();
+    mountedRef.current = true;
+    loadHistory();
     return () => {
-      cancelled = true;
+      mountedRef.current = false;
     };
-  }, [sellerId]);
+  }, [loadHistory]);
 
   if (loading) {
     return (
@@ -163,6 +151,15 @@ export function SellerHistory({ sellerId, fromReportId }: SellerHistoryProps) {
                 year: "numeric",
               })}
             </p>
+            {data.sellerRating != null && (
+              <p
+                className="text-sm text-muted-foreground flex items-center gap-1"
+                data-testid="seller-rating"
+              >
+                <Star className="size-3 fill-yellow-400 text-yellow-400" />
+                {data.sellerRating.toFixed(1)} / 5
+              </p>
+            )}
           </div>
         </div>
         <Badge variant="outline" className={statusInfo.className} data-testid="account-status">

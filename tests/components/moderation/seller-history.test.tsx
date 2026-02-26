@@ -26,6 +26,7 @@ const MOCK_HISTORY: ISellerHistory = {
   displayName: "Jean Dupont",
   memberSince: "2024-01-15T10:00:00Z",
   accountStatus: "active",
+  sellerRating: 4.2,
   statistics: {
     totalListings: 5,
     activeListings: 3,
@@ -170,6 +171,26 @@ describe("SellerHistory", () => {
       expect(screen.getByTestId("pattern-alerts")).toBeDefined();
     });
     expect(screen.getByText("3 signalements en 30 jours")).toBeDefined();
+  });
+
+  it("displays seller rating when available", async () => {
+    mockFetchSellerHistory.mockResolvedValue(MOCK_HISTORY);
+    render(<SellerHistory sellerId={SELLER_ID} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("seller-rating")).toBeDefined();
+    });
+    expect(screen.getByText("4.2 / 5")).toBeDefined();
+  });
+
+  it("hides seller rating when null", async () => {
+    mockFetchSellerHistory.mockResolvedValue({ ...MOCK_HISTORY, sellerRating: null });
+    render(<SellerHistory sellerId={SELLER_ID} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("seller-history")).toBeDefined();
+    });
+    expect(screen.queryByTestId("seller-rating")).toBeNull();
   });
 
   it("calls fetchSellerHistory with correct sellerId", async () => {

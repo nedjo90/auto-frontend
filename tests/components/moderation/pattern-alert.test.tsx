@@ -38,7 +38,7 @@ const INFO_PATTERN: IViolationPattern = {
   description: "Meme motif de signalement 3 fois en 90 jours",
   count: 3,
   period: "90j",
-  severity: "info",
+  severity: "warning",
 };
 
 describe("PatternAlert", () => {
@@ -67,7 +67,7 @@ describe("PatternAlert", () => {
     expect(screen.getByText("Periode: 30j")).toBeDefined();
   });
 
-  it("renders info pattern", () => {
+  it("renders same-reason pattern with period", () => {
     render(
       <PatternAlert
         patterns={[INFO_PATTERN]}
@@ -190,6 +190,8 @@ describe("PatternAlert", () => {
           confirmed: true,
         }),
       );
+      // Should NOT include reportId (escalation from seller history has no report context)
+      expect(mockDeactivateAccount.mock.calls[0][0]).not.toHaveProperty("reportId");
     });
 
     await waitFor(() => {

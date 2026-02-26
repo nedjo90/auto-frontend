@@ -197,7 +197,7 @@ export async function sendWarning(input: {
 
 /** Deactivate (suspend) a user account. */
 export async function deactivateAccount(input: {
-  reportId: string;
+  reportId?: string;
   userId: string;
   reason?: string;
   confirmed: boolean;
