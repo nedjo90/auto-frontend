@@ -23,7 +23,7 @@ describe("SellerCtaSection", () => {
     render(<SellerCtaSection />);
 
     expect(screen.getByTestId("seller-cta-section")).toBeInTheDocument();
-    expect(screen.getByText("Vendez votre vehicule")).toBeInTheDocument();
+    expect(screen.getByText("Vendez votre véhicule")).toBeInTheDocument();
   });
 
   it("should display all 3 benefits", () => {
@@ -38,8 +38,8 @@ describe("SellerCtaSection", () => {
     render(<SellerCtaSection />);
 
     expect(screen.getByText("Remplissage automatique en 3 secondes")).toBeInTheDocument();
-    expect(screen.getByText("Score de visibilite en temps reel")).toBeInTheDocument();
-    expect(screen.getByText(/Audience qualifiee d.*acheteurs verifies/)).toBeInTheDocument();
+    expect(screen.getByText("Score de visibilité en temps réel")).toBeInTheDocument();
+    expect(screen.getByText(/Audience qualifiée d.acheteurs vérifiés/)).toBeInTheDocument();
   });
 
   it("should navigate to /register when not authenticated", () => {

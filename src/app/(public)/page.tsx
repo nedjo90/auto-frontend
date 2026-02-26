@@ -8,21 +8,21 @@ import { SellerCtaSection } from "@/components/home/seller-cta-section";
 import { JsonLd } from "@/components/seo/json-ld";
 
 export const metadata: Metadata = {
-  title: "Auto — Annonces vehicules verifiees | Donnees certifiees & transparence",
+  title: "Auto — Annonces véhicules vérifiées | Données certifiées & transparence",
   description:
-    "Trouvez votre prochain vehicule en toute confiance. Annonces verifiees, donnees certifiees, historique transparent. Voitures et motos d'occasion sur Auto.",
+    "Trouvez votre prochain véhicule en toute confiance. Annonces vérifiées, données certifiées, historique transparent. Voitures et motos d'occasion sur Auto.",
   openGraph: {
-    title: "Auto — Annonces vehicules verifiees",
+    title: "Auto — Annonces véhicules vérifiées",
     description:
-      "Trouvez votre prochain vehicule en toute confiance. Annonces verifiees, donnees certifiees, historique transparent.",
+      "Trouvez votre prochain véhicule en toute confiance. Annonces vérifiées, données certifiées, historique transparent.",
     type: "website",
     siteName: "Auto",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Auto — Annonces vehicules verifiees",
+    title: "Auto — Annonces véhicules vérifiées",
     description:
-      "Trouvez votre prochain vehicule en toute confiance. Annonces verifiees, donnees certifiees, historique transparent.",
+      "Trouvez votre prochain véhicule en toute confiance. Annonces vérifiées, données certifiées, historique transparent.",
   },
 };
 
@@ -32,7 +32,7 @@ const WEBSITE_JSONLD = {
   name: "Auto",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://auto.fr",
   description:
-    "Plateforme d'annonces vehicules verifiees avec donnees certifiees et transparence totale.",
+    "Plateforme d'annonces véhicules vérifiées avec données certifiées et transparence totale.",
   potentialAction: {
     "@type": "SearchAction",
     target: {

@@ -20,10 +20,10 @@ describe("TrustStrip", () => {
   it("should display trust indicator labels", () => {
     render(<TrustStrip />);
 
-    expect(screen.getByText("Donnees certifiees")).toBeInTheDocument();
-    expect(screen.getByText("Historique verifie")).toBeInTheDocument();
-    expect(screen.getByText("Paiement securise")).toBeInTheDocument();
-    expect(screen.getByText("Prix du marche")).toBeInTheDocument();
+    expect(screen.getByText("Données certifiées")).toBeInTheDocument();
+    expect(screen.getByText("Historique vérifié")).toBeInTheDocument();
+    expect(screen.getByText("Paiement sécurisé")).toBeInTheDocument();
+    expect(screen.getByText("Prix du marché")).toBeInTheDocument();
   });
 
   it("should have responsive grid layout", () => {

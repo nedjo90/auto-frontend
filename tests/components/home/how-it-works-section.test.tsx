@@ -7,7 +7,7 @@ describe("HowItWorksSection", () => {
     render(<HowItWorksSection />);
 
     expect(screen.getByTestId("how-it-works")).toBeInTheDocument();
-    expect(screen.getByText("Comment ca marche")).toBeInTheDocument();
+    expect(screen.getByText("Comment ça marche")).toBeInTheDocument();
   });
 
   it("should display all 3 steps", () => {
@@ -30,22 +30,22 @@ describe("HowItWorksSection", () => {
     render(<HowItWorksSection />);
 
     expect(
-      screen.getByText("Parcourez des annonces verifiees avec des donnees certifiees"),
+      screen.getByText("Parcourez des annonces vérifiées avec des données certifiées"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Consultez les donnees certifiees et le rapport d'historique"),
+      screen.getByText(/Consultez les données certifiées et le rapport d.historique/),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Echangez directement avec le vendeur par messagerie"),
+      screen.getByText("Échangez directement avec le vendeur par messagerie"),
     ).toBeInTheDocument();
   });
 
   it("should display step numbers", () => {
     render(<HowItWorksSection />);
 
-    expect(screen.getByText("Etape 1")).toBeInTheDocument();
-    expect(screen.getByText("Etape 2")).toBeInTheDocument();
-    expect(screen.getByText("Etape 3")).toBeInTheDocument();
+    expect(screen.getByText(/Étape.*1/)).toBeInTheDocument();
+    expect(screen.getByText(/Étape.*2/)).toBeInTheDocument();
+    expect(screen.getByText(/Étape.*3/)).toBeInTheDocument();
   });
 
   it("should have responsive grid layout", () => {

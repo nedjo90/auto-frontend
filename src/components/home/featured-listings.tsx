@@ -25,7 +25,7 @@ export async function FeaturedListings() {
   return (
     <section className="px-4 py-10 sm:px-6 sm:py-14 lg:py-16" data-testid="featured-listings">
       <div className="mx-auto max-w-6xl">
-        <h2 className="text-lg font-bold sm:text-xl lg:text-2xl">Annonces recentes</h2>
+        <h2 className="text-lg font-bold sm:text-xl lg:text-2xl">Annonces récentes</h2>
 
         {listings.items.length > 0 ? (
           <>

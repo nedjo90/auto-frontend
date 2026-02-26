@@ -24,10 +24,10 @@ describe("HeroSection", () => {
 
     expect(screen.getByTestId("hero-section")).toBeInTheDocument();
     expect(screen.getByTestId("hero-title")).toHaveTextContent(
-      "Trouvez votre prochain vehicule en toute confiance",
+      "Trouvez votre prochain véhicule en toute confiance",
     );
     expect(screen.getByTestId("hero-subtitle")).toHaveTextContent(
-      "Annonces verifiees. Donnees certifiees. Transparence totale.",
+      "Annonces vérifiées. Données certifiées. Transparence totale.",
     );
   });
 

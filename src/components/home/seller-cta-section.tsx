@@ -13,12 +13,12 @@ const BENEFITS = [
   },
   {
     icon: Eye,
-    text: "Score de visibilite en temps reel",
+    text: "Score de visibilité en temps réel",
     testId: "benefit-visibility",
   },
   {
     icon: Users,
-    text: "Audience qualifiee d\u2019acheteurs verifies",
+    text: "Audience qualifiée d'acheteurs vérifiés",
     testId: "benefit-audience",
   },
 ] as const;
@@ -35,7 +35,7 @@ export function SellerCtaSection() {
   return (
     <section className="px-4 py-10 sm:px-6 sm:py-14 lg:py-16" data-testid="seller-cta-section">
       <div className="mx-auto max-w-3xl text-center">
-        <h2 className="text-lg font-bold sm:text-xl lg:text-2xl">Vendez votre vehicule</h2>
+        <h2 className="text-lg font-bold sm:text-xl lg:text-2xl">{"Vendez votre véhicule"}</h2>
         <p className="mt-2 text-sm text-muted-foreground sm:text-base">
           {"Publiez votre annonce en quelques minutes et touchez des milliers d'acheteurs"}
         </p>

@@ -1,10 +1,10 @@
 import { Shield, FileCheck, Lock, BarChart3 } from "lucide-react";
 
 const TRUST_ITEMS = [
-  { icon: Shield, label: "Donnees certifiees", testId: "trust-certified" },
-  { icon: FileCheck, label: "Historique verifie", testId: "trust-history" },
-  { icon: Lock, label: "Paiement securise", testId: "trust-payment" },
-  { icon: BarChart3, label: "Prix du marche", testId: "trust-market" },
+  { icon: Shield, label: "Données certifiées", testId: "trust-certified" },
+  { icon: FileCheck, label: "Historique vérifié", testId: "trust-history" },
+  { icon: Lock, label: "Paiement sécurisé", testId: "trust-payment" },
+  { icon: BarChart3, label: "Prix du marché", testId: "trust-market" },
 ] as const;
 
 /**

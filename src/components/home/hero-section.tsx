@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,18 +20,15 @@ export function HeroSection() {
   const [city, setCity] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      const params = new URLSearchParams();
-      if (make) params.set("make", make);
-      if (model) params.set("model", model);
-      if (city) params.set("search", city);
-      if (maxPrice) params.set("maxPrice", maxPrice);
-      router.push(`/search?${params.toString()}`);
-    },
-    [make, model, city, maxPrice, router],
-  );
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (make) params.set("make", make);
+    if (model) params.set("model", model);
+    if (city) params.set("search", city);
+    if (maxPrice) params.set("maxPrice", maxPrice);
+    router.push(`/search?${params.toString()}`);
+  }
 
   const sellerCTAHref = isAuthenticated ? "/seller/publish" : "/register";
 
@@ -46,7 +43,7 @@ export function HeroSection() {
           className="font-serif text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl"
           data-testid="hero-title"
         >
-          Trouvez votre prochain vehicule en toute confiance
+          {"Trouvez votre prochain véhicule en toute confiance"}
         </h1>
 
         {/* Subtitle */}
@@ -54,7 +51,7 @@ export function HeroSection() {
           className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:mt-6 sm:text-lg"
           data-testid="hero-subtitle"
         >
-          Annonces verifiees. Donnees certifiees. Transparence totale.
+          {"Annonces vérifiées. Données certifiées. Transparence totale."}
         </p>
 
         {/* Quick search form */}
@@ -74,7 +71,7 @@ export function HeroSection() {
             />
             <Input
               type="text"
-              placeholder="Modele"
+              placeholder="Modèle"
               value={model}
               onChange={(e) => setModel(e.target.value)}
               className="h-11"
@@ -98,28 +95,29 @@ export function HeroSection() {
               min={0}
             />
           </div>
-          <Button
-            type="submit"
-            size="lg"
-            className="mt-4 w-full gap-2 sm:w-auto"
-            data-testid="hero-search-submit"
-          >
-            <Search className="size-4" />
-            Rechercher un vehicule
-          </Button>
-        </form>
 
-        {/* Dual CTAs */}
-        <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={() => router.push(sellerCTAHref)}
-            data-testid="hero-seller-cta"
-          >
-            Vendre mon vehicule
-          </Button>
-        </div>
+          {/* CTAs */}
+          <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full gap-2 sm:w-auto"
+              data-testid="hero-search-submit"
+            >
+              <Search className="size-4" />
+              {"Rechercher un véhicule"}
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full sm:w-auto"
+              onClick={() => router.push(sellerCTAHref)}
+              data-testid="hero-seller-cta"
+            >
+              {"Vendre mon véhicule"}
+            </Button>
+          </div>
+        </form>
       </div>
     </section>
   );
