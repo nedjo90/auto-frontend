@@ -118,6 +118,14 @@ export function SellerListingsTable({
                     onListingClick && "cursor-pointer",
                   )}
                   onClick={() => onListingClick?.(listing.ID)}
+                  onKeyDown={(e) => {
+                    if (onListingClick && (e.key === "Enter" || e.key === " ")) {
+                      e.preventDefault();
+                      onListingClick(listing.ID);
+                    }
+                  }}
+                  tabIndex={onListingClick ? 0 : undefined}
+                  role={onListingClick ? "button" : undefined}
                   data-testid={`listing-row-${listing.ID}`}
                 >
                   <td className="py-3 pl-4">
@@ -195,6 +203,14 @@ export function SellerListingsTable({
               key={listing.ID}
               className={cn("p-4 space-y-2", onListingClick && "cursor-pointer active:bg-muted/50")}
               onClick={() => onListingClick?.(listing.ID)}
+              onKeyDown={(e) => {
+                if (onListingClick && (e.key === "Enter" || e.key === " ")) {
+                  e.preventDefault();
+                  onListingClick(listing.ID);
+                }
+              }}
+              tabIndex={onListingClick ? 0 : undefined}
+              role={onListingClick ? "button" : undefined}
               data-testid={`listing-card-${listing.ID}`}
             >
               <div className="flex items-center gap-3">

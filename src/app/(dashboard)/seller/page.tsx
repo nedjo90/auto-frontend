@@ -61,7 +61,9 @@ export default function SellerCockpitPage() {
     setListingsLoading(true);
     getListingPerformance({ sortBy: column, sortDir: dir })
       .then((data) => setListings(data.listings))
-      .catch(() => {})
+      .catch(() => {
+        // Keep current listings on sort failure; just stop loading
+      })
       .finally(() => setListingsLoading(false));
   }, []);
 
