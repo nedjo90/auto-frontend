@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { FileText, ShoppingBag, Upload, History } from "lucide-react";
+import { FileText, ShoppingBag, Upload, History, Eye } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { SellerKpiGrid } from "@/components/seller/seller-kpi-grid";
 import { SellerListingsTable } from "@/components/seller/seller-listings-table";
@@ -36,6 +36,12 @@ const SELLER_SECTIONS = [
     icon: History,
     title: "Historique",
     description: "Consultez vos annonces passees",
+  },
+  {
+    href: "/seller/market",
+    icon: Eye,
+    title: "Suivi marché",
+    description: "Surveillez les annonces concurrentes",
   },
 ];
 

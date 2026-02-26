@@ -14,6 +14,7 @@ import {
   Shield,
   ShoppingCart,
   PenLine,
+  Eye,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,12 @@ const NAV_ITEMS: NavItem[] = [
     href: "/seller/publish",
     label: "Publier",
     icon: ShoppingCart,
+    roles: ["seller", "administrator"],
+  },
+  {
+    href: "/seller/market",
+    label: "Suivi marché",
+    icon: Eye,
     roles: ["seller", "administrator"],
   },
   { href: "/admin", label: "Administration", icon: Shield, roles: ["administrator"] },
