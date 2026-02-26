@@ -131,6 +131,35 @@ describe("SellerCockpitPage", () => {
     });
   });
 
+  it("shows empty state when seller has no listings", async () => {
+    const emptyKpis: ISellerKpiSummary = {
+      activeListings: { current: 0, previous: 0, trend: 0 },
+      totalViews: { current: 0, previous: 0, trend: 0 },
+      totalContacts: { current: 0, previous: 0, trend: 0 },
+      avgDaysOnline: { current: 0, previous: 0, trend: 0 },
+    };
+    mockGetAggregateKPIs.mockResolvedValue(emptyKpis);
+    mockGetListingPerformance.mockResolvedValue({ listings: [], total: 0 });
+
+    render(<SellerCockpitPage />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("seller-cockpit-empty")).toBeInTheDocument();
+    });
+    expect(screen.getByTestId("empty-state-cockpit")).toBeInTheDocument();
+    expect(screen.getByTestId("cta-create-listing")).toBeInTheDocument();
+    expect(screen.getByTestId("cta-explore-market")).toBeInTheDocument();
+  });
+
+  it("shows full dashboard when seller has listings", async () => {
+    render(<SellerCockpitPage />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("seller-kpi-grid")).toBeInTheDocument();
+    });
+    expect(screen.queryByTestId("empty-state-cockpit")).not.toBeInTheDocument();
+  });
+
   it("handles listing fetch error gracefully", async () => {
     mockGetListingPerformance.mockRejectedValue(new Error("Failed"));
     render(<SellerCockpitPage />);

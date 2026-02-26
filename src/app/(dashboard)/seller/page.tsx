@@ -8,6 +8,7 @@ import { SellerKpiGrid } from "@/components/seller/seller-kpi-grid";
 import { SellerListingsTable } from "@/components/seller/seller-listings-table";
 import { MetricDrilldown } from "@/components/seller/metric-drilldown";
 import { MarketPositionDetail } from "@/components/seller/market-position-detail";
+import { EmptyStateCockpit } from "@/components/dashboard/empty-state-cockpit";
 import { getAggregateKPIs, getListingPerformance } from "@/lib/api/seller-kpi-api";
 import type { ISellerKpiSummary, ISellerListingPerformance, SellerKpiMetric } from "@auto/shared";
 import type { SellerListingSortColumn } from "@auto/shared";
@@ -82,6 +83,21 @@ export default function SellerCockpitPage() {
   const handleMarketClick = useCallback((listingId: string) => {
     setMarketDetailListingId(listingId);
   }, []);
+
+  // Show empty state when seller has no listings at all
+  const isEmptyState =
+    !kpiLoading && !listingsLoading && kpis?.activeListings?.current === 0 && listings.length === 0;
+
+  if (isEmptyState) {
+    return (
+      <div className="space-y-4 sm:space-y-6" data-testid="seller-cockpit-empty">
+        <div>
+          <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">Cockpit Vendeur</h1>
+        </div>
+        <EmptyStateCockpit />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6">
