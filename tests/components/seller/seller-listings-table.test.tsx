@@ -22,6 +22,9 @@ const MOCK_LISTINGS: ISellerListingPerformance[] = [
     photoCount: 5,
     primaryPhotoUrl: null,
     marketPosition: "aligned",
+    marketPercentageDiff: 2,
+    marketDisplayText: "Prix aligné",
+    marketIsEstimation: true,
   },
   {
     ID: "listing-2",
@@ -40,6 +43,9 @@ const MOCK_LISTINGS: ISellerListingPerformance[] = [
     photoCount: 3,
     primaryPhotoUrl: null,
     marketPosition: "below",
+    marketPercentageDiff: -8,
+    marketDisplayText: "8% en dessous du marché",
+    marketIsEstimation: true,
   },
 ];
 
@@ -106,5 +112,19 @@ describe("SellerListingsTable", () => {
     render(<SellerListingsTable listings={MOCK_LISTINGS} loading={false} />);
     expect(screen.getByTestId("listing-card-listing-1")).toBeInTheDocument();
     expect(screen.getByTestId("listing-card-listing-2")).toBeInTheDocument();
+  });
+
+  it("calls onMarketClick when market badge is clicked", async () => {
+    const user = userEvent.setup();
+    const onMarketClick = vi.fn();
+    render(
+      <SellerListingsTable
+        listings={MOCK_LISTINGS}
+        loading={false}
+        onMarketClick={onMarketClick}
+      />,
+    );
+    await user.click(screen.getByTestId("market-badge-listing-1"));
+    expect(onMarketClick).toHaveBeenCalledWith("listing-1");
   });
 });

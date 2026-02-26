@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SellerKpiGrid } from "@/components/seller/seller-kpi-grid";
 import { SellerListingsTable } from "@/components/seller/seller-listings-table";
 import { MetricDrilldown } from "@/components/seller/metric-drilldown";
+import { MarketPositionDetail } from "@/components/seller/market-position-detail";
 import { getAggregateKPIs, getListingPerformance } from "@/lib/api/seller-kpi-api";
 import type { ISellerKpiSummary, ISellerListingPerformance, SellerKpiMetric } from "@auto/shared";
 import type { SellerListingSortColumn } from "@auto/shared";
@@ -44,6 +45,7 @@ export default function SellerCockpitPage() {
   const [listings, setListings] = useState<ISellerListingPerformance[]>([]);
   const [listingsLoading, setListingsLoading] = useState(true);
   const [drilldownMetric, setDrilldownMetric] = useState<SellerKpiMetric | null>(null);
+  const [marketDetailListingId, setMarketDetailListingId] = useState<string | null>(null);
 
   useEffect(() => {
     getAggregateKPIs()
@@ -71,6 +73,10 @@ export default function SellerCockpitPage() {
     setDrilldownMetric(metric);
   }, []);
 
+  const handleMarketClick = useCallback((listingId: string) => {
+    setMarketDetailListingId(listingId);
+  }, []);
+
   return (
     <div className="space-y-4 sm:space-y-6">
       <div>
@@ -88,8 +94,21 @@ export default function SellerCockpitPage() {
         <MetricDrilldown metric={drilldownMetric} onClose={() => setDrilldownMetric(null)} />
       )}
 
+      {/* Market Position Detail */}
+      {marketDetailListingId && (
+        <MarketPositionDetail
+          listing={listings.find((l) => l.ID === marketDetailListingId)!}
+          onClose={() => setMarketDetailListingId(null)}
+        />
+      )}
+
       {/* Listings Performance Table */}
-      <SellerListingsTable listings={listings} loading={listingsLoading} onSort={handleSort} />
+      <SellerListingsTable
+        listings={listings}
+        loading={listingsLoading}
+        onSort={handleSort}
+        onMarketClick={handleMarketClick}
+      />
 
       {/* Quick Access */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">

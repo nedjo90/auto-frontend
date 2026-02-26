@@ -39,6 +39,9 @@ const MOCK_LISTINGS: ISellerListingPerformance[] = [
     photoCount: 4,
     primaryPhotoUrl: null,
     marketPosition: "aligned",
+    marketPercentageDiff: 2,
+    marketDisplayText: "Prix aligné",
+    marketIsEstimation: true,
   },
 ];
 

@@ -14,6 +14,7 @@ export interface SellerListingsTableProps {
   loading: boolean;
   onSort?: (column: SellerListingSortColumn, dir: "asc" | "desc") => void;
   onListingClick?: (listingId: string) => void;
+  onMarketClick?: (listingId: string) => void;
 }
 
 interface SortState {
@@ -21,16 +22,16 @@ interface SortState {
   dir: "asc" | "desc";
 }
 
-const MARKET_POSITION_COLORS: Record<string, string> = {
-  below: "text-green-600 bg-green-50",
-  aligned: "text-blue-600 bg-blue-50",
-  above: "text-orange-600 bg-orange-50",
-};
-
 const MARKET_POSITION_LABELS: Record<string, string> = {
   below: "Bon prix",
   aligned: "Prix marché",
   above: "Au-dessus",
+};
+
+const MARKET_POSITION_TOKENS: Record<string, string> = {
+  below: "var(--market-below)",
+  aligned: "var(--market-aligned)",
+  above: "var(--market-above)",
 };
 
 function formatPrice(price: number | null): string {
@@ -43,6 +44,7 @@ export function SellerListingsTable({
   loading,
   onSort,
   onListingClick,
+  onMarketClick,
 }: SellerListingsTableProps) {
   const [sort, setSort] = useState<SortState>({ column: "viewCount", dir: "desc" });
 
@@ -178,14 +180,25 @@ export function SellerListingsTable({
                   </td>
                   <td className="py-3 pr-4">
                     {listing.marketPosition ? (
-                      <span
+                      <button
                         className={cn(
                           "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
-                          MARKET_POSITION_COLORS[listing.marketPosition] || "",
+                          onMarketClick && "cursor-pointer hover:opacity-80",
                         )}
+                        style={{
+                          color: MARKET_POSITION_TOKENS[listing.marketPosition] || undefined,
+                          backgroundColor: MARKET_POSITION_TOKENS[listing.marketPosition]
+                            ? `color-mix(in srgb, ${MARKET_POSITION_TOKENS[listing.marketPosition]} 10%, transparent)`
+                            : undefined,
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onMarketClick?.(listing.ID);
+                        }}
+                        data-testid={`market-badge-${listing.ID}`}
                       >
                         {MARKET_POSITION_LABELS[listing.marketPosition] || listing.marketPosition}
-                      </span>
+                      </button>
                     ) : (
                       <span className="text-xs text-muted-foreground">-</span>
                     )}
@@ -235,10 +248,13 @@ export function SellerListingsTable({
                 </div>
                 {listing.marketPosition && (
                   <span
-                    className={cn(
-                      "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium flex-shrink-0",
-                      MARKET_POSITION_COLORS[listing.marketPosition] || "",
-                    )}
+                    className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium flex-shrink-0"
+                    style={{
+                      color: MARKET_POSITION_TOKENS[listing.marketPosition] || undefined,
+                      backgroundColor: MARKET_POSITION_TOKENS[listing.marketPosition]
+                        ? `color-mix(in srgb, ${MARKET_POSITION_TOKENS[listing.marketPosition]} 10%, transparent)`
+                        : undefined,
+                    }}
                   >
                     {MARKET_POSITION_LABELS[listing.marketPosition] || listing.marketPosition}
                   </span>
